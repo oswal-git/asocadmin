@@ -1,0 +1,78 @@
+<div class="main">
+   <div class="content">
+      <!-- <h1 class="content__title"></h1> -->
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__change">
+         <div class="form__change">
+            <!-- <h2></h2> -->
+            <form class="form__container grid" *ngIf="!loading" [formGroup]="form" (ngSubmit)="change($event)" autocomplete="off">
+               <input autocomplete="false" name="hidden" type="text" style="display: none" />
+               <div class="form__field-image">
+                  <label class="form__label" for="avartarImg"></label>
+                  <egl-img
+                     id="avartarImg"
+                     class="img_avatar"
+                     [label]="'Avatar'"
+                     imagedefault="avatarUrlDefault"
+                     [(ngModel)]="avatarImg"
+                     [ngModelOptions]="{ standalone: true }"
+                     [readonly]="true"
+                  ></egl-img>
+                  <!-- <div class="grid-avatar">
+               </div> -->
+                  <h1 class="content__title">Cambio de contraseña</h1>
+               </div>
+               <div class="form__group">
+                  <div class="form__field">
+                     <label class="form__label" for="email_user">Email</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faEnvelope"></fa-icon>
+                        <input type="email" class="form__input" formControlName="email_user" id="email_user" placeholder="Email" />
+                     </div>
+                     <div class="form__field-error" *ngIf="emailField!.errors && emailField!.touched">
+                        <p *ngIf="emailField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="emailField!.hasError('email')">El email no es válido</p>
+                        <p *ngIf="emailField!.hasError('pattern')">Formato de correo erróneo</p>
+                        <p *ngIf="emailField!.hasError('maxlength')">Te pasaste, máximo deben haber {{ emailMaxLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="password_user">Password</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
+                        <input type="password" class="form__input" formControlName="password_user" id="password_user" placeholder="Password" />
+                     </div>
+                     <div class="form__field-error" *ngIf="passwordField!.errors && passwordField!.touched">
+                        <p *ngIf="passwordField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="passwordField!.hasError('password')">El password no es válido</p>
+                        <p *ngIf="passwordField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ passwordMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="new_password_user">Nuevo password</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
+                        <input
+                           type="password"
+                           class="form__input"
+                           formControlName="new_password_user"
+                           id="new_password_user"
+                           placeholder="New password"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="newPasswordField!.errors && newPasswordField!.touched">
+                        <p *ngIf="newPasswordField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="newPasswordField!.hasError('password')">El password no es válido</p>
+                        <p *ngIf="newPasswordField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ passwordMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+               </div>
+               <br />
+               <div class="form__button">
+                  <button type="submit" class="form__btn">Cambiar contraseña</button>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>

@@ -1,0 +1,262 @@
+$minwidth: 482px;
+$minwidth: 420px;
+:host {
+   background: #181818;
+
+   ::ng-deep.mat-toolbar {
+      background: #181818;
+      color: #fff;
+      line-height: 1.6;
+      font-family: "Quicksand", sans-serif;
+   }
+}
+
+.mat-elevation-z8 {
+   width: 100%;
+   min-width: $minwidth;
+}
+
+table {
+   // background: #252525;
+   color: #fff;
+   width: 100%;
+   margin-top: 10px;
+   min-width: $minwidth;
+}
+
+th {
+   background: #181818;
+   color: #fff;
+   width: 20%;
+   font-weight: 400;
+   font-size: 1rem;
+}
+
+.mat-row,
+.mat-cell {
+   background: #252525;
+   color: #fff;
+   font-weight: 100;
+   font-size: 0.8rem;
+}
+
+mat-paginator::ng-deep {
+   width: 100%;
+   min-width: $minwidth;
+   background: #353535;
+   color: #ccc;
+
+   div.mat-select-value {
+      color: #ccc;
+   }
+   .mat-paginator-icon {
+      fill: #ccc;
+      width: 18px;
+   }
+
+   .mat-select-arrow {
+      width: 0;
+      height: 0;
+      border-left: 5px solid #353535;
+      border-right: 5px solid #353535;
+      border-top: 5px solid;
+      margin: 0 4px;
+      color: #ccc;
+   }
+
+   .mat-form-field-wrapper:hover .mat-select-arrow {
+      color: #fff;
+   }
+
+   .mat-form-field-appearance-legacy .mat-form-field-underline {
+      background-color: #ccc;
+   }
+
+   .mat-form-field-wrapper:hover .mat-form-field-underline {
+      background-color: #fff;
+   }
+}
+
+.add-button {
+   &.mat-fab {
+      width: 45px;
+      height: 45px;
+   }
+   .material-icons {
+      font-size: 1.8rem;
+      line-height: 0.4;
+      padding-right: 6px;
+   }
+}
+
+$tam: 1.5rem;
+
+.action-icon {
+   width: $tam;
+   height: $tam;
+   font-size: ($tam * 0.5);
+}
+
+.action-button {
+   width: $tam;
+   height: $tam;
+   margin-right: 0.3rem;
+
+   &.browse-button {
+      background-color: var(--eglos-color-warning-shade);
+   }
+
+   &.edit-button {
+      background-color: var(--eglos-color-success-shade);
+      color: white;
+   }
+
+   &.delete-button {
+      background-color: var(--eglos-color-danger-shade);
+   }
+
+   &:last-child {
+      margin-right: 0;
+   }
+
+   & span.mat-button-wrapper {
+      padding: 0;
+   }
+
+   // .material-icons {
+   // font-size: 1.8rem;
+   // line-height: 0.4;
+   // padding-right: 6px;
+   // }
+
+   //   & .mat-mini-fab .mat-button-wrapper {
+   //     padding: 0px 0 !important;
+   //   }
+}
+
+.spinner {
+   margin: 20vh auto;
+}
+
+// .nodisplay {
+//   display: none;
+// }
+
+// .icon {
+//   position: absolute;
+// }
+
+// .datatable-icon-down {
+//   top: 0px;
+// }
+// .datatable-icon-up {
+//   top: 40px;
+// }
+// .dragFromLeft .icon {
+//   left: -13px;
+// }
+
+// columns without actions
+$widthColumns: 8;
+$dividers: 60;
+$portion: calc(100vw - 85px) / $dividers;
+
+.mat-column-id_asociation_user {
+   color: #fff;
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 10);
+}
+.mat-column-user_name_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 6);
+}
+.mat-column-name_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 10);
+}
+.mat-column-last_name_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 14);
+}
+.mat-column-email_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 10);
+}
+.mat-column-phone_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 4);
+}
+.mat-column-status_user {
+   // width: (100% / $dividers * 3);
+   width: calc($portion * 4);
+}
+.mat-column-profile_user {
+   width: calc($portion * 4);
+   padding: 3px;
+   img {
+      border: 1px solid #333;
+      border-radius: 50%;
+   }
+}
+.mat-column-actions {
+   // width: (100% / $dividers * 1);
+   width: 85px;
+   min-width: 85px;
+}
+
+@media screen and (min-width: 1600px) {
+}
+@media screen and (max-width: 1600px) and (min-width: 1400px) {
+   .mat-column-phone_user {
+      display: none;
+   }
+}
+@media screen and (max-width: 1400px) and (min-width: 1225px) {
+   .mat-column-email_user,
+   .mat-column-phone_user {
+      display: none;
+   }
+}
+@media screen and (max-width: 1225px) and (min-width: 1024px) {
+   .mat-column-email_user,
+   .mat-column-name_user,
+   .mat-column-phone_user {
+      display: none;
+   }
+}
+
+@media screen and (max-width: 1024px) and (min-width: 835px) {
+   .mat-column-email_user,
+  // .mat-column-name_user,
+  .mat-column-phone_user {
+      display: none;
+   }
+}
+
+@media screen and (max-width: 835px) and (min-width: 565px) {
+   .mat-column-email_user,
+   .mat-column-name_user,
+   .mat-column-last_name_user,
+   .mat-column-phone_user {
+      display: none;
+   }
+}
+
+@media screen and (max-width: 565px) and (min-width: 300px) {
+   .mat-column-email_user,
+   .mat-column-name_user,
+   .mat-column-last_name_user,
+   .mat-column-phone_user {
+      display: none;
+   }
+}
+
+@media screen and (max-width: 300px) {
+   .mat-column-email_user,
+   .mat-column-name_user,
+   .mat-column-last_name_user,
+   .mat-column-id_asociation_user,
+   .mat-column-phone_user {
+      display: none;
+   }
+}

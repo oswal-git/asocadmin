@@ -1,0 +1,80 @@
+<div class="container">
+   <mat-toolbar>
+      <span>{{ options.title }}</span>
+   </mat-toolbar>
+   <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+   <mat-card *ngIf="!loading" style="margin-top: 5px">
+      <form (ngSubmit)="manageAsociation()" [formGroup]="form">
+         <mat-grid-list cols="4" rowHeight="70px" gutterSize="5px" [style.background]="'white'">
+            <mat-grid-tile [colspan]="2" [rowspan]="1"
+               ><mat-form-field appearance="fill" class="ancho">
+                  <mat-label>Nombre</mat-label>
+                  <input matInput autocomplete="off" formControlName="nombre_largo" />
+               </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="2" [rowspan]="3">
+               <input
+                  style="display: none"
+                  type="file"
+                  id="logoUpload"
+                  (change)="getLogo($event)"
+                  autocomplete="off"
+                  accept=".png,.jpg"
+                  name="logo"
+                  #logo
+               />
+               <div class="grid-logo">
+                  <img class="img_logo" [src]="logoUrl" (click)="browseForm || logo.click()" width="80%" />
+                  <div (click)="defaultLogo()" class="close-button" *ngIf="!browseForm">✕</div>
+               </div>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="2" [rowspan]="1"
+               ><mat-form-field appearance="fill" class="ancho">
+                  <mat-label>Nombre abreviado</mat-label>
+                  <input matInput autocomplete="off" formControlName="nombre_corto" />
+               </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="2" [rowspan]="1"
+               ><mat-form-field appearance="fill" class="ancho">
+                  <mat-label>Teléfono</mat-label>
+                  <input matInput autocomplete="off" formControlName="telefono" />
+               </mat-form-field>
+            </mat-grid-tile>
+
+            <mat-grid-tile [colspan]="4" [rowspan]="1"
+               ><mat-form-field appearance="fill" class="ancho">
+                  <mat-label>Email</mat-label>
+                  <input type="email" matInput autocomplete="off" formControlName="email" />
+               </mat-form-field>
+            </mat-grid-tile>
+
+            <div *ngIf="!createForm">
+               <mat-grid-tile [colspan]="2" [rowspan]="1">
+                  <mat-form-field class="ancho" appearance="fill">
+                     <mat-label>Fecha de alta</mat-label>
+                     <mat-icon matPrefix> history_toggle_off </mat-icon>
+                     <input matInput [value]="oldRecord.date_created_asociation" autocomplete="off" disabled />
+                  </mat-form-field>
+               </mat-grid-tile>
+
+               <mat-grid-tile [colspan]="2" [rowspan]="1">
+                  <mat-form-field class="ancho" appearance="fill">
+                     <mat-label>Fecha de modificacion</mat-label>
+                     <mat-icon matPrefix> history</mat-icon>
+                     <input matInput [value]="oldRecord.date_updated_asociation" autocomplete="off" disabled />
+                  </mat-form-field>
+               </mat-grid-tile>
+            </div>
+            <mat-grid-tile [colspan]="2" [rowspan]="1" *ngIf="!browseForm">
+               <button class="submit" type="submit" mat-raised-button color="primary" [disabled]="form.invalid">{{ options.button }}</button>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="browseForm ? 4 : 2" [rowspan]="1">
+               <button type="button" (click)="exitForm(null)" mat-raised-button class="cancel">Volver</button>
+            </mat-grid-tile>
+         </mat-grid-list>
+      </form>
+   </mat-card>
+</div>

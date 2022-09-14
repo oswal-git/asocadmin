@@ -1,0 +1,13 @@
+.egl-container {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   width: 100%;
+   height: 100%;
+   background: #181818;
+
+   .egl-container-form {
+      width: 100%;
+      margin: auto;
+   }
+}

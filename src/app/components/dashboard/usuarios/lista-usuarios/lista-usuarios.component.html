@@ -1,0 +1,113 @@
+<div class="container">
+   <mat-toolbar>
+      <span>{{ titleData.title }}</span>
+      <div class="spacer"></div>
+      <button mat-fab color="primary" class="add-button" (click)="abrirDialogo('create')"><mat-icon> person_add </mat-icon></button>
+   </mat-toolbar>
+
+   <mat-form-field appearance="standard">
+      <mat-label>Filter</mat-label>
+      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar ..." #input />
+   </mat-form-field>
+
+   <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+   <div [ngClass]="{ nodisplay: loading }">
+      <div *ngIf="listUsuarios.length > 0">
+         <div class="mat-elevation-z8">
+            <table mat-table [dataSource]="dataSource" matSort [trackBy]="trackByUid">
+               <!--- Note that these columns can be defined in any order.
+                     The actual rendered columns are set as a property on the row definition" -->
+               <!-- Asociacion Column -->
+               <ng-container matColumnDef="id_asociation_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="this.userProfile.id_asociation_user !== 0">Asociacion</th>
+                  <td mat-cell *matCellDef="let element" [hidden]="this.userProfile.id_asociation_user !== 0">
+                     {{ getNameAsociation(element.id_asociation_user) }}
+                  </td>
+               </ng-container>
+               <!-- Usuario Column -->
+               <ng-container matColumnDef="user_name_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
+                  <td mat-cell *matCellDef="let element">{{ element.user_name_user }}</td>
+               </ng-container>
+               <!-- Nombre Column -->
+               <ng-container matColumnDef="name_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+                  <td mat-cell *matCellDef="let element">{{ element.name_user }}</td>
+               </ng-container>
+               <!-- Apellido Column -->
+               <ng-container matColumnDef="last_name_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Apellidos</th>
+                  <td mat-cell *matCellDef="let element">{{ element.last_name_user }}</td>
+               </ng-container>
+               <!-- Email Column -->
+               <ng-container matColumnDef="email_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Email</th>
+                  <td mat-cell *matCellDef="let element">{{ element.email_user }}</td>
+               </ng-container>
+               <!-- Telefono Column -->
+               <ng-container matColumnDef="phone_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Teléfono</th>
+                  <td mat-cell *matCellDef="let element">{{ element.phone_user }}</td>
+               </ng-container>
+               <!-- Situacion Column -->
+               <ng-container matColumnDef="status_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Situación</th>
+                  <td mat-cell *matCellDef="let element">{{ element.status_user }}</td>
+               </ng-container>
+               <!-- Situacion Column -->
+               <ng-container matColumnDef="profile_user">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Perfil</th>
+                  <td mat-cell *matCellDef="let element">{{ element.profile_user }}</td>
+               </ng-container>
+               <!-- Actions Column -->
+               <ng-container matColumnDef="actions">
+                  <th mat-header-cell *matHeaderCellDef>Acciones</th>
+                  <td mat-cell *matCellDef="let element; let i = index" style="text-align: right">
+                     <button
+                        mat-mini-fab
+                        color="primary"
+                        class="action-button browse-button"
+                        (click)="abrirDialogo('browse', element, i)"
+                        matTooltip="Ver datos usuario"
+                     >
+                        <mat-icon class="action-icon"> search </mat-icon>
+                     </button>
+                     <button
+                        mat-mini-fab
+                        color="success"
+                        class="action-button edit-button"
+                        (click)="abrirDialogo('edit', element, i)"
+                        matTooltip="Editar usuario"
+                     >
+                        <mat-icon class="action-icon"> edit </mat-icon>
+                     </button>
+                     <button
+                        mat-mini-fab
+                        color="warn"
+                        class="action-button delete-button"
+                        (click)="abrirDialogo('delete', element, i)"
+                        matTooltip="Eliminar usuario"
+                     >
+                        <mat-icon class="action-icon"> delete </mat-icon>
+                     </button>
+                  </td>
+               </ng-container>
+               <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+               <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+               <!-- Row shown when there is no matching data. -->
+               <tr class="mat-row" *matNoDataRow>
+                  <td class="mat-cell" colspan="4">No hay datos que coincidan con el filtro "{{ input.value }}"</td>
+               </tr>
+            </table>
+            <mat-paginator
+               [length]="listUsuarios.length"
+               [pageSizeOptions]="pageSizeOptions"
+               [showFirstLastButtons]="numPageSizeOptions > 1"
+               aria-label="Select page of users"
+            >
+            </mat-paginator>
+         </div>
+      </div>
+      <h2 *ngIf="listUsuarios.length === 0">No hay usuarios para mostarar</h2>
+   </div>
+</div>

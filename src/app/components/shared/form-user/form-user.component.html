@@ -1,0 +1,206 @@
+<div class="main">
+   <div class="content">
+      <h1 class="content__title" [innerHTML]="optionsDialog.title"></h1>
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__user">
+         <div class="form__user" [ngStyle]="{ 'padding-top': optionsDialog.second_title ? '0' : '1rem' }">
+            <h2 class="form__user-title" *ngIf="optionsDialog.second_title">{{ optionsDialog.second_title }}</h2>
+            <!-- <h2 class="form__user-title" [ngStyle]="{ display: options.second_title ? 'inline' : 'none' }">{{ options.second_title }}</h2> -->
+            <form *ngIf="!loading" class="form__container grid" (ngSubmit)="manageUser($event)" [formGroup]="form" autocomplete="off">
+               <input autocomplete="false" name="hidden" type="text" style="display: none" />
+               <div class="form__field-image" *ngIf="!registerForm">
+                  <label class="form__label" for="avartarImg">Avatar</label>
+                  <egl-img
+                     id="avartarImg"
+                     class="img_avatar"
+                     [label]="''"
+                     [imagedefault]="avatarUrlDefault"
+                     [(ngModel)]="avatarImg"
+                     [ngModelOptions]="{ standalone: true }"
+                     [readonly]="false"
+                  ></egl-img>
+               </div>
+               <div class="form__group">
+                  <div class="form__field">
+                     <label class="form__label" for="id_asociation_user">Asociación</label>
+                     <div class="form__field-select">
+                        <egl-select
+                           class="form__select"
+                           type="id"
+                           id="id_asociation_user"
+                           formControlName="id_asociation_user"
+                           [valores]="asociations"
+                           [label]="'Asociación'"
+                           placeHolder="Selecciona una asociación"
+                           [imgctrl]="asociationImgCtrl"
+                           [showthumbnails]="true"
+                           [isvalid]="idAsociationUserIsValid"
+                           [isinvalid]="idAsociationUserIsInvalid"
+                        >
+                        </egl-select>
+                     </div>
+                     <div class="form__field-error" *ngIf="idAsociationUserField!.errors && idAsociationUserField!.touched">
+                        <p *ngIf="idAsociationUserField!.hasError('required')">Es un campo requerido</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="user_name_user">Usuario</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input
+                           type="text"
+                           class="form__input"
+                           formControlName="user_name_user"
+                           id="user_name_user"
+                           placeholder="Introduce el usuario"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="userNameUserField!.errors && userNameUserField!.touched">
+                        <p *ngIf="userNameUserField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="userNameUserField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ userNameUserMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="name_user">Nombre</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input type="text" class="form__input" formControlName="name_user" id="name_user" placeholder="Introduce el nombre" />
+                     </div>
+                     <div class="form__field-error" *ngIf="nameUserField!.errors && nameUserField!.touched">
+                        <p *ngIf="nameUserField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="nameUserField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ nameUserMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="last_name_user">Apellidos</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input
+                           type="text"
+                           class="form__input"
+                           formControlName="last_name_user"
+                           id="last_name_user"
+                           placeholder="Introduce los apellidos"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="lastNameUserField!.errors && lastNameUserField!.touched">
+                        <p *ngIf="lastNameUserField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="lastNameUserField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ lastNameUserMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="email_user">Email</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faEnvelope"></fa-icon>
+                        <input type="email" class="form__input" formControlName="email_user" id="email_user" placeholder="Email" />
+                     </div>
+                     <div class="form__field-error" *ngIf="emailField!.errors && emailField!.touched">
+                        <p *ngIf="emailField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="emailField!.hasError('email')">El email no es válido</p>
+                        <p *ngIf="emailField!.hasError('pattern')">Formato de correo erróneo</p>
+                        <p *ngIf="emailField!.hasError('maxlength')">Te pasaste, máximo deben haber {{ emailMaxLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field" *ngIf="createForm || registerForm">
+                     <label class="form__label" for="password_user">Password</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
+                        <input type="password" class="form__input" formControlName="password_user" id="password_user" placeholder="Password" />
+                     </div>
+                     <div class="form__field-error" *ngIf="passwordField!.errors && passwordField!.touched">
+                        <p *ngIf="passwordField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="passwordField!.hasError('password')">El password no es válido</p>
+                        <p *ngIf="passwordField!.hasError('minlength')">Te pasaste, mínimo deben haber {{ passwordMinLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="form__field">
+                     <label class="form__label" for="phone_user">Teléfono</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faMobileScreen"></fa-icon
+                        ><input
+                           type="tel"
+                           class="form__input"
+                           formControlName="phone_user"
+                           id="phone_user"
+                           placeholder="Introduce el teléfono"
+                           pattern="(\(\+[0-9]{0,1}[0-9]{1}\)\s){0,1}([0-9]{3}\s[0-9]{3}\s[0-9]{3}){1}"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="phoneUserField!.errors && phoneUserField!.touched">
+                        <p *ngIf="phoneUserField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="phoneUserField!.hasError('pattern')">Formato de teléfono erróneo</p>
+                     </div>
+                  </div>
+
+                  <div class="form__field" *ngIf="!(registerForm || profileForm)">
+                     <label class="form__label" for="profile_user">Perfil</label>
+                     <div class="form__field-select">
+                        <egl-select
+                           class="form__select"
+                           id="profile_user"
+                           formControlName="profile_user"
+                           [valores]="profiles"
+                           [label]="'Perfil'"
+                           placeHolder="Selecciona un perfil"
+                           [imgctrl]="profileImgCtrl"
+                           [showthumbnails]="false"
+                           [isvalid]="profileUserIsValid"
+                           [isinvalid]="profileUserIsInvalid"
+                        >
+                        </egl-select>
+                     </div>
+                     <div class="form__field-error" *ngIf="profileUserField!.errors && profileUserField!.touched">
+                        <p *ngIf="profileUserField!.hasError('required')">Es un campo requerido</p>
+                     </div>
+                  </div>
+                  <div class="form__field" *ngIf="!(registerForm || profileForm)">
+                     <label class="form__label" for="status_user">Estado</label>
+                     <div class="form__field-select">
+                        <egl-select
+                           class="select"
+                           id="status_user"
+                           formControlName="status_user"
+                           [valores]="status"
+                           [label]="'Estado'"
+                           placeHolder="Selecciona un estado"
+                           [imgctrl]="statusImgCtrl"
+                           [showthumbnails]="true"
+                           [isvalid]="statusUserIsValid"
+                           [isinvalid]="statusUserIsInvalid"
+                        >
+                        </egl-select>
+                        <div class="form__field-error" *ngIf="statusUserField!.errors && statusUserField!.touched">
+                           <p *ngIf="statusUserField!.hasError('required')">Es un campo requerido</p>
+                        </div>
+                     </div>
+                  </div>
+                  <div *ngIf="!createForm && !registerForm">
+                     <div class="form__field">
+                        <label class="form__label" for="status_user">Fecha de alta</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faCalendarPlus"></fa-icon>
+                           <!-- <mat-icon matPrefix> history_toggle_off </mat-icon> -->
+                           <input class="form__input" [value]="oldRecord.date_created_user" autocomplete="off" disabled />
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="status_user">Fecha de modificacion</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faClockRotateLeft"></fa-icon>
+                           <!-- <mat-icon matPrefix> history</mat-icon> -->
+                           <input class="form__input" [value]="oldRecord.date_updated_user" autocomplete="off" disabled />
+                        </div>
+                     </div>
+                  </div>
+               </div>
+               <div class="form__group-button">
+                  <div class="form__button">
+                     <button type="submit" class="form__btn">{{ optionsDialog.button }}</button>
+                  </div>
+                  <div class="form__button">
+                     <button type="button" (click)="exitForm(null)" class="form__btn cancel">Volver</button>
+                  </div>
+               </div>
+               <div class="form__link" *ngIf="registerForm"><a [routerLink]="['/login']">Ya estás registrado? Accede aquí</a></div>
+            </form>
+         </div>

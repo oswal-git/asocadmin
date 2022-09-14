@@ -1,0 +1,42 @@
+<div class="component">
+   <div class="component--content" [class.input-ok]="isValid" [class.input-ko]="isInvalid">
+      <div class="component--container">
+         <div class="component--input">
+            <div class="component--img">
+               <egl-svg-input [icon]="type"> </egl-svg-input>
+            </div>
+
+            <div class="component--text">
+               <input
+                  class="component--text-input"
+                  [id]="'input-' + label"
+                  [type]="type"
+                  [attr.aria-labelledby]="ariaLabelledby"
+                  [placeholder]="placeholder"
+                  [(ngModel)]="value"
+                  (ngModelChange)="onChangefn($event)"
+                  (blur)="onTouchfn()"
+                  (focus)="focus = true"
+                  (focusout)="focus = false"
+                  autocomplete="false"
+               />
+               <!-- *autofocus="onFocus" -->
+               <label
+                  [ngClass]="{
+                     'component--label': placeholder === '' && !focus && value === '',
+                     'component--label-focus': focus || (placeholder !== '' && !focus) || (value !== '' && !focus)
+                  }"
+                  [for]="'input-' + label"
+                  >{{ label }}</label
+               >
+            </div>
+
+            <div class="component--img-after">
+               <egl-svg-input class="icon-ok" *ngIf="isValid" [icon]="'ok'"> </egl-svg-input>
+               <egl-svg-input class="icon-ko" *ngIf="isInvalid" [icon]="'ko'"> </egl-svg-input>
+            </div>
+         </div>
+         <p class="count" *ngIf="maxLength > 0">{{ value.length }}/{{ maxLength }}</p>
+      </div>
+   </div>
+</div>

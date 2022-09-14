@@ -1,0 +1,77 @@
+.ancho {
+  width: 100%;
+}
+
+.ancho-izquierda {
+  width: 100%;
+  padding-right: 10px;
+}
+
+.ancho-derecha {
+  width: 100%;
+  padding-left: 10px;
+}
+
+.acceder-login {
+  display: flex;
+  justify-content: center;
+  a {
+    display: block;
+  }
+}
+
+button {
+  width: 100%;
+
+  &.submit {
+    background: var(--eglos-color-success);
+    color: white;
+  }
+
+  &.cancel {
+    background: var(--eglos-color-danger);
+    color: white;
+  }
+}
+
+.spinner {
+  margin: 20vh auto;
+}
+
+
+.img_logo {
+  max-width: 200px;
+  border: 1px solid;
+}
+
+.grid-logo {
+  position: relative;
+
+  .close-button {
+    border: 1px solid #852b2b;
+    color: white;
+    background-color: #852b2b;
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    top: -7px;
+    right: 30px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 12px;
+    line-height: 17px;
+    padding: 0;
+    margin: 0;
+    font-weight: 700;
+    cursor: pointer;
+  }
+}
+
+input[disabled] {
+  color: var(--eglos-color-primary);
+}
+
+mat-icon {
+    padding-right: 4px;
+    font-size: 120%;
+}

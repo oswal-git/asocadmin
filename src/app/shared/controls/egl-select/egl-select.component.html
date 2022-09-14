@@ -1,0 +1,25 @@
+<div class="selector" (blur)="onBlur($event)" tabindex="1">
+   <div id="selectField" (click)="expandOptions()" [class.input-ok]="isValid" [class.input-ko]="isInvalid">
+      <label for="selectText">{{ label }}</label>
+      <img [src]="imgSelect" id="selectIcon" *ngIf="imgSelect !== '' && imgSelect !== null" />
+      <p id="selectText" *ngIf="selectedText" [ngClass]="{ 'font-size-L': lngTextSelected > 20, 'font-size-S': lngTextSelected > 20 }">
+         {{ selectText.charAt(0).toUpperCase() + selectText.substr(1).toLowerCase() }}
+      </p>
+      <p id="placeHolder" class="txtitalic" *ngIf="!selectedText">
+         {{ placeHolder.charAt(0).toUpperCase() + placeHolder.substr(1).toLowerCase() }}
+      </p>
+      <egl-svg-select [icon]="icon" id="arrowIcon" [ngClass]="{ rotate: !expandValues }"> </egl-svg-select>
+   </div>
+   <div class="options-list" [ngClass]="{ hide: !expandValues }" *ngIf="valores">
+      <ul id="list">
+         <li
+            *ngFor="let valor of valores; index as i; first as isFirst"
+            (click)="optionsClick(valor)"
+            [ngClass]="{ images: !showThumbnails || !valor.url, options: true, txtselect: valor.caption == selectText }"
+         >
+            <img *ngIf="showThumbnails && valor.url" [src]="valor.url ? valor.url : imgDefault" />
+            <p>{{ valor.caption }}</p>
+         </li>
+      </ul>
+   </div>
+</div>

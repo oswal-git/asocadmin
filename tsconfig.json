@@ -1,0 +1,51 @@
+/* To learn more about this file see: https://angular.io/config/tsconfig. */
+{
+    "compileOnSave": false,
+    "compilerOptions": {
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+        "baseUrl": "./",
+        "paths": {
+            "@app/*": ["src/app/*"],
+            "@assets/*": ["src/app/assets/*"],
+            "@components/*": ["src/app/components/*"],
+            "@dashboard/*": ["src/app/components/dashboard/*"],
+            "@home/*": ["src/app/pages/home/*"],
+            "@pages/*": ["src/app/pages/*"],
+            "@auth/*": ["src/app/pages/auth/*"],
+            "@shared/*": ["src/app/shared/*"],
+            "@env/*": ["src/environments/*"],
+            "@services/*": ["src/app/services/*"]
+        },
+        "outDir": "./dist/out-tsc",
+        "skipLibCheck": true /*   midudev   */,
+        "forceConsistentCasingInFileNames": true,
+        "strict": true,
+        "noUnusedLocals": true /*   midudev   */,
+        "noUnusedParameters": true /*   midudev   */,
+        "noImplicitOverride": true,
+        "noPropertyAccessFromIndexSignature": true,
+        "noImplicitReturns": true,
+        "noFallthroughCasesInSwitch": true,
+        "sourceMap": true,
+        "declaration": false,
+        "downlevelIteration": true,
+        "emitDecoratorMetadata": true  /*   KillerCodeMonkey   */,
+        "experimentalDecorators": true,
+        "allowJs": true,
+        "moduleResolution": "node",
+        "importHelpers": true,
+        "target": "es2020",
+        "typeRoots": ["node_modules/@types"]  /*   KillerCodeMonkey   */,
+        "module": "es2020",
+        "lib": ["es2020", "dom"],
+    },
+    "include": ["src/main.ts", "src/polyfills.ts"]  /*   KillerCodeMonkey   */,
+    "angularCompilerOptions": {
+        "enableI18nLegacyMessageIdFormat": false,
+        "strictInjectionParameters": true,
+        "strictInputAccessModifiers": true,
+        "strictTemplates": true
+    }
+}

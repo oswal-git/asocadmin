@@ -1,0 +1,46 @@
+.stepper-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 80%;
+  margin: 0 auto;
+}
+.p-stepper {
+  display: block;
+  // padding: 2px 4px;
+  margin: auto;
+  font-size: 1.5rem;
+  font-weight: bold;
+  line-height:2rem;
+}
+$btn-size: 50px;
+
+.btn-minus {
+  border-radius: 5px;
+  width: $btn-size;
+  height: $btn-size;
+  background-color: #2181CB;
+  color: white;
+  font-weight: bold;
+  padding: 2px 4px;
+  border: 0;
+  border-bottom: 4px solid #1E5B90;
+  &:hover {
+    background-color: rgb(0, 132, 255);
+  }
+}
+
+.btn-plus {
+  border-radius: 5px;
+  width: $btn-size;
+  height: $btn-size;
+  background-color: #2181CB;
+  color: white;
+  font-weight: bold;
+  padding: 2px 4px;
+  border: 0;
+  border-bottom: 4px solid #1E5B90;
+  &:hover {
+    background-color: rgb(0, 132, 255);
+  }
+}

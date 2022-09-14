@@ -1,0 +1,82 @@
+<div class="container" style="border: 2px solid red">
+   <h2 style="margin-top: 50px; border: 1px solid blue">Artículo Uno</h2>
+   <mat-card style="margin-top: 5px; border: 1px solid black">
+      <form [formGroup]="form" (ngSubmit)="save()" style="border: 2px solid red">
+         <mat-grid-list cols="1" rowHeight="70px" gutterSize="5" [style.background]="'white'" style="border: 3px dashed cyan">
+            <mat-grid-tile [colspan]="1" [rowspan]="1" style="border: 3px dashed rgb(195, 33, 216)">
+               <mat-form-field
+                  appearance="fill"
+                  class="ancho"
+                  style="border: 3px dashed cyan"
+                  [class.border-red-500]="titleField.touched && titleField.invalid"
+                  [class.border-green-500]="titleField.touched && titleField.valid"
+               >
+                  <mat-label>Título</mat-label>
+                  <mat-icon matPrefix>person</mat-icon>
+                  <div>
+                     <input matInput formControlName="title" id="title" />
+                     <div *ngIf="titleField.touched && titleField.invalid">
+                        <p class="text-red-500 text-xs italic" *ngIf="titleField.hasError('required')">Este campo es obligatorio</p>
+                        <p class="text-red-500 text-xs italic" *ngIf="titleField.hasError('minLength')">Este campo es de 4 caracters mínimo</p>
+                     </div>
+                  </div>
+               </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1" [rowspan]="1">
+               <mat-form-field appearance="fill" class="ancho">
+                  <div>
+                     <mat-icon matPrefix>person</mat-icon>
+                     <mat-label>Abstract</mat-label>
+                     <input
+                        matInput
+                        formControlName="abstract"
+                        id="abstract"
+                        type="text"
+                        [class.border-red-500]="abstractField.touched && abstractField.invalid"
+                        [class.border-green-500]="abstractField.touched && abstractField.valid"
+                     />
+                     <div *ngIf="abstractField.touched && abstractField.invalid">
+                        <p class="text-red-500 text-xs italic" *ngIf="abstractField.hasError('required')">Este campo es obligatorio</p>
+                        <p class="text-red-500 text-xs italic" *ngIf="abstractField.hasError('minLength')">Este campo es de 4 caracters mínimo</p>
+                        <p class="text-red-500 text-xs italic" *ngIf="abstractField.hasError('maxLength')">
+                           Este campo es máximo de 50 caracters mínimo
+                        </p>
+                     </div>
+                  </div>
+               </mat-form-field>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1" [rowspan]="5" class="ancho">
+               <div>
+                  <!-- <label for="text">Texto</label> -->
+                  <app-editor
+                     id="text"
+                     title="Texto"
+                     [(ngModel)]="form.value.text"
+                     formControlName="text"
+                     [class.border-red-500]="textField.touched && textField.invalid"
+                     [class.border-green-500]="textField.touched && textField.valid"
+                  ></app-editor>
+                  <div *ngIf="textField.touched && textField.invalid">
+                     <p class="text-red-500 text-xs italic" *ngIf="textField.hasError('required')">Este campo es obligatorio</p>
+                     <p class="text-red-500 text-xs italic" *ngIf="textField.hasError('minLength')">Este campo es de 4 caracters mínimo</p>
+                     <p class="text-red-500 text-xs italic" *ngIf="textField.hasError('maxLength')">Este campo es máximo de 50 caracters mínimo</p>
+                  </div>
+               </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1" [rowspan]="1">
+               <div class="ancho">
+                  <label for="stepper" style="font-size: 1.4rem; margin: 0 0 50px 10px;">Stock</label>
+                  <app-stepper id="stepper" formControlName="stock"></app-stepper>
+                  <div *ngIf="stockField.touched && stockField.invalid">
+                     <p class="text-red-500 text-xs italic" *ngIf="stockField.hasError('required')">Este campo es obligatorio</p>
+                     <p class="text-red-500 text-xs italic" *ngIf="stockField.hasError('min')">Mínimo 4 unidades</p>
+                  </div>
+               </div>
+            </mat-grid-tile>
+            <mat-grid-tile [colspan]="1" [rowspan]="1" class="ancho">
+               <button class="submit" type="submit" mat-raised-button color="primary" [disabled]="form.invalid">Guardar</button>
+            </mat-grid-tile>
+         </mat-grid-list>
+      </form>
+   </mat-card>
+</div>

@@ -1,0 +1,45 @@
+<div class="main">
+   <div class="content">
+      <h1 class="content__title">Recuperar password</h1>
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__reset">
+         <div class="form__reset">
+            <!-- <h2></h2> -->
+            <form class="form__container grid" *ngIf="!loading" [formGroup]="form" (ngSubmit)="reset($event)" autocomplete="off">
+               <input autocomplete="false" name="hidden" type="text" style="display: none" />
+               <div class="form__field-image">
+                  <label class="form__label" for="avartarImg"></label>
+                  <egl-img id="avartarImg" class="img_avatar" [label]="'Avatar'" [imagedefault]="avatarUrlDefault" [readonly]="true"></egl-img>
+                  <!-- <div class="grid-avatar">
+               </div> -->
+               </div>
+               <div class="form__group">
+                  <div class="form__field">
+                     <label class="form__label" for="email_user">Email</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faEnvelope"></fa-icon>
+                        <input type="email" class="form__input" formControlName="email_user" id="email_user" placeholder="Email" />
+                     </div>
+                     <div class="form__field-error" *ngIf="emailField!.errors && emailField!.touched">
+                        <p *ngIf="emailField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="emailField!.hasError('email')">El email no es válido</p>
+                        <p *ngIf="emailField!.hasError('pattern')">Formato de correo erróneo</p>
+                        <p *ngIf="emailField!.hasError('maxlength')">Te pasaste, máximo deben haber {{ emailMaxLength }} caracteres.</p>
+                     </div>
+                  </div>
+                  <div class="content__notice">Te llegará un correo con un enlace para recuperar tu contraseña</div>
+               </div>
+               <br />
+               <div class="form__button">
+                  <button type="submit" class="form__btn">Recuperar contraseña</button>
+               </div>
+               <div class="form__link">
+                  <a [routerLink]="['/login']">Ingresar</a>
+                  <br />
+                  <a [routerLink]="['/register']">Crear cuenta</a>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
+</div>

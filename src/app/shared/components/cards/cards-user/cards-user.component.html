@@ -1,0 +1,10 @@
+<div class="egl-card" *ngIf="data">
+   <div class="egl-card__img">
+      <img src="{{ data.avatar }}" alt="">
+   </div>
+   <div class="egl-card__info">
+      <h2>{{data.name}}</h2>
+      <h4>Edad: {{data.age}}</h4>
+      <p>{{ data.description }}</p>
+   </div>
+</div>

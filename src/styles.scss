@@ -1,0 +1,193 @@
+/*
+//    Device	                                           Width
+//    --------------------------------------            --------
+//    xs - Phone with portrait mode	min-width: ..............  320 px
+//    sd - Phone with Landscape mode	min-width: ............  480 px
+//    md - Portrait Tablet and iPads	min-width: ............  600 px
+//    lg - Landscape Tablet and iPads	min-width: ............  801 px
+//    xl - Laptop and desktops	min-width: .................. 1025 px
+//       - High Resolution desktops	min-width: .............. 1281 px
+*/
+
+//
+// "@angular\material\core\theming\_palette.scss"
+//
+// src/styles.scss
+
+// @use "../components";
+
+@use "@angular/material" as mat;
+
+@use "./styles/themes/light";
+
+@include mat.core();
+
+// @include mat.all-component-themes($my-app-theme);
+@include mat.core-theme(light.$my-app-light-theme);
+@include mat.button-theme(light.$my-app-light-theme);
+// regular style toast
+@import "~ngx-toastr/toastr";
+
+/* You can add global styles to this file, and also import other style files */
+// @import "~@swimlane/ngx-datatable/index.css";
+// @import "~@swimlane/ngx-datatable/themes/material.css";
+// @import "~@swimlane/ngx-datatable/assets/icons.css";
+
+html,
+body {
+   height: 100%;
+}
+body {
+   margin: 0;
+   font-family: Roboto, "Helvetica Neue", sans-serif;
+   background: #181818;
+}
+
+.container {
+   margin-left: 5%;
+   margin-right: 5%;
+   margin-top: 10px;
+}
+
+.spacer {
+   flex: 1 1 auto;
+}
+
+.example-spacer-v {
+   flex-direction: column;
+   flex: 1 1 auto;
+}
+
+.mr-20 {
+   margin-right: 20px !important;
+}
+
+.mt-10 {
+   margin-top: 10px !important;
+}
+
+.mt-20 {
+   margin-top: 20px !important;
+}
+
+.action-button {
+   & span.mat-button-wrapper {
+      padding: 0;
+   }
+}
+
+// configuracion diálogos modales
+
+.create-user-modalbox,
+.browse-user-modalbox,
+.edit-user-modalbox {
+   display: flex;
+   align-items: center;
+
+   mat-dialog-container.mat-dialog-container {
+      border-radius: 30px;
+      height: 90%;
+      padding: 0;
+
+      background: #181818;
+
+      overflow-y: scroll;
+      scrollbar-color: #181818 #181818;
+      scrollbar-width: thin !important;
+
+      &::-webkit-scrollbar {
+         display: none;
+      }
+
+      & scrollbar {
+         display: none;
+      }
+   }
+}
+
+.delete-user-modalbox {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   mat-dialog-container.mat-dialog-container {
+      max-width: 550px;
+      border-radius: 30px;
+      padding-left: 0;
+      padding-right: 0;
+      padding: 0;
+
+      background: #181818;
+
+      overflow-y: scroll;
+      scrollbar-color: #181818 #181818;
+      scrollbar-width: thin !important;
+
+      &::-webkit-scrollbar {
+         display: none;
+      }
+   }
+}
+
+.create-asociacion-modalbox mat-dialog-container.mat-dialog-container,
+.browse-asociacion-modalbox mat-dialog-container.mat-dialog-container,
+.edit-asociacion-modalbox mat-dialog-container.mat-dialog-container {
+   border-radius: 30px;
+   height: 75%;
+}
+
+.delete-asociacion-modalbox mat-dialog-container.mat-dialog-container {
+   border-radius: 30px;
+   padding-left: 0;
+   padding-right: 0;
+}
+
+.create-modalbox mat-dialog-container.mat-dialog-container,
+.browse-modalbox mat-dialog-container.mat-dialog-container,
+.edit-modalbox mat-dialog-container.mat-dialog-container {
+   border-radius: 30px;
+   height: 75%;
+}
+
+.delete-modalbox mat-dialog-container.mat-dialog-container {
+   border-radius: 30px;
+   padding-left: 0;
+   padding-right: 0;
+}
+
+.mat-select-disabled .mat-select-value-text {
+   color: var(--eglos-color-primary);
+}
+
+.mat-select + span mat-label,
+input + span mat-label {
+   color: var(--eglos-color-dark);
+}
+
+.nav-submenu .mat-menu-item {
+   left: 10px !important;
+   width: auto !important;
+}
+
+.nav-submenu,
+.mat-submenu {
+   padding: 5px;
+   border-top: 1px solid white;
+   border-bottom: 1px solid white;
+   background-color: var(--eglos-color-primary);
+
+   button {
+      color: white;
+   }
+}
+
+p.innerH figure img,
+.ck-content figure img,
+.ck-content .image-inline img,
+.ck-content .image-inline picture {
+   width: 100px !important;
+}
+
+.title__span {
+   color: #b70e21;
+}

@@ -1,0 +1,236 @@
+// Eglos Variables and Theming. For more info, please see:
+// http://eglos.es/
+
+/** Eglos CSS Variables **/
+:root {
+  /** primary **/
+  --eglos-color-primary: #3f51b5;
+  --eglos-color-primary-rgb: 56, 128, 255;
+  --eglos-color-primary-contrast: #ffffff;
+  --eglos-color-primary-contrast-rgb: 255, 255, 255;
+  --eglos-color-primary-shade: #3171e0;
+  --eglos-color-primary-tint: #4c8dff;
+
+  /** secondary **/
+  --eglos-color-secondary: #3dc2ff;
+  --eglos-color-secondary-rgb: 61, 194, 255;
+  --eglos-color-secondary-contrast: #ffffff;
+  --eglos-color-secondary-contrast-rgb: 255, 255, 255;
+  --eglos-color-secondary-shade: #36abe0;
+  --eglos-color-secondary-tint: #50c8ff;
+
+  /** tertiary **/
+  --eglos-color-tertiary: #5260ff;
+  --eglos-color-tertiary-rgb: 82, 96, 255;
+  --eglos-color-tertiary-contrast: #ffffff;
+  --eglos-color-tertiary-contrast-rgb: 255, 255, 255;
+  --eglos-color-tertiary-shade: #4854e0;
+  --eglos-color-tertiary-tint: #6370ff;
+
+  /** success **/
+  --eglos-color-success: #2dd36f;
+  --eglos-color-success-rgb: 45, 211, 111;
+  --eglos-color-success-contrast: #ffffff;
+  --eglos-color-success-contrast-rgb: 255, 255, 255;
+  --eglos-color-success-shade: #28ba62;
+  --eglos-color-success-tint: #42d77d;
+
+  /** warning **/
+  --eglos-color-warning: #ffc409;
+  --eglos-color-warning-rgb: 255, 196, 9;
+  --eglos-color-warning-contrast: #000000;
+  --eglos-color-warning-contrast-rgb: 0, 0, 0;
+  --eglos-color-warning-shade: #e0ac08;
+  --eglos-color-warning-tint: #ffca22;
+
+  /** danger **/
+  --eglos-color-danger: #eb445a;
+  --eglos-color-danger-rgb: 235, 68, 90;
+  --eglos-color-danger-contrast: #ffffff;
+  --eglos-color-danger-contrast-rgb: 255, 255, 255;
+  --eglos-color-danger-shade: #cf3c4f;
+  --eglos-color-danger-tint: #ed576b;
+
+  /** dark **/
+  --eglos-color-dark: #222428;
+  --eglos-color-dark-rgb: 34, 36, 40;
+  --eglos-color-dark-contrast: #ffffff;
+  --eglos-color-dark-contrast-rgb: 255, 255, 255;
+  --eglos-color-dark-shade: #1e2023;
+  --eglos-color-dark-tint: #383a3e;
+
+  /** medium **/
+  --eglos-color-medium: #92949c;
+  --eglos-color-medium-rgb: 146, 148, 156;
+  --eglos-color-medium-contrast: #ffffff;
+  --eglos-color-medium-contrast-rgb: 255, 255, 255;
+  --eglos-color-medium-shade: #808289;
+  --eglos-color-medium-tint: #9d9fa6;
+
+  /** light **/
+  --eglos-color-light: #f4f5f8;
+  --eglos-color-light-rgb: 244, 245, 248;
+  --eglos-color-light-contrast: #000000;
+  --eglos-color-light-contrast-rgb: 0, 0, 0;
+  --eglos-color-light-shade: #d7d8da;
+  --eglos-color-light-tint: #f5f6f9;
+}
+
+@media (prefers-color-scheme: dark) {
+  /*
+   * Dark Colors
+   * -------------------------------------------
+   */
+
+  body {
+    --eglos-color-primary: #428cff;
+    --eglos-color-primary-rgb: 66,140,255;
+    --eglos-color-primary-contrast: #ffffff;
+    --eglos-color-primary-contrast-rgb: 255,255,255;
+    --eglos-color-primary-shade: #3a7be0;
+    --eglos-color-primary-tint: #5598ff;
+
+    --eglos-color-secondary: #50c8ff;
+    --eglos-color-secondary-rgb: 80,200,255;
+    --eglos-color-secondary-contrast: #ffffff;
+    --eglos-color-secondary-contrast-rgb: 255,255,255;
+    --eglos-color-secondary-shade: #46b0e0;
+    --eglos-color-secondary-tint: #62ceff;
+
+    --eglos-color-tertiary: #6a64ff;
+    --eglos-color-tertiary-rgb: 106,100,255;
+    --eglos-color-tertiary-contrast: #ffffff;
+    --eglos-color-tertiary-contrast-rgb: 255,255,255;
+    --eglos-color-tertiary-shade: #5d58e0;
+    --eglos-color-tertiary-tint: #7974ff;
+
+    --eglos-color-success: #2fdf75;
+    --eglos-color-success-rgb: 47,223,117;
+    --eglos-color-success-contrast: #000000;
+    --eglos-color-success-contrast-rgb: 0,0,0;
+    --eglos-color-success-shade: #29c467;
+    --eglos-color-success-tint: #44e283;
+
+    --eglos-color-warning: #ffd534;
+    --eglos-color-warning-rgb: 255,213,52;
+    --eglos-color-warning-contrast: #000000;
+    --eglos-color-warning-contrast-rgb: 0,0,0;
+    --eglos-color-warning-shade: #e0bb2e;
+    --eglos-color-warning-tint: #ffd948;
+
+    --eglos-color-danger: #ff4961;
+    --eglos-color-danger-rgb: 255,73,97;
+    --eglos-color-danger-contrast: #ffffff;
+    --eglos-color-danger-contrast-rgb: 255,255,255;
+    --eglos-color-danger-shade: #e04055;
+    --eglos-color-danger-tint: #ff5b71;
+
+    --eglos-color-dark: #f4f5f8;
+    --eglos-color-dark-rgb: 244,245,248;
+    --eglos-color-dark-contrast: #000000;
+    --eglos-color-dark-contrast-rgb: 0,0,0;
+    --eglos-color-dark-shade: #d7d8da;
+    --eglos-color-dark-tint: #f5f6f9;
+
+    --eglos-color-medium: #989aa2;
+    --eglos-color-medium-rgb: 152,154,162;
+    --eglos-color-medium-contrast: #000000;
+    --eglos-color-medium-contrast-rgb: 0,0,0;
+    --eglos-color-medium-shade: #86888f;
+    --eglos-color-medium-tint: #a2a4ab;
+
+    --eglos-color-light: #222428;
+    --eglos-color-light-rgb: 34,36,40;
+    --eglos-color-light-contrast: #ffffff;
+    --eglos-color-light-contrast-rgb: 255,255,255;
+    --eglos-color-light-shade: #1e2023;
+    --eglos-color-light-tint: #383a3e;
+  }
+
+  /*
+   * iOS Dark Theme
+   * -------------------------------------------
+   */
+
+  .ios body {
+    --eglos-background-color: #000000;
+    --eglos-background-color-rgb: 0,0,0;
+
+    --eglos-text-color: #ffffff;
+    --eglos-text-color-rgb: 255,255,255;
+
+    --eglos-color-step-50: #0d0d0d;
+    --eglos-color-step-100: #1a1a1a;
+    --eglos-color-step-150: #262626;
+    --eglos-color-step-200: #333333;
+    --eglos-color-step-250: #404040;
+    --eglos-color-step-300: #4d4d4d;
+    --eglos-color-step-350: #595959;
+    --eglos-color-step-400: #666666;
+    --eglos-color-step-450: #737373;
+    --eglos-color-step-500: #808080;
+    --eglos-color-step-550: #8c8c8c;
+    --eglos-color-step-600: #999999;
+    --eglos-color-step-650: #a6a6a6;
+    --eglos-color-step-700: #b3b3b3;
+    --eglos-color-step-750: #bfbfbf;
+    --eglos-color-step-800: #cccccc;
+    --eglos-color-step-850: #d9d9d9;
+    --eglos-color-step-900: #e6e6e6;
+    --eglos-color-step-950: #f2f2f2;
+
+    --eglos-item-background: #000000;
+
+    --eglos-card-background: #1c1c1d;
+  }
+
+  .ios eglos-modal {
+    --eglos-background-color: var(--eglos-color-step-100);
+    --eglos-toolbar-background: var(--eglos-color-step-150);
+    --eglos-toolbar-border-color: var(--eglos-color-step-250);
+  }
+
+
+  /*
+   * Material Design Dark Theme
+   * -------------------------------------------
+   */
+
+  .md body {
+    --eglos-background-color: #121212;
+    --eglos-background-color-rgb: 18,18,18;
+
+    --eglos-text-color: #ffffff;
+    --eglos-text-color-rgb: 255,255,255;
+
+    --eglos-border-color: #222222;
+
+    --eglos-color-step-50: #1e1e1e;
+    --eglos-color-step-100: #2a2a2a;
+    --eglos-color-step-150: #363636;
+    --eglos-color-step-200: #414141;
+    --eglos-color-step-250: #4d4d4d;
+    --eglos-color-step-300: #595959;
+    --eglos-color-step-350: #656565;
+    --eglos-color-step-400: #717171;
+    --eglos-color-step-450: #7d7d7d;
+    --eglos-color-step-500: #898989;
+    --eglos-color-step-550: #949494;
+    --eglos-color-step-600: #a0a0a0;
+    --eglos-color-step-650: #acacac;
+    --eglos-color-step-700: #b8b8b8;
+    --eglos-color-step-750: #c4c4c4;
+    --eglos-color-step-800: #d0d0d0;
+    --eglos-color-step-850: #dbdbdb;
+    --eglos-color-step-900: #e7e7e7;
+    --eglos-color-step-950: #f3f3f3;
+
+    --eglos-item-background: #1e1e1e;
+
+    --eglos-toolbar-background: #1f1f1f;
+
+    --eglos-tab-bar-background: #1f1f1f;
+
+    --eglos-card-background: #1e1e1e;
+  }
+}

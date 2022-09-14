@@ -1,0 +1,36 @@
+[
+    {
+        "nombre": "Dashboard",
+        "redirect": "/dashboard",
+        "menu": []
+    },
+    {
+        "nombre": "Asociaciones",
+        "redirect": "/dashboard/listar-asociaciones",
+        "menu": []
+    },
+    {
+        "nombre": "Usuarios",
+        "redirect": "/dashboard/list-users",
+        "menu": []
+    },
+    {
+        "nombre": "Reportes",
+        "redirect": "/dashboard/reportes",
+        "menu": []
+    },
+    {
+        "nombre": "Artículos",
+        "redirect": "",
+        "menu": [
+            {
+                "nombre": "Nuevo",
+                "redirect": "/dashboard/nuevo-articulo"
+            },
+            {
+                "nombre": "Editar",
+                "redirect": "/dashboard/reportes"
+            }
+        ]
+    }
+]

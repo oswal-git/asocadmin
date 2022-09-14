@@ -1,0 +1,19 @@
+<div class="component">
+   <div class="component--content">
+      <div class="component--container">
+         <div class="component--button" [class]="class">
+            <span></span>
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="component--button-body">
+               <button class="egl-button" [class]="class" [type]="type" [disabled]="disabled">
+                  {{ title }}
+               </button>
+               <egl-svg-button [icon]="icon" [fillColor]="class === 'success' ? 'white' : 'yellow'" class="component--img" *ngIf="icon">
+               </egl-svg-button>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

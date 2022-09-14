@@ -1,0 +1,46 @@
+<div class="main">
+   <div class="content">
+      <h1 class="content__title" [innerHTML]="options.title"></h1>
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__user">
+         <div class="form__user" [ngStyle]="{ 'padding-top': options.second_title ? '0' : '1rem' }">
+            <div *ngIf="!loading" class="form__container grid" style="margin-top: 5px">
+               <div cols="4" rowHeight="10px" gutterSize="2px" [style.background]="'white'">
+                  <div class="form__group">
+                     <div class="form__field">
+                        <div class="form__field-text">
+                           <div class="form__text">
+                              <strong>¿</strong>Está seguro de querer <strong>eliminar</strong> el usuario<br />
+                              <span class="alert">'{{ options.record.user_name_user }}'</span><br />
+                              con el correo <br /><span class="alert">"{{ options.record.email_user }}"</span><strong>?</strong>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div class="form__field-image">
+                     <label class="form__label" for="avartarImg"></label>
+                     <egl-img
+                        id="avartarImg"
+                        class="img_avatar"
+                        [label]="''"
+                        [imagedefault]="avatarUrlDefault"
+                        [(ngModel)]="avatarImg"
+                        [ngModelOptions]="{ standalone: true }"
+                        [readonly]="true"
+                     ></egl-img>
+                  </div>
+                  <div class="form__group-button">
+                     <div class="form__button">
+                        <button type="button" (click)="clickDelete()" class="form__btn submit">{{ options.button }}</button>
+                     </div>
+                     <div class="form__button">
+                        <button type="button" (click)="cancelar(null)" class="form__btn cancel">Salir</button>
+                     </div>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

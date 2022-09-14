@@ -1,0 +1,49 @@
+<div class="component">
+   <div class="component--container">
+      <div class="component--content">
+         <div class="component--body" [ngClass]="{ 'no-img': !src && !imgDefaultSrc }">
+            <ngx-spinner bdColor="rgba(51,51,51,0.8)" size="medium" color="red" type="ball-fussion" [fullScreen]="false">
+               <p style="font-size: 20px; color: white">Loading...</p>
+            </ngx-spinner>
+            <div class="component--main">
+               <div *ngIf="!src && !imgDefaultSrc">Imagen</div>
+               <img class="component--main-svg" *ngIf="!src && imgDefaultSrc" [src]="imgDefaultSrc" />
+               <img class="component--main-img" *ngIf="src" [src]="src" />
+               <label class="component--label" *ngIf="label !== ''">{{ label }}</label>
+            </div>
+
+            <div class="component--img-icons" *ngIf="!readOnly">
+               <div class="component--img-folder">
+                  <label for="btn-input">
+                     <span class="component--span-icon-folder">
+                        <fa-icon [icon]="faPhotoFilm"></fa-icon>
+                     </span>
+                  </label>
+                  <input
+                     name="picture"
+                     id="btn-input"
+                     type="file"
+                     style="display: none"
+                     onclick="this.value = null;"
+                     (click)="clickFile($event)"
+                     (change)="selectFile($event)"
+                  />
+               </div>
+
+               <div *ngIf="src && isImgDefault" class="component--img-erase" (click)="defaultImage()">
+                  <span class="component--span-icon-erase">
+                     <fa-icon [icon]="faCircleXmark"></fa-icon>
+                  </span>
+               </div>
+               <div *ngIf="canRestoreImage" class="component--img-restore" (click)="restoreImage()">
+                  <span class="component--span-icon-restore">
+                     <fa-icon [icon]="faArrowRotateLeft"></fa-icon>
+                  </span>
+               </div>
+            </div>
+         </div>
+         <div class="img--name">{{ nameFile }}</div>
+         <p></p>
+      </div>
+   </div>
+</div>

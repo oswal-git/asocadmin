@@ -1,0 +1,98 @@
+Listado de rutas de carpetas para el volumen TO450GVARI
+El n£mero de serie del volumen es 60A9-C100
+F:\ANGULAR\TOMAS RUIZ DIAZ\MATERIAL\SRC
+|   favicon.ico
+|   index.html
+|   main.ts
+|   polyfills.ts
+|   styles.scss
+|   test.ts
+|   
++---app
+|   |   app-routing.module.ts
+|   |   app.component.html
+|   |   app.component.scss
+|   |   app.component.ts
+|   |   app.module.ts
+|   |   
+|   +---components
+|   |   |   components.module.ts
+|   |   |   
+|   |   +---dashboard
+|   |   |   |   dashboard-routing.module.ts
+|   |   |   |   dashboard.component.html
+|   |   |   |   dashboard.component.scss
+|   |   |   |   dashboard.component.ts
+|   |   |   |   dashboard.module.ts
+|   |   |   |   
+|   |   |   +---inicio
+|   |   |   |       inicio.component.html
+|   |   |   |       inicio.component.scss
+|   |   |   |       inicio.component.ts
+|   |   |   |       
+|   |   |   +---navbar
+|   |   |   |       navbar.component.html
+|   |   |   |       navbar.component.scss
+|   |   |   |       navbar.component.ts
+|   |   |   |       
+|   |   |   +---reportes
+|   |   |   |       reportes.component.html
+|   |   |   |       reportes.component.scss
+|   |   |   |       reportes.component.ts
+|   |   |   |       
+|   |   |   \---usuarios
+|   |   |       |   usuarios.component.html
+|   |   |       |   usuarios.component.scss
+|   |   |       |   usuarios.component.ts
+|   |   |       |   
+|   |   |       \---crear-usuario
+|   |   |               crear-usuario.component.html
+|   |   |               crear-usuario.component.scss
+|   |   |               crear-usuario.component.ts
+|   |   |               
+|   |   \---shared
+|   |       \---size-detector
+|   |               size-detector.component.html
+|   |               size-detector.component.scss
+|   |               size-detector.component.ts
+|   |               
+|   +---directives
+|   +---interfaces
+|   |       menu.ts
+|   |       screen-size.ts
+|   |       usuario.ts
+|   |       
+|   +---pages
+|   |   |   pages.module.ts
+|   |   |   
+|   |   \---auth
+|   |       +---login
+|   |       |       login.component.html
+|   |       |       login.component.scss
+|   |       |       login.component.ts
+|   |       |       
+|   |       \---register
+|   |               register.component.html
+|   |               register.component.scss
+|   |               register.component.ts
+|   |               
+|   \---services
+|           mediascreen.service.ts
+|           usuario.service.ts
+|           
++---assets
+|   |   .gitkeep
+|   |   
+|   +---data
+|   |       menu.json
+|   |       
+|   \---img
+|           user.png
+|           
++---environments
+|       environment.prod.ts
+|       environment.ts
+|       
+\---theme
+        variables.scss
+        

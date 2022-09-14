@@ -1,0 +1,244 @@
+$radius: 10px;
+$radius2: 2rem;
+
+*,
+*::before,
+*::after {
+   box-sizing: border-box;
+   margin: 0;
+   padding: 0;
+}
+
+:host {
+   width: 100%;
+   display: block;
+   position: static;
+   font-family: sans-serif;
+   // border: 1px solid #077732;
+   padding-top: 1.1rem;
+   padding-bottom: 0.3em;
+   background-color: transparent;
+   // background-color: #f5f5f5;
+
+   .component {
+      position: relative;
+
+      .component--container {
+         // border: 2px solid #333;
+         box-shadow: 0 0 20px 0 rgba(255, 255, 255, 0.3);
+         border-radius: $radius;
+         width: 100%;
+         margin-bottom: 15px;
+         box-sizing: border-box;
+         background-color: #181818;
+         display: flex;
+         justify-content: center;
+
+         .component--content {
+            padding: 0;
+            width: 100%;
+            // height: 3rem;
+            // border: 2px solid #ee3507;
+            border-radius: $radius;
+
+            p.count {
+               position: absolute;
+               font-size: 0.8rem;
+               bottom: -1rem;
+               right: 0.6rem;
+            }
+
+            .component--label {
+               position: absolute;
+               top: -3rem;
+               left: -1.4rem;
+               padding: 0.3rem 0.6rem;
+               font-size: 0.8rem;
+               font-style: italic;
+               font-weight: 600;
+               // background: linear-gradient(to bottom, transparent 0%, #f5f5f5 100%);
+               background: #baccf7;
+               color: #453ba3;
+               border-radius: $radius;
+               cursor: text;
+               transition: all 200ms ease-in;
+               visibility: hidden;
+            }
+
+            .img--name {
+               position: absolute;
+               // padding: 2px 5px;
+               width: 100%;
+               bottom: 5px;
+               left: 50%;
+               transform: translateX(-50%);
+               font-size: 0.8rem;
+               font-style: italic;
+               font-weight: 600;
+               text-align: center;
+               margin: auto;
+               color: #222;
+               // background: rgba(255, 255, 255, .5);
+               // border: 1px solid #ee3507;
+               border-radius: $radius;
+            }
+
+            .component--body {
+               // border: 1px solid #ee3507;
+               position: relative;
+               box-shadow: rgb(38, 57, 77) 0px 10px 10px -10px;
+               width: 100%;
+               padding: 2px;
+               border-radius: $radius;
+               display: flex;
+               justify-content: center;
+               align-items: center;
+
+               &:after {
+                  content: "";
+                  display: block;
+                  padding-bottom: 80%;
+               }
+
+               .component--main {
+                  display: flex;
+                  justify-content: center;
+                  align-items: center;
+
+                  .component--main-svg {
+                     display: flex;
+                     width: 100%;
+                     margin: 0 auto;
+                     padding: 1rem;
+                     border: none;
+                     // border: 2px solid #f04c0b;
+                     background: transparent;
+                     font-size: 1rem;
+
+                     &:focus,
+                     &:focus-visible,
+                     &:focus-within {
+                        outline: none;
+                     }
+                  }
+
+                  .component--main-img {
+                     display: flex;
+                     width: 100%;
+                     margin: 0 auto;
+                     padding: 1rem;
+                     border: none;
+                     // border: 2px solid #f04c0b;
+                     background: transparent;
+                     font-size: 1rem;
+                     border-radius: $radius2;
+
+                     &:focus,
+                     &:focus-visible,
+                     &:focus-within {
+                        outline: none;
+                     }
+                  }
+               }
+
+               .component--img-icons {
+                  position: absolute;
+                  top: -0.8rem;
+                  right: -1.1rem;
+                  z-index: 1000;
+
+                  .component--img-folder {
+                     margin-bottom: 0.3rem;
+                     cursor: pointer;
+
+                     .component--span-icon-folder {
+                        font-size: 1.2em;
+                        color: #d1cedb;
+                        cursor: pointer;
+
+                        &:hover {
+                           border-radius: 3px;
+                           color: #b5ddf1;
+                           // background: #06465a;
+                        }
+                     }
+                  }
+
+                  .component--img-erase {
+                     cursor: pointer;
+                     margin-bottom: 0.3rem;
+
+                     .component--span-icon-erase {
+                        font-size: 1.2em;
+                        color: #d1cedb;
+                        cursor: pointer;
+
+                        &:hover {
+                           border-radius: 50%;
+                           color: #b5ddf1;
+                           cursor: pointer;
+                           // background: #06465a;
+                        }
+                     }
+                  }
+
+                  .component--img-restore {
+                     cursor: pointer;
+
+                     .component--span-icon-restore {
+                        font-size: 1.2em;
+                        color: #d1cedb;
+                        cursor: pointer;
+
+                        &:hover {
+                           border-radius: 50%;
+                           color: #b5ddf1;
+                           // background: #06465a;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+
+   .hide {
+      visibility: hidden;
+      // display: none;
+   }
+
+   &.disabled {
+      pointer-events: none;
+      .component--span-icon-erase {
+         color: #acaeaf;
+         border-radius: 50%;
+      }
+   }
+
+   .rotate {
+      transform: rotate(180deg);
+   }
+
+   .txtitalic {
+      font-style: italic;
+   }
+
+   .txtselect {
+      background: #8aa5b6 !important;
+
+      &:hover {
+         background: #a9cadf !important;
+      }
+   }
+
+   .no-img {
+      background: rgb(58, 172, 120);
+      background: radial-gradient(
+         circle,
+         rgba(58, 172, 120, 1) 0%,
+         rgba(16, 24, 15, 0.31836484593837533) 60%,
+         rgba(116, 210, 230, 0.27354691876750703) 100%
+      );
+   }
+}

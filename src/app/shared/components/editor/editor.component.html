@@ -1,0 +1,10 @@
+<div class="container">
+   <div class="contain-editor">
+      <h2>{{ title }}</h2>
+      <ckeditor [editor]="Editor" [config]="config" [(ngModel)]="value" (ready)="onReady($event)" [disabled]="readOnly"> </ckeditor>
+
+      <!-- <P class="innerH" [innerHTML]="value"></P>
+   <br>
+   <P>{{ value}}</P> -->
+   </div>
+</div>
