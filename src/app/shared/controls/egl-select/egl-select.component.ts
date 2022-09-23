@@ -1,6 +1,11 @@
 import { Component, forwardRef, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
+export interface ISelectValues {
+    url: string;
+    caption: string;
+    id: number;
+}
 @Component({
     selector: 'egl-select',
     templateUrl: './egl-select.component.html',
@@ -18,17 +23,19 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
 
     @Input() type: 'id' | 'txt' = 'txt';
     @Input() label: string = 'Selector';
-    @Input() valores!: any[];
+    @Input() valores!: ISelectValues[];
     @Input('placeholder') placeHolder: string = 'Selecciona una opción';
     @Input('showthumbnails') showThumbnails: boolean = false;
     @Input('imgdefault') imgDefault: string = '';
     @Input('imgctrl') imgCtrl: string = '';
     @Input('isvalid') isValid: boolean = false;
     @Input('isinvalid') isInvalid: boolean = false;
+    @Input('disabled') isDisabled: boolean = false;
+    // @Input('isDisabled') isDisabled: boolean = false;
 
     onChangefn = (_: any) => {};
     onTouchfn = () => {};
-    isDisabled!: boolean;
+    // isDisabled!: boolean;
 
     icon: 'chevron' = 'chevron';
 
@@ -94,6 +101,7 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
     expandOptions(): void {
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : expandOptions: this.expandValues 1   ─> ', this.expandValues);
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : expandOptions: this.selectedText 1   ─> ', this.selectedText);
+        if (this.isDisabled) return;
         if (this.expandValues && !this.selectedText) {
             this.isValid = false;
             this.isInvalid = true;
@@ -128,7 +136,7 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
         if (this.selectId) {
             console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.valores ─> ', this.valores);
             console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.selectId ─> ', this.selectId);
-            const val = this.valores.filter((ele) => ele.id === this.selectId.toString());
+            const val = this.valores.filter((ele) => ele.id.toString() === this.selectId.toString());
             if (val) {
                 console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: val ─> ', val);
                 this.selectText = val[0].caption;
@@ -151,10 +159,11 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
     }
 
     getTxtSelect(): void {
-        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectedText ─> ', this.selectedText);
-        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectText ─> ', this.selectText);
+        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectedText ─> ', this.selectedText);
+        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectText ─> ', this.selectText);
+        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.valores ─> ', this.valores);
         if (this.selectedText) {
-            const val = this.valores.filter((val) => val.caption === this.selectText);
+            const val: ISelectValues[] = this.valores.filter((val: ISelectValues) => val.caption === this.selectText);
             if (val) {
                 // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getImgSelect: val ─> ', val);
                 this.selectId = val[0].id;

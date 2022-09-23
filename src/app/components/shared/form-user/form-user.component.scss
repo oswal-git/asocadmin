@@ -36,7 +36,8 @@
 
       .content__title {
          text-align: center;
-         font-size: 1.5rem;
+         font-size: 1.4rem;
+         line-height: 1.6rem;
          margin-top: 0.5rem;
          margin-bottom: 2rem;
 
@@ -70,7 +71,8 @@
                .form__field-image {
                   grid-area: image;
 
-                  margin: 0;
+                  max-width: 200px;
+                  margin: 0 auto;
                   padding: 1rem;
                   position: relative;
 
@@ -129,6 +131,11 @@
                            &:hover {
                               background: #403f3f;
                            }
+
+                           &:disabled {
+                              background: rgb(34, 34, 34);
+                              color: #aaa;
+                           }
                         }
                      }
 
@@ -152,6 +159,8 @@
                      }
                   }
                }
+
+               .form__group-button_single,
                .form__group-button {
                   grid-area: buttons;
 
@@ -237,6 +246,7 @@
       grid-template-columns: 1fr;
    }
 
+   .form__group-button_single,
    .form__group-button {
       display: grid;
       grid-template-areas: " buttons";
@@ -253,7 +263,8 @@
       // border: 2px dashed rgb(228, 13, 85);
 
       .content__title {
-         font-size: 3rem;
+         font-size: 2rem;
+         line-height: 2rem;
          margin-top: 2rem;
          margin-bottom: 2rem;
          span {
@@ -277,9 +288,10 @@
          grid-template-columns: 1fr;
       }
 
+      .form__group-button_single,
       .form__group-button {
          display: grid;
-         grid-template-areas: " buttons";
+         grid-template-areas: "buttons";
          grid-template-columns: 1fr;
       }
    }
@@ -291,7 +303,8 @@
       // border: 2px dashed rgb(178, 221, 22);
       max-width: 1170px;
       .content__title {
-         font-size: 3rem;
+         font-size: 2.5rem;
+         line-height: 2.5rem;
          margin-top: 2rem;
          margin-bottom: 2rem;
          span {
@@ -321,6 +334,13 @@
          grid-gap: 0.8em;
          grid-template-areas: " buttons buttons";
          grid-template-columns: 1fr 1fr;
+      }
+
+      .form__group-button_single {
+         display: grid;
+         grid-gap: 0.8em;
+         grid-template-areas: " buttons";
+         grid-template-columns: 1fr;
       }
    }
 }

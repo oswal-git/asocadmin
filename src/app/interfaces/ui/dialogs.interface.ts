@@ -39,3 +39,9 @@ export interface ICreateUser {
     profile_user: string;
     status_user: string;
 }
+
+export enum ACTION_AVATAR {
+    user = 'user',
+    delete = 'delete',
+    profile = 'profile',
+}

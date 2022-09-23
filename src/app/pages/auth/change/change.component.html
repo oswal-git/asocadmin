@@ -13,7 +13,7 @@
                      id="avartarImg"
                      class="img_avatar"
                      [label]="'Avatar'"
-                     imagedefault="avatarUrlDefault"
+                     [imagedefault]="avatarUrlDefault"
                      [(ngModel)]="avatarImg"
                      [ngModelOptions]="{ standalone: true }"
                      [readonly]="true"
@@ -68,8 +68,13 @@
                   </div>
                </div>
                <br />
-               <div class="form__button">
-                  <button type="submit" class="form__btn">Cambiar contraseña</button>
+               <div class="form__group-button">
+                  <div class="form__button">
+                     <button type="submit" class="form__btn">Cambiar contraseña</button>
+                  </div>
+                  <div class="form__button">
+                     <button type="button" (click)="exit()" class="form__btn cancel">Volver</button>
+                  </div>
                </div>
             </form>
          </div>

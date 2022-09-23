@@ -24,7 +24,7 @@
             <!-- <mat-icon>more_vert</mat-icon> -->
          </button>
          <mat-menu #menuProfile="matMenu">
-            <button mat-menu-item *ngIf="isLogin" (click)="profile()" matTooltip="Edit profile">
+            <button mat-menu-item *ngIf="isLogin" (click)="getMediaScren().order < 5 ? snav.close() : ''; profile()" matTooltip="Edit profile">
                <mat-icon>manage_accounts</mat-icon>
                <span>Profile</span>
             </button>
@@ -32,15 +32,15 @@
                <mat-icon>voicemail</mat-icon>
                <span>Check voice mail</span>
             </button>
-            <button mat-menu-item *ngIf="isLogin" (click)="change()" matTooltip="Change password">
+            <button mat-menu-item *ngIf="isLogin" (click)="getMediaScren().order < 5 ? snav.close() : ''; change()" matTooltip="Change password">
                <mat-icon>lock_reset</mat-icon>
                <span>Change password</span>
             </button>
-            <button mat-menu-item *ngIf="!isLogin" (click)="login()" matTooltip="Login">
+            <button mat-menu-item *ngIf="!isLogin" (click)="getMediaScren().order < 5 ? snav.close() : ''; login()" matTooltip="Login">
                <mat-icon>login1</mat-icon>
                <span>Login</span>
             </button>
-            <button mat-menu-item *ngIf="isLogin" (click)="logout()" matTooltip="Logout">
+            <button mat-menu-item *ngIf="isLogin" (click)="getMediaScren().order < 5 ? snav.close() : ''; logout()" matTooltip="Logout">
                <mat-icon>logout1</mat-icon>
                <span>Logout</span>
             </button>
@@ -82,12 +82,21 @@
             <div *ngFor="let item of menu" class="nav-submenu-container">
                <mat-nav-list>
                   <div *ngIf="item.redirect !== ''">
-                     <button mat-button [routerLink]="item.redirect">{{ item.nombre }}</button>
+                     <button mat-button (click)="getMediaScren().order < 5 ? snav.close() : ''" [routerLink]="item.redirect">
+                        {{ item.nombre }}
+                     </button>
                   </div>
                   <div *ngIf="item.redirect === ''">
                      <button mat-button [matMenuTriggerFor]="afterMenu" class="nav-submenu-container">{{ item.nombre }}</button>
                      <mat-menu class="nav-submenu" #afterMenu="matMenu" xPosition="after">
-                        <button *ngFor="let item2 of item.menu" [routerLink]="item2.redirect" mat-menu-item>{{ item2.nombre }}</button>
+                        <button
+                           *ngFor="let item2 of item.menu"
+                           (click)="getMediaScren().order < 5 ? snav.close() : ''"
+                           [routerLink]="item2.redirect"
+                           mat-menu-item
+                        >
+                           {{ item2.nombre }}
+                        </button>
                      </mat-menu>
                   </div>
                   <mat-divider></mat-divider>

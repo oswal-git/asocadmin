@@ -29,12 +29,12 @@ export class DeleteUserComponent implements OnInit {
         isSelectedFile: false,
     };
 
-    durationInSeconds = 1.5;
-
     loading = true;
 
+    durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
     verticalPosition: MatSnackBarVerticalPosition = 'bottom';
+
     constructor(
         public dialogRef: MatDialogRef<DeleteUserComponent>,
         @Inject(MAT_DIALOG_DATA) public data: IOptionsDialog | string,

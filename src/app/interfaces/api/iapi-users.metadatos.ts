@@ -1,3 +1,5 @@
+import { IAsociationData } from './iapi-asociation.metadata';
+
 export interface IBDUsuario extends IProfileUsuario {
     password_user: string;
 }
@@ -19,6 +21,8 @@ export interface IProfileUsuario {
     date_created_user: string;
     date_updated_user: string;
 }
+
+export interface IUserAsociation extends IProfileUsuario, IAsociationData {}
 
 // Datos básicos del usuario - users.sevice
 export interface IUserConnected {

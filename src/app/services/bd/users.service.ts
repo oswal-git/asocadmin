@@ -1,14 +1,15 @@
 import { Injectable } from '@angular/core';
-import { IBDAsociacion } from '@app/interfaces/api/iapi-asociation.metadata';
-import { IBDUsuario, ICredentials, IIdUser, INewCredentials, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
+import { IBDUsuario, ICredentials, IIdUser, INewCredentials, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { ICreateUser } from '@app/interfaces/ui/dialogs.interface';
+import { Observable, Subject } from 'rxjs';
 import { BdmysqlService } from './bdmysql.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class UsersService {
-    // private _name = 'UsersService';
+    private _name = 'UsersService';
 
     private _userprofile: IUserConnected = {
         id_user: 0,
@@ -32,19 +33,51 @@ export class UsersService {
         short_name_asoc: '',
     };
 
+    private _userProfileO: IUserConnected = this._userprofile;
+    // private sharedUserPerfilObservable: BehaviorSubject<IUserConnected> = new BehaviorSubject<IUserConnected>(this._userProfileO);
+
+    get userProfileO$(): Observable<IUserConnected> {
+        console.log('Componente ' + this._name + ': userProfileO: this._userProfileO ─> ', this._userProfileO);
+        // return this.sharedUserPerfilObservable.asObservable().pipe(distinctUntilChanged());
+        return this.userProfileSubject.asObservable();
+    }
+    private userProfileSubject: Subject<IUserConnected>;
+
+    // set userProfileOData(data: IUserConnected) {
+    //     this._userProfileO = data;
+    //     this.sharedUserPerfilObservable.next(data);
+    // }
+
+    // set userProfileOAvatar(avatar: string) {
+    //     this._userProfileO.avatar_user = avatar;
+    //     this.sharedUserPerfilObservable.next(this._userProfileO);
+    // }
+
     get userProfile(): IUserConnected {
+        console.log('Componente ' + this._name + ': userProfile: this._userprofile ─> ', this._userprofile);
+        this.userProfileSubject.next(this._userprofile);
         return this._userprofile;
     }
 
     set userProfileData(data: IUserConnected) {
+        console.log('Componente ' + this._name + ': userProfileData: data ─> ', data);
         this._userprofile = data;
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(data);
+        this.userProfileSubject.next(data);
     }
 
     set userProfileAvatar(avatar: string) {
+        console.log('Componente ' + this._name + ': userProfileAvatar: avatar ─> ', avatar);
         this._userprofile.avatar_user = avatar;
+        this._userProfileO.avatar_user = avatar;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
     }
 
-    constructor(private _db: BdmysqlService) {}
+    constructor(private _db: BdmysqlService) {
+        this.userProfileSubject = new Subject();
+    }
 
     getUserConnected() {
         // console.log('Componente ' + this._name + ': getUser: data ─> ');
@@ -88,14 +121,6 @@ export class UsersService {
         return this._db.changePassword(credentials, this.getAuthHeaders());
     }
 
-    dataUser(_uid: string) {
-        // console.log('Componente ' + this._name + ': uid:  ─> ', uid);
-    }
-
-    register(_credentials: ICredentials) {
-        // return this._db.createUserWithEmailAndPassword(credentials.email, credentials.password);
-    }
-
     getAuthHeaders(_auth: boolean = false) {
         let header: any = {};
 
@@ -123,14 +148,12 @@ export class UsersService {
         return header;
     }
 
-    async insertProfile() {}
-
     updateProfile(data: any) {
         return this._db.updateUserProfile(data, this.getAuthHeaders());
     }
 
-    stateUser() {
-        // return this._db.authState;
+    editUser(data: any) {
+        return this._db.updateUser(data, this.getAuthHeaders());
     }
 
     getLocalStoredProfile() {
@@ -164,6 +187,7 @@ export class UsersService {
                         msg: 'User logged',
                         userprofile: this._userprofile,
                     };
+                    this.userProfileSubject.next(this._userprofile);
                     // console.log('Componente ' + this._name + ': getProfile: resp  ─> ', resp);
                     return resp;
                 }
@@ -179,7 +203,7 @@ export class UsersService {
         }
     }
 
-    actualizeStoreProfile(user: IBDUsuario, asoc: IBDAsociacion) {
+    actualizeStoreProfile(user: IBDUsuario, asoc: IBDAsociation) {
         // console.log('Componente ' + this._name + ': actualizeProfile: user  ─> ', user);
         // console.log('Componente ' + this._name + ': actualizeProfile: asoc  ─> ', asoc);
 
@@ -212,6 +236,45 @@ export class UsersService {
 
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
 
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
+
+        return this._userprofile;
+    }
+
+    modifyStoreProfile(user: IUserAsociation) {
+        // console.log('Componente ' + this._name + ': actualizeProfile: user  ─> ', user);
+        // console.log('Componente ' + this._name + ': actualizeProfile: asoc  ─> ', asoc);
+
+        this._userprofile.id_user = user.id_user;
+        this._userprofile.id_asociation_user = user.id_asociation_user;
+        this._userprofile.user_name_user = user.user_name_user;
+        this._userprofile.email_user = user.email_user;
+        this._userprofile.recover_password_user = user.recover_password_user;
+        this._userprofile.token_user = user.token_user;
+        this._userprofile.token_exp_user = user.token_exp_user;
+        this._userprofile.profile_user = user.profile_user;
+        this._userprofile.status_user = user.status_user;
+        this._userprofile.name_user = user.name_user;
+        this._userprofile.last_name_user = user.last_name_user;
+        this._userprofile.avatar_user = user.avatar_user;
+        this._userprofile.phone_user = user.phone_user;
+        this._userprofile.date_deleted_user = user.date_deleted_user;
+        this._userprofile.date_created_user = user.date_created_user;
+        this._userprofile.date_updated_user = user.date_updated_user;
+
+        this._userprofile.id_asoc_admin = user.profile_user === 'admin' ? user.id_asociation_user : 0;
+
+        this._userprofile.long_name_asoc = user.long_name_asociation;
+        this._userprofile.short_name_asoc = user.short_name_asociation;
+
+        localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
+
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
+
         return this._userprofile;
     }
 
@@ -241,20 +304,27 @@ export class UsersService {
 
         localStorage.removeItem('userprofile');
 
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
+
         return this._userprofile;
     }
 
     updateProfileAvatar(avatar: string) {
         this._userprofile.avatar_user = avatar;
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
         return this._userprofile;
     }
 
     uploadAvatar(fd: FormData) {
-        return this._db.uploadAvatarUser(fd, this.getAuthHeaders());
+        return this._db.uploadImage(fd, this.getAuthHeaders());
     }
 
     deleteAvatar(fd: FormData) {
-        return this._db.deleteAvatarUser(fd, this.getAuthHeaders());
+        return this._db.deleteImage(fd, this.getAuthHeaders());
     }
 }

@@ -1,80 +1,173 @@
-<div class="container">
-   <mat-toolbar>
-      <span>{{ options.title }}</span>
-   </mat-toolbar>
-   <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
-   <mat-card *ngIf="!loading" style="margin-top: 5px">
-      <form (ngSubmit)="manageAsociation()" [formGroup]="form">
-         <mat-grid-list cols="4" rowHeight="70px" gutterSize="5px" [style.background]="'white'">
-            <mat-grid-tile [colspan]="2" [rowspan]="1"
-               ><mat-form-field appearance="fill" class="ancho">
-                  <mat-label>Nombre</mat-label>
-                  <input matInput autocomplete="off" formControlName="nombre_largo" />
-               </mat-form-field>
-            </mat-grid-tile>
+<div class="main">
+   <div class="content">
+      <h1 class="content__title" [innerHTML]="optionsDialog.title"></h1>
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__asociation">
+         <div class="form__asociation" [ngStyle]="{ 'padding-top': optionsDialog.second_title ? '0' : '1rem' }">
+            <h2 class="form__asociation-title" *ngIf="optionsDialog.second_title">{{ optionsDialog.second_title }}</h2>
+            <form *ngIf="!loading" class="form__container grid" (ngSubmit)="manageAsociation()" [formGroup]="form" autocomplete="off">
+               <input autocomplete="false" name="hidden" type="text" style="display: none" />
 
-            <mat-grid-tile [colspan]="2" [rowspan]="3">
-               <input
-                  style="display: none"
-                  type="file"
-                  id="logoUpload"
-                  (change)="getLogo($event)"
-                  autocomplete="off"
-                  accept=".png,.jpg"
-                  name="logo"
-                  #logo
-               />
-               <div class="grid-logo">
-                  <img class="img_logo" [src]="logoUrl" (click)="browseForm || logo.click()" width="80%" />
-                  <div (click)="defaultLogo()" class="close-button" *ngIf="!browseForm">✕</div>
+               <div class="form__field-image">
+                  <label class="form__label" for="logoImg">Logo</label>
+                  <egl-img
+                     id="logoImg"
+                     class="img_logo"
+                     [label]="''"
+                     [imagedefault]="logoUrlDefault"
+                     [(ngModel)]="logoImg"
+                     [ngModelOptions]="{ standalone: true }"
+                     [readonly]="browseForm"
+                  ></egl-img>
                </div>
-            </mat-grid-tile>
 
-            <mat-grid-tile [colspan]="2" [rowspan]="1"
-               ><mat-form-field appearance="fill" class="ancho">
-                  <mat-label>Nombre abreviado</mat-label>
-                  <input matInput autocomplete="off" formControlName="nombre_corto" />
-               </mat-form-field>
-            </mat-grid-tile>
+               <div class="form__group">
+                  <div class="form__field">
+                     <label class="form__label" for="long_name_asociation">Nombre</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input
+                           type="text"
+                           class="form__input"
+                           formControlName="long_name_asociation"
+                           id="long_name_asociation"
+                           placeholder="Introduce el nombre"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="longNameAsociationField!.errors && longNameAsociationField!.touched">
+                        <p *ngIf="longNameAsociationField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="longNameAsociationField!.hasError('minlength')">
+                           Te has quedado corto, mínimo deben haber {{ longNameAsociationMinLength }} caracteres.
+                        </p>
+                     </div>
+                  </div>
 
-            <mat-grid-tile [colspan]="2" [rowspan]="1"
-               ><mat-form-field appearance="fill" class="ancho">
-                  <mat-label>Teléfono</mat-label>
-                  <input matInput autocomplete="off" formControlName="telefono" />
-               </mat-form-field>
-            </mat-grid-tile>
+                  <div class="form__field">
+                     <label class="form__label" for="short_name_asociation">Nombre abreviado</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input
+                           type="text"
+                           class="form__input"
+                           formControlName="short_name_asociation"
+                           id="short_name_asociation"
+                           placeholder="Introduce el nombre"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="shortNameAsociationField!.errors && shortNameAsociationField!.touched">
+                        <p *ngIf="shortNameAsociationField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="shortNameAsociationField!.hasError('maxlength')">
+                           Te pasaste, máximo son {{ shortNameAsociationMaxLength }} caracteres.
+                        </p>
+                        <p *ngIf="shortNameAsociationField!.hasError('minlength')">
+                           Te has quedado corto, mínimo deben haber {{ shortNameAsociationMinLength }} caracteres.
+                        </p>
+                     </div>
+                  </div>
 
-            <mat-grid-tile [colspan]="4" [rowspan]="1"
-               ><mat-form-field appearance="fill" class="ancho">
-                  <mat-label>Email</mat-label>
-                  <input type="email" matInput autocomplete="off" formControlName="email" />
-               </mat-form-field>
-            </mat-grid-tile>
+                  <div class="form__field">
+                     <label class="form__label" for="name_contact_asociation">Persona de contacto</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                        <input
+                           type="text"
+                           class="form__input"
+                           formControlName="name_contact_asociation"
+                           id="name_contact_asociation"
+                           placeholder="Introduce el nombre"
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="nameContactAsociationField!.errors && nameContactAsociationField!.touched">
+                        <p *ngIf="nameContactAsociationField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="nameContactAsociationField!.hasError('minlength')">
+                           Te has quedado corto, mínimo deben haber {{ nameContactAsociationMinLength }} caracteres.
+                        </p>
+                     </div>
+                  </div>
 
-            <div *ngIf="!createForm">
-               <mat-grid-tile [colspan]="2" [rowspan]="1">
-                  <mat-form-field class="ancho" appearance="fill">
-                     <mat-label>Fecha de alta</mat-label>
-                     <mat-icon matPrefix> history_toggle_off </mat-icon>
-                     <input matInput [value]="oldRecord.date_created_asociation" autocomplete="off" disabled />
-                  </mat-form-field>
-               </mat-grid-tile>
+                  <div class="form__field">
+                     <label class="form__label" for="phone_asociation">Teléfono</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faMobileScreen"></fa-icon
+                        ><input
+                           type="tel"
+                           class="form__input"
+                           formControlName="phone_asociation"
+                           id="phone_asociation"
+                           placeholder="Introduce el teléfono"
+                           pattern="(\(\+[0-9]{0,1}[0-9]{1}\)\s){0,1}([0-9]{3}\s[0-9]{3}\s[0-9]{3}){1}"
+                           #eglphone
+                        />
+                     </div>
+                     <div class="form__field-error" *ngIf="phoneAsociationField!.errors && phoneAsociationField!.touched">
+                        <p *ngIf="phoneAsociationField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="phoneAsociationField!.hasError('pattern')">Formato de teléfono erróneo</p>
+                     </div>
+                  </div>
 
-               <mat-grid-tile [colspan]="2" [rowspan]="1">
-                  <mat-form-field class="ancho" appearance="fill">
-                     <mat-label>Fecha de modificacion</mat-label>
-                     <mat-icon matPrefix> history</mat-icon>
-                     <input matInput [value]="oldRecord.date_updated_asociation" autocomplete="off" disabled />
-                  </mat-form-field>
-               </mat-grid-tile>
-            </div>
-            <mat-grid-tile [colspan]="2" [rowspan]="1" *ngIf="!browseForm">
-               <button class="submit" type="submit" mat-raised-button color="primary" [disabled]="form.invalid">{{ options.button }}</button>
-            </mat-grid-tile>
-            <mat-grid-tile [colspan]="browseForm ? 4 : 2" [rowspan]="1">
-               <button type="button" (click)="exitForm(null)" mat-raised-button class="cancel">Volver</button>
-            </mat-grid-tile>
-         </mat-grid-list>
-      </form>
-   </mat-card>
+                  <div class="form__field">
+                     <label class="form__label" for="email_asociation">Email</label>
+                     <div class="form__field-input">
+                        <fa-icon class="form__input-icon" [icon]="faEnvelope"></fa-icon>
+                        <input type="email" class="form__input" formControlName="email_asociation" id="email_asociation" placeholder="Email" />
+                     </div>
+                     <div class="form__field-error" *ngIf="emailAsociationField!.errors && emailAsociationField!.touched">
+                        <p *ngIf="emailAsociationField!.hasError('required')">Es un campo requerido</p>
+                        <p *ngIf="emailAsociationField!.hasError('email')">El email no es válido</p>
+                        <p *ngIf="emailAsociationField!.hasError('pattern')">Formato de correo erróneo</p>
+                        <p *ngIf="emailAsociationField!.hasError('maxlength')">
+                           Te pasaste, máximo deben haber {{ emailAsociationMaxLength }} caracteres.
+                        </p>
+                     </div>
+                  </div>
+
+                  <ng-container *ngIf="browseForm">
+                     <div class="form__field">
+                        <label class="form__label" for="date_created_asociation">Fecha de alta</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faCalendarPlus"></fa-icon>
+                           <!-- <mat-icon matPrefix> history_toggle_off </mat-icon> -->
+                           <input
+                              id="date_created_asociation"
+                              class="form__input"
+                              [value]="oldRecord.date_created_asociation"
+                              autocomplete="off"
+                              disabled
+                           />
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="date_updated_asociation">Fecha de modificacion</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faClockRotateLeft"></fa-icon>
+                           <!-- <mat-icon matPrefix> history</mat-icon> -->
+                           <input
+                              id="date_updated_asociation"
+                              class="form__input"
+                              [value]="oldRecord.date_updated_asociation"
+                              autocomplete="off"
+                              disabled
+                           />
+                        </div>
+                     </div>
+                  </ng-container>
+               </div>
+
+               <div
+                  [ngClass]="{
+                     'form__group-button': !browseForm,
+                     'form__group-button_single': browseForm
+                  }"
+               >
+                  <div class="form__button" *ngIf="!browseForm">
+                     <button type="submit" class="form__btn">{{ optionsDialog.button }}</button>
+                  </div>
+                  <div class="form__button">
+                     <button type="button" (click)="exitForm(null)" class="form__btn cancel">Salir</button>
+                  </div>
+               </div>
+            </form>
+         </div>
+      </div>
+   </div>
 </div>

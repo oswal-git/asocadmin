@@ -1,3 +1,4 @@
+import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
@@ -12,6 +13,7 @@ import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
     selector: 'app-change',
     templateUrl: './change.component.html',
     styleUrls: ['./change.component.scss'],
+    providers: [Location, { provide: LocationStrategy, useClass: PathLocationStrategy }],
 })
 export class ChangeComponent implements OnInit {
     private _name = 'LoginComponent';
@@ -50,13 +52,26 @@ export class ChangeComponent implements OnInit {
         private _formBuilder: UntypedFormBuilder,
         private _snackBar: MatSnackBar,
         private router: Router,
-        private _usersService: UsersService
+        private _usersService: UsersService,
+        private _location: Location
     ) {
         const res = this._usersService.getLocalStoredProfile();
 
         if (res.msg !== 'User logged') {
             this.router.navigateByUrl('/login');
         }
+        const avatar =
+            this._usersService.userProfile.avatar_user === ''
+                ? environment.urlApi + '/assets/images/user.png'
+                : this._usersService.userProfile.avatar_user;
+
+        this.avatarImg = {
+            src: avatar,
+            nameFile: avatar.split(/[\\/]/).pop() || '',
+            filePath: '',
+            fileImage: null,
+            isSelectedFile: false,
+        };
 
         this.form = this._formBuilder.group({
             // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],
@@ -124,6 +139,10 @@ export class ChangeComponent implements OnInit {
             this.form.markAllAsTouched();
             this.msg('Email o contraseña ingresados son inválidos');
         }
+    }
+
+    exit(): void {
+        this._location.back();
     }
 
     get emailField(): any {

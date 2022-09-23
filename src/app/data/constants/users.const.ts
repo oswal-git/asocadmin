@@ -32,7 +32,7 @@ export const USERS_CONST = {
         },
         {
             id: 3,
-            caption: 'asociado',
+            caption: 'suspendido',
             url: '',
         },
         {

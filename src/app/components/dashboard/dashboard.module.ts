@@ -10,6 +10,12 @@ import { ReportesComponent } from './reportes/reportes.component';
 import { ListaUsuariosComponent } from './usuarios/lista-usuarios/lista-usuarios.component';
 import { CreateUserComponent } from './usuarios/create-user/create-user.component';
 import { DeleteUserComponent } from './usuarios/delete-usuer/delete-user.component';
+import { EditUserComponent } from './usuarios/edit-user/edit-user.component';
+import { BrowseUserComponent } from './usuarios/browse-user/browse-user.component';
+import { ListAsociationsComponent } from './asociations/list-asociations/list-asociations.component';
+import { DeleteAsociationComponent } from './asociations/delete-asociation/delete-asociation.component';
+import { EditAsociationComponent } from './asociations/edit-asociation/edit-asociation.component';
+import { BrowseAsociationComponent } from './asociations/browse-asociation/browse-asociation.component';
 
 @NgModule({
     declarations: [
@@ -20,6 +26,12 @@ import { DeleteUserComponent } from './usuarios/delete-usuer/delete-user.compone
         ListaUsuariosComponent,
         CreateUserComponent,
         DeleteUserComponent,
+        EditUserComponent,
+        BrowseUserComponent,
+        ListAsociationsComponent,
+        DeleteAsociationComponent,
+        EditAsociationComponent,
+        BrowseAsociationComponent,
     ],
     imports: [CommonModule, DashboardRoutingModule, ComponentsModule],
 })

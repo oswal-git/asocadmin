@@ -1,6 +1,7 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { UsersService } from '@app/services/bd/users.service';
 import { environment } from '@env/environment';
 import { Subscription } from 'rxjs';
@@ -26,6 +27,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     size: IScreenSize = this.sizes[this.sizes.length - 1];
     last_size!: IScreenSize;
 
+    userProfileOSubscription!: Subscription;
     onResizeSubscription: Subscription;
 
     durationInSeconds = 1.5;
@@ -39,16 +41,28 @@ export class NavbarComponent implements OnInit, OnDestroy {
         private _snackBar: MatSnackBar
     ) {
         this.menu = menuData;
-
-        // this.sadmin = false;
-        // this.isLogin = this._usersService.userProfile.token_user !== '' ? true : false;
-        // this.avatar =
-        //     this._usersService.userProfile.avatar_user === ''
-        //         ? environment.urlApi + '/assets/images/user.png'
-        //         : this._usersService.userProfile.avatar_user;
-        // if (this._usersService.userProfile.profile_user === 'superadmin') {
-        //     this.sadmin = true;
-        // }
+        this.sadmin = false;
+        console.log('Componente ' + this._name + ': constructor: this.userProfileOSubscription ─> ', this.userProfileOSubscription);
+        console.log('Componente ' + this._name + ': constructor: !this.userProfileOSubscription ─> ', !this.userProfileOSubscription);
+        if (!this.userProfileOSubscription) {
+            console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfileO$.subscribe({
+                next: (user: IUserConnected) => {
+                    console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    this.avatar = user.avatar_user === '' ? environment.urlApi + '/assets/images/user.png' : user.avatar_user;
+                    if (user.profile_user === 'superadmin') {
+                        this.sadmin = true;
+                    }
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
+            });
+        }
 
         this.size = this.mediaScreenService._size;
         // console.log('Componente ' + this._name + ': constructor: this.size ─> ', this.size);
@@ -66,23 +80,24 @@ export class NavbarComponent implements OnInit, OnDestroy {
         if (this._usersService.userProfile.profile_user === 'superadmin') {
             this.sadmin = true;
         }
-        // console.log('Componente ' + this._name + ': constructor: this.sadmin ─> ', this.sadmin);
-        // console.log('Componente ' + this._name + ': constructor: this.isLogin ─> ', this.isLogin);
-        console.log('Componente ' + this._name + ': constructor: this.avatar ─> ', this.avatar);
+        // console.log('Componente ' + this._name + ': ngOnInit: this.sadmin ─> ', this.sadmin);
+        // console.log('Componente ' + this._name + ': ngOnInit: this.isLogin ─> ', this.isLogin);
+        // console.log('Componente ' + this._name + ': ngOnInit: this.avatar ─> ', this.avatar);
 
         // console.log('Componente ' + this._name + ': ngOnInit: this.size ─> ', this.size);
     }
 
     ngOnDestroy(): void {
         // console.log('Componente ' + this._name + ': ngOnDestroy: this.size ─> ', this.size);
+        this.userProfileOSubscription.unsubscribe();
         this.onResizeSubscription.unsubscribe();
     }
 
     getMediaScren(): IScreenSize {
-        // if (this.size !== this.last_size) {
-        //     console.log('Componente ' + this._name + ': getMediaScren: this.size ─> ', this.size);
-        //     this.last_size = this.size;
-        // }
+        if (this.size !== this.last_size) {
+            console.log('Componente ' + this._name + ': getMediaScren: this.size ─> ', this.size);
+            this.last_size = this.size;
+        }
         return this.size;
     }
 

@@ -78,6 +78,9 @@ body {
 
 // configuracion diálogos modales
 
+.create-asociation-modalbox,
+.browse-asociation-modalbox,
+.edit-asociation-modalbox,
 .create-user-modalbox,
 .browse-user-modalbox,
 .edit-user-modalbox {
@@ -86,6 +89,7 @@ body {
 
    mat-dialog-container.mat-dialog-container {
       border-radius: 30px;
+      height: 75%;
       height: 90%;
       padding: 0;
 
@@ -105,7 +109,32 @@ body {
    }
 }
 
-.delete-user-modalbox {
+.delete-user-modalbox,
+.delete-asociation-modalbox {
+   display: flex;
+   align-items: center;
+   justify-content: center;
+
+   mat-dialog-container.mat-dialog-container {
+      max-width: 550px;
+      border-radius: 30px;
+      padding-left: 0;
+      padding-right: 0;
+      padding: 0;
+
+      background: #181818;
+
+      overflow-y: scroll;
+      scrollbar-color: #181818 #181818;
+      scrollbar-width: thin !important;
+
+      &::-webkit-scrollbar {
+         display: none;
+      }
+   }
+}
+.delete-user-modalbox,
+.delete-asociation-modalbox {
    display: flex;
    align-items: center;
    justify-content: center;
@@ -129,31 +158,19 @@ body {
    }
 }
 
-.create-asociacion-modalbox mat-dialog-container.mat-dialog-container,
-.browse-asociacion-modalbox mat-dialog-container.mat-dialog-container,
-.edit-asociacion-modalbox mat-dialog-container.mat-dialog-container {
-   border-radius: 30px;
-   height: 75%;
-}
+// .create-asociacion-modalbox mat-dialog-container.mat-dialog-container,
+// .browse-asociacion-modalbox mat-dialog-container.mat-dialog-container,
+// .edit-asociacion-modalbox mat-dialog-container.mat-dialog-container {
+//    border-radius: 30px;
+//    height: 75%;
+// }
 
-.delete-asociacion-modalbox mat-dialog-container.mat-dialog-container {
-   border-radius: 30px;
-   padding-left: 0;
-   padding-right: 0;
-}
-
-.create-modalbox mat-dialog-container.mat-dialog-container,
-.browse-modalbox mat-dialog-container.mat-dialog-container,
-.edit-modalbox mat-dialog-container.mat-dialog-container {
-   border-radius: 30px;
-   height: 75%;
-}
-
-.delete-modalbox mat-dialog-container.mat-dialog-container {
-   border-radius: 30px;
-   padding-left: 0;
-   padding-right: 0;
-}
+// .create-user-modalbox mat-dialog-container.mat-dialog-container,
+// .browse-user-modalbox mat-dialog-container.mat-dialog-container,
+// .edit-user-modalbox mat-dialog-container.mat-dialog-container {
+//    border-radius: 30px;
+//    height: 75%;
+// }
 
 .mat-select-disabled .mat-select-value-text {
    color: var(--eglos-color-primary);
@@ -190,4 +207,46 @@ p.innerH figure img,
 
 .title__span {
    color: #b70e21;
+}
+
+#toast-container {
+   border-radius: 1rem;
+
+   .ngx-toastr {
+      width: 300px !important; // Specify toastr-dialog width for all devices
+      // min-height: 300px !important; // Specify toastr-dialog width for all devices
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+
+      &.toast-success {
+         // background-color: #8c3b3b;
+         color: #fff;
+      }
+
+      &.toast-error {
+         background-color: #8c3b3b;
+         color: #ccc;
+      }
+
+      &.toast-info {
+         color: #fff;
+      }
+
+      .toast-title {
+         width: 100%;
+         text-align: center;
+         padding-bottom: 1rem;
+         font-size: 1.1rem;
+         font-weight: 400;
+      }
+
+      .toast-message {
+         text-align: center;
+         width: 100%;
+         font-size: 0.9rem;
+         font-weight: 400;
+      }
+   }
 }

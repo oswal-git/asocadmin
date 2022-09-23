@@ -89,6 +89,7 @@ mat-paginator::ng-deep {
    }
 }
 
+// Tamaño de los iconos
 $tam: 1.5rem;
 
 .action-icon {
@@ -240,6 +241,10 @@ $portion: calc(100vw - 85px) / $dividers;
    .mat-column-phone_user {
       display: none;
    }
+
+   ::ng-deep.mat-paginator-page-size {
+      display: none !important;
+   }
 }
 
 @media screen and (max-width: 565px) and (min-width: 300px) {
@@ -248,6 +253,10 @@ $portion: calc(100vw - 85px) / $dividers;
    .mat-column-last_name_user,
    .mat-column-phone_user {
       display: none;
+   }
+
+   ::ng-deep.mat-paginator-page-size {
+      display: none !important;
    }
 }
 
@@ -258,5 +267,9 @@ $portion: calc(100vw - 85px) / $dividers;
    .mat-column-id_asociation_user,
    .mat-column-phone_user {
       display: none;
+   }
+
+   ::ng-deep.mat-paginator-page-size {
+      display: none !important;
    }
 }

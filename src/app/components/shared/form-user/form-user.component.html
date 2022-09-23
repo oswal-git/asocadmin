@@ -17,7 +17,7 @@
                      [imagedefault]="avatarUrlDefault"
                      [(ngModel)]="avatarImg"
                      [ngModelOptions]="{ standalone: true }"
-                     [readonly]="false"
+                     [readonly]="browseForm"
                   ></egl-img>
                </div>
                <div class="form__group">
@@ -29,6 +29,7 @@
                            type="id"
                            id="id_asociation_user"
                            formControlName="id_asociation_user"
+                           [disabled]="!isSuper || browseForm || (isSuper && profileForm) || (isAdmin && profileForm)"
                            [valores]="asociations"
                            [label]="'Asociación'"
                            placeHolder="Selecciona una asociación"
@@ -131,8 +132,7 @@
                         <p *ngIf="phoneUserField!.hasError('pattern')">Formato de teléfono erróneo</p>
                      </div>
                   </div>
-
-                  <div class="form__field" *ngIf="!(registerForm || profileForm)">
+                  <div class="form__field" *ngIf="!registerForm">
                      <label class="form__label" for="profile_user">Perfil</label>
                      <div class="form__field-select">
                         <egl-select
@@ -141,6 +141,7 @@
                            formControlName="profile_user"
                            [valores]="profiles"
                            [label]="'Perfil'"
+                           [disabled]="browseForm || profileForm"
                            placeHolder="Selecciona un perfil"
                            [imgctrl]="profileImgCtrl"
                            [showthumbnails]="false"
@@ -153,7 +154,7 @@
                         <p *ngIf="profileUserField!.hasError('required')">Es un campo requerido</p>
                      </div>
                   </div>
-                  <div class="form__field" *ngIf="!(registerForm || profileForm)">
+                  <div class="form__field" *ngIf="!registerForm">
                      <label class="form__label" for="status_user">Estado</label>
                      <div class="form__field-select">
                         <egl-select
@@ -162,6 +163,7 @@
                            formControlName="status_user"
                            [valores]="status"
                            [label]="'Estado'"
+                           [disabled]="browseForm || profileForm"
                            placeHolder="Selecciona un estado"
                            [imgctrl]="statusImgCtrl"
                            [showthumbnails]="true"
@@ -174,7 +176,7 @@
                         </div>
                      </div>
                   </div>
-                  <div *ngIf="!createForm && !registerForm">
+                  <ng-container *ngIf="browseForm">
                      <div class="form__field">
                         <label class="form__label" for="status_user">Fecha de alta</label>
                         <div class="form__field-input">
@@ -191,16 +193,25 @@
                            <input class="form__input" [value]="oldRecord.date_updated_user" autocomplete="off" disabled />
                         </div>
                      </div>
-                  </div>
+                  </ng-container>
                </div>
-               <div class="form__group-button">
-                  <div class="form__button">
+
+               <div
+                  [ngClass]="{
+                     'form__group-button': !browseForm,
+                     'form__group-button_single': browseForm
+                  }"
+               >
+                  <div class="form__button" *ngIf="!browseForm">
                      <button type="submit" class="form__btn">{{ optionsDialog.button }}</button>
                   </div>
                   <div class="form__button">
-                     <button type="button" (click)="exitForm(null)" class="form__btn cancel">Volver</button>
+                     <button type="button" (click)="exitForm(null)" class="form__btn cancel">Salir</button>
                   </div>
                </div>
                <div class="form__link" *ngIf="registerForm"><a [routerLink]="['/login']">Ya estás registrado? Accede aquí</a></div>
             </form>
          </div>
+      </div>
+   </div>
+</div>

@@ -6,15 +6,17 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
-import { IBDAsociacion } from '@app/interfaces/api/iapi-asociation.metadata';
-import { IProfileUsuario, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
+import { IProfileUsuario, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog, IResponseActionsUsers } from '@app/interfaces/ui/dialogs.interface';
 import { AsociationsService } from '@app/services/bd/asociations.service';
 import { ToastrService } from 'ngx-toastr';
 import { Subject, Subscription } from 'rxjs';
 import { UsersService } from 'src/app/services/bd/users.service';
+import { BrowseUserComponent } from '../browse-user/browse-user.component';
 import { CreateUserComponent } from '../create-user/create-user.component';
 import { DeleteUserComponent } from '../delete-usuer/delete-user.component';
+import { EditUserComponent } from '../edit-user/edit-user.component';
 // import { CrearUsuarioComponent } from '../crear-usuario/crear-usuario.component';
 // import { DeleteUsuarioComponent } from '../delete-usuario/delete-usuario.component';
 // import { EditUsuarioComponent } from '../edit-usuario/edit-usuario.component';
@@ -67,9 +69,10 @@ export class ListaUsuariosComponent implements OnInit {
     };
 
     listUsuarios: IProfileUsuario[] = [];
-    asociations: IBDAsociacion[] = [];
+    asociations: IBDAsociation[] = [];
 
-    durationInSeconds = 1.5;
+    isSuper = false;
+    isAdmin = false;
 
     loading = true;
     viewCheckeed = true;
@@ -77,11 +80,12 @@ export class ListaUsuariosComponent implements OnInit {
     hasUser = false;
     hasAsociations = false;
 
+    durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
     verticalPosition: MatSnackBarVerticalPosition = 'bottom';
 
     displayedColumns: string[] = [
-        'id_asociation_user',
+        'short_name_asociation',
         'user_name_user',
         'name_user',
         'last_name_user',
@@ -117,14 +121,23 @@ export class ListaUsuariosComponent implements OnInit {
         public dialog: MatDialog,
         private router: Router
     ) {
-        console.log('Componente ' + this._name + ': constructor: subscriptions ─> ');
         const res = this._usersService.getLocalStoredProfile();
+        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {
-            this.router.navigateByUrl('/dashboard');
+            this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
+                this.router.navigateByUrl('/dashboard');
+            });
+        } else if (!['admin', 'superadmin'].includes(res.userprofile.profile_user)) {
+            this._toastr.error('User not authorized for try the user list', 'User unauthorized').onHidden.subscribe(() => {
+                this.router.navigateByUrl('/dashboard');
+            });
         }
 
         this.userProfile = res.userprofile;
+
+        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
+        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
 
         this.titleData.title =
             this.userProfile.long_name_asoc === '' ? this.titleData.title : this.titleData.title + ' de ' + this.userProfile.long_name_asoc;
@@ -238,7 +251,7 @@ export class ListaUsuariosComponent implements OnInit {
     getNameAsociation(asoc_id: number): string {
         // console.log('Componente ' + this._name + ': getNameAsociation: asoc_id ─> ', asoc_id);
         // console.log('Componente ' + this._name + ': getNameAsociation: ─> this.asociations', this.asociations);
-        const asoc: IBDAsociacion[] = this.asociations.filter((asoc: any) => asoc.id_asociation === asoc_id);
+        const asoc: IBDAsociation[] = this.asociations.filter((asoc: any) => asoc.id_asociation === asoc_id);
         if (asoc.length === 1) {
             // console.log('Componente ' + this._name + ': getNameAsociation: asoc[0].short_name_asociation ─> ', asoc[0].short_name_asociation);
             return asoc[0].short_name_asociation;
@@ -271,12 +284,16 @@ export class ListaUsuariosComponent implements OnInit {
         });
     }
 
-    editarUsuario(userEdit: IProfileUsuario) {
+    editarUsuario(userEdit: IUserAsociation) {
         console.log('Componente ' + this._name + ': editarUsuario: userEdit.user_id ─> ', userEdit.id_user);
+        console.log('Componente ' + this._name + ': editarUsuario: typeof userEdit.user_id ─> ', typeof userEdit.id_user);
         console.log('Componente ' + this._name + ': editarUsuario: this.listUsuarios ─> ', this.listUsuarios);
-        this.listUsuarios = this.listUsuarios.map((user) => {
+        this.dataSource.data = this.dataSource.data.map((user: IUserAsociation) => {
             console.log('Componente ' + this._name + ': editarUsuario: user ─> map', user);
-            if (user.id_user === userEdit.id_user) {
+            console.log('Componente ' + this._name + ': editarUsuario: typeof user.user_id ─> ', typeof user.id_user);
+            if (user.id_user.toString() === userEdit.id_user.toString()) {
+                user.id_asociation_user = userEdit.id_asociation_user;
+                user.short_name_asociation = userEdit.short_name_asociation;
                 user.user_name_user = userEdit.user_name_user;
                 user.profile_user = userEdit.profile_user;
                 user.status_user = userEdit.status_user;
@@ -294,9 +311,12 @@ export class ListaUsuariosComponent implements OnInit {
             return user;
         });
 
-        this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        console.log('Componente ' + this._name + ': editarUsuario: this.dataSource.data ─> ', this.dataSource.data);
+        this.dataSource.data = this.dataSource.data;
+        // this.dataSource = this.listUsuarios;
+        // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
 
         this._snackBar.open('El usuario fue modificado con exito', '', {
             duration: this.durationInSeconds * 1000,
@@ -347,7 +367,7 @@ export class ListaUsuariosComponent implements OnInit {
                 break;
 
             case 'browse':
-                // component = EditUsuarioComponent;
+                component = BrowseUserComponent;
                 dataDialog = {
                     id: 'browse',
                     title: 'Visualizar Usuario',
@@ -363,7 +383,7 @@ export class ListaUsuariosComponent implements OnInit {
                 break;
 
             case 'edit':
-                component = CreateUserComponent;
+                component = EditUserComponent;
                 dataDialog = {
                     id: 'edit',
                     title: 'Editar Usuario',
@@ -409,7 +429,7 @@ export class ListaUsuariosComponent implements OnInit {
         dialogo1.afterClosed().subscribe({
             next: (retorno: IResponseActionsUsers) => {
                 console.log('Componente ' + this._name + ': afterClosed: retorno ─> ', retorno);
-                if (retorno && retorno.action)
+                if (retorno && retorno.action) {
                     if (retorno.action === 'create') {
                         this.agregarUsuario(retorno.data);
                     } else if (retorno.action === 'edit') {
@@ -417,6 +437,7 @@ export class ListaUsuariosComponent implements OnInit {
                     } else if (retorno.action === 'delete') {
                         this.eliminarUsuario(retorno.data);
                     }
+                }
             },
             error: (err: IResponseActionsUsers) => {
                 console.log('Componente ' + this._name + ': afterClosed: error ─> ', err.replay.message);

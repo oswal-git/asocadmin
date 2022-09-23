@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { ICredentials, IIdUser, INewCredentials } from '@app/interfaces/api/iapi-users.metadatos';
 import { ICreateUser } from '@app/interfaces/ui/dialogs.interface';
+import { IIdAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 
 @Injectable({
     providedIn: 'root',
@@ -39,6 +40,17 @@ export class BdmysqlService {
         return this.http.get(`${this.Url}/users/delete.php?id_user=${data.id_user}&date_updated_user=${data.date_updated_user}`, header.headers);
     }
 
+    deleteAsociation(data: IIdAsociation, header: any) {
+        // console.log('Componente ' + this._name + ': signOut:  ─> ');
+        console.log('Componente ' + this._name + ': signOut: data.date_updated_asociation ─> ', data.date_updated_asociation);
+        console.log('Componente ' + this._name + ': signOut: typeof data.date_updated_asociation ─> ', typeof data.date_updated_asociation);
+
+        return this.http.get(
+            `${this.Url}/asociations/delete.php?id_asociation=${data.id_asociation}&date_updated_asociation=${data.date_updated_asociation}`,
+            header.headers
+        );
+    }
+
     createUser(data: ICreateUser, header: any) {
         return this.http.post(`${this.Url}/users/create.php`, data, header.headers);
     }
@@ -59,7 +71,7 @@ export class BdmysqlService {
         return this.http.post(`${this.Url}/users/change.php`, credentials, header.headers);
     }
 
-    uploadAvatarUser(fd: FormData, _header: any) {
+    uploadImage(fd: FormData, _header: any) {
         // console.log('Componente ' + this._name + ': changePassword: credentials ─> ', credentials);
 
         return this.http.post(`${this.Url}/images/upload.php`, fd, {
@@ -68,7 +80,7 @@ export class BdmysqlService {
         });
     }
 
-    deleteAvatarUser(fd: FormData, _header: any) {
+    deleteImage(fd: FormData, _header: any) {
         // console.log('Componente ' + this._name + ': changePassword: credentials ─> ', credentials);
 
         return this.http.post(`${this.Url}/images/upload.php`, fd);
@@ -94,5 +106,13 @@ export class BdmysqlService {
 
     updateUserProfile(data: any, header: any) {
         return this.http.post(`${this.Url}/users/profile.php`, data, header.headers);
+    }
+
+    updateUser(data: any, header: any) {
+        return this.http.post(`${this.Url}/users/update.php`, data, header.headers);
+    }
+
+    updateAsociation(data: any, header: any) {
+        return this.http.post(`${this.Url}/asociations/update.php`, data, header.headers);
     }
 }

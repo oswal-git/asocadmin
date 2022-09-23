@@ -18,11 +18,12 @@
                <!--- Note that these columns can be defined in any order.
                      The actual rendered columns are set as a property on the row definition" -->
                <!-- Asociacion Column -->
-               <ng-container matColumnDef="id_asociation_user">
+               <ng-container matColumnDef="short_name_asociation">
                   <th mat-header-cell *matHeaderCellDef mat-sort-header [hidden]="this.userProfile.id_asociation_user !== 0">Asociacion</th>
                   <td mat-cell *matCellDef="let element" [hidden]="this.userProfile.id_asociation_user !== 0">
-                     {{ getNameAsociation(element.id_asociation_user) }}
+                     {{ element.short_name_asociation }}
                   </td>
+                  <!-- {{ getNameAsociation(element.id_asociation_user) }} -->
                </ng-container>
                <!-- Usuario Column -->
                <ng-container matColumnDef="user_name_user">
@@ -87,6 +88,7 @@
                         class="action-button delete-button"
                         (click)="abrirDialogo('delete', element, i)"
                         matTooltip="Eliminar usuario"
+                        [disabled]="element.profile_user === 'superadmin' || element.profile_user === 'admin' ? true : false"
                      >
                         <mat-icon class="action-icon"> delete </mat-icon>
                      </button>

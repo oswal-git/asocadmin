@@ -1,5 +1,5 @@
 <div class="selector" (blur)="onBlur($event)" tabindex="1">
-   <div id="selectField" (click)="expandOptions()" [class.input-ok]="isValid" [class.input-ko]="isInvalid">
+   <div id="selectField" (click)="expandOptions()" [class.input-ok]="isValid" [class.input-ko]="isInvalid" [class.input-disabled]="isDisabled">
       <label for="selectText">{{ label }}</label>
       <img [src]="imgSelect" id="selectIcon" *ngIf="imgSelect !== '' && imgSelect !== null" />
       <p id="selectText" *ngIf="selectedText" [ngClass]="{ 'font-size-L': lngTextSelected > 20, 'font-size-S': lngTextSelected > 20 }">
@@ -8,7 +8,7 @@
       <p id="placeHolder" class="txtitalic" *ngIf="!selectedText">
          {{ placeHolder.charAt(0).toUpperCase() + placeHolder.substr(1).toLowerCase() }}
       </p>
-      <egl-svg-select [icon]="icon" id="arrowIcon" [ngClass]="{ rotate: !expandValues }"> </egl-svg-select>
+      <egl-svg-select [icon]="icon" id="arrowIcon" [ngClass]="{ rotate: !expandValues }" *ngIf="!isDisabled"> </egl-svg-select>
    </div>
    <div class="options-list" [ngClass]="{ hide: !expandValues }" *ngIf="valores">
       <ul id="list">

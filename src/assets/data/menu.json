@@ -6,7 +6,7 @@
     },
     {
         "nombre": "Asociaciones",
-        "redirect": "/dashboard/listar-asociaciones",
+        "redirect": "/dashboard/list-asociations",
         "menu": []
     },
     {

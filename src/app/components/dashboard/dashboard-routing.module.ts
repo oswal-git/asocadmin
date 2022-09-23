@@ -2,6 +2,7 @@ import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { ChangeComponent } from '@app/pages/auth/change/change.component';
 import { ProfileComponent } from '@app/pages/auth/profile/profile.component';
+import { ListAsociationsComponent } from './asociations/list-asociations/list-asociations.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { InicioComponent } from './inicio/inicio.component';
 import { ReportesComponent } from './reportes/reportes.component';
@@ -19,6 +20,7 @@ const routes: Routes = [
             { path: 'change', component: ChangeComponent },
             { path: 'profile', component: ProfileComponent },
             { path: 'create-usuer', component: CreateUserComponent },
+            { path: 'list-asociations', component: ListAsociationsComponent },
             // { path: 'listar-asociaciones', component: ListarAsociacionesComponent },
             // { path: 'nuevo-articulo', component: NewArticleComponent },
         ],

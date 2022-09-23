@@ -34,7 +34,7 @@ export class ProfileComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService // private _db: BdmysqlService
     ) {
-        console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
+        // console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
         const res = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'Token expired') {
@@ -49,10 +49,10 @@ export class ProfileComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log('Componente ' + this._name + ': ngOnInit: this._usersService.userPerfil ─> ', this._usersService.userProfile);
+        // console.log('Componente ' + this._name + ': ngOnInit: this._usersService.userPerfil ─> ', this._usersService.userProfile);
         if ((this._usersService.userProfile.profile_user === 'superadmin' || this._usersService.userProfile.token_user) === '') {
-            this.options.options.fin = true;
         }
+        this.options.options.fin = true;
     }
 
     msg(msg: string) {

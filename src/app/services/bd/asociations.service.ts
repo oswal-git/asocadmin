@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { IBDAsociacion } from '@app/interfaces/api/iapi-asociation.metadata';
+import { IBDAsociation, IIdAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 import { BdmysqlService } from './bdmysql.service';
+import { UsersService } from './users.service';
 
 @Injectable({
     providedIn: 'root',
@@ -8,7 +9,7 @@ import { BdmysqlService } from './bdmysql.service';
 export class AsociationsService {
     private _name = 'AsociationsService';
 
-    private _asociation: IBDAsociacion = {
+    private _asociation: IBDAsociation = {
         id_asociation: 0,
         long_name_asociation: '',
         short_name_asociation: '',
@@ -21,11 +22,11 @@ export class AsociationsService {
         date_updated_asociation: '',
     };
 
-    get asociation(): IBDAsociacion {
+    get asociation(): IBDAsociation {
         return this._asociation;
     }
 
-    set asociationData(data: IBDAsociacion) {
+    set asociationData(data: IBDAsociation) {
         this._asociation = data;
     }
 
@@ -33,15 +34,15 @@ export class AsociationsService {
         this._asociation.logo_asociation = logo;
     }
 
-    constructor(private _db: BdmysqlService) {}
+    constructor(private _db: BdmysqlService, private _usersService: UsersService) {}
 
-    getAllAsociations(header: any) {
-        console.log('Componente ' + this._name + ': getAllAsociations: header ─> ', header);
-        return this._db.getAllAsociations(header);
+    getAllAsociations() {
+        console.log('Componente ' + this._name + ': getAllAsociations: header ─> ', this._usersService.getAuthHeaders());
+        return this._db.getAllAsociations(this._usersService.getAuthHeaders());
     }
 
     getListAsociations() {
-        console.log('Componente ' + this._name + ': getListAsociations: ─> ');
+        // console.log('Componente ' + this._name + ': getListAsociations: ─> ');
         return this._db.getListAsociations();
     }
 
@@ -49,5 +50,19 @@ export class AsociationsService {
 
     async insertProfile() {}
 
-    async updateProfile() {}
+    modifyAsociation(data: any) {
+        return this._db.updateAsociation(data, this._usersService.getAuthHeaders());
+    }
+
+    deleteAsociation(data: IIdAsociation) {
+        return this._db.deleteAsociation(data, this._usersService.getAuthHeaders());
+    }
+
+    uploadLogo(fd: FormData) {
+        return this._db.uploadImage(fd, this._usersService.getAuthHeaders());
+    }
+
+    deleteLogo(fd: FormData) {
+        return this._db.deleteImage(fd, this._usersService.getAuthHeaders());
+    }
 }

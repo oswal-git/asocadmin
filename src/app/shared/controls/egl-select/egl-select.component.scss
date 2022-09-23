@@ -48,6 +48,14 @@ $radius: 10px;
          background: #403f3f;
       }
 
+      &.input-disabled {
+         color: #aaa;
+
+         &:hover {
+            background: #222222;
+         }
+      }
+
       display: flex;
       // justify-content: space-between;
       align-items: center;
