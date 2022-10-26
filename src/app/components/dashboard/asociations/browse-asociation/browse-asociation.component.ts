@@ -21,6 +21,11 @@ export class BrowseAsociationComponent implements OnInit {
 
     ngOnInit(): void {}
 
+    onActivate() {
+        console.log('Componente ' + this._name + ': onActivate: ─> ');
+        window.scroll(0, 0);
+    }
+
     close(datosSalida: IResponseActionsUsers) {
         console.log('Componente ' + this._name + ': cancelar: ─> dialogRef.close: datosSalida ', datosSalida);
         this.dialogRef.close(datosSalida);

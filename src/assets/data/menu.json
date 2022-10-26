@@ -2,33 +2,46 @@
     {
         "nombre": "Dashboard",
         "redirect": "/dashboard",
+        "ngif": "[all]",
+        "menu": []
+    },
+    {
+        "nombre": "Datos Asociacion",
+        "redirect": "/dashboard/single-asociations",
+        "ngif": "['admin']",
         "menu": []
     },
     {
         "nombre": "Asociaciones",
         "redirect": "/dashboard/list-asociations",
+        "ngif": "['super']",
         "menu": []
     },
     {
         "nombre": "Usuarios",
         "redirect": "/dashboard/list-users",
+        "ngif": "['super', 'admin']",
         "menu": []
     },
     {
         "nombre": "Reportes",
         "redirect": "/dashboard/reportes",
+        "ngif": "[all]",
         "menu": []
     },
     {
         "nombre": "Artículos",
         "redirect": "",
+        "ngif": "[all]",
         "menu": [
             {
                 "nombre": "Nuevo",
+                "ngif": "[all]",
                 "redirect": "/dashboard/nuevo-articulo"
             },
             {
                 "nombre": "Editar",
+                "ngif": "[all]",
                 "redirect": "/dashboard/reportes"
             }
         ]

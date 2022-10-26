@@ -31,6 +31,8 @@ export class DeleteAsociationComponent implements OnInit {
         filePath: '',
         fileImage: null,
         isSelectedFile: false,
+        isDefault: this.avatarUrlDefault === this.avatarUrlDefault,
+        isChange: false,
     };
 
     isSuper = false;

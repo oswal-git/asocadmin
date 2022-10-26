@@ -21,12 +21,16 @@ export class ChangeComponent implements OnInit {
 
     // avatar
     avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
+    src = environment.urlApi + '/assets/images/user.png';
+
     avatarImg: IEglImagen = {
-        src: environment.urlApi + '/assets/images/user.png',
+        src: this.src,
         nameFile: '',
         filePath: '',
         fileImage: null,
         isSelectedFile: false,
+        isDefault: this.avatarUrlDefault === this.src,
+        isChange: false,
     };
 
     form: UntypedFormGroup;
@@ -71,6 +75,8 @@ export class ChangeComponent implements OnInit {
             filePath: '',
             fileImage: null,
             isSelectedFile: false,
+            isDefault: this.avatarUrlDefault === avatar,
+            isChange: false,
         };
 
         this.form = this._formBuilder.group({

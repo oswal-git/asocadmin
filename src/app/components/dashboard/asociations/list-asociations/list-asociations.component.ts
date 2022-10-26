@@ -17,6 +17,7 @@ import { DeleteAsociationComponent } from '../delete-asociation/delete-asociatio
 import { environment } from '@env/environment';
 import { EditAsociationComponent } from '../edit-asociation/edit-asociation.component';
 import { BrowseAsociationComponent } from '../browse-asociation/browse-asociation.component';
+import { CreateAsociationComponent } from '../create-asociation/create-asociation.component';
 
 @Injectable()
 export class MyCustomPaginatorIntl implements MatPaginatorIntl {
@@ -59,7 +60,7 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
     subscriptions$: Array<Subscription> = [];
 
     titleData = {
-        title: 'Lista de Asociationes',
+        title: 'Lista de Asociaciones',
         style: '',
     };
     listAsociations: IBDAsociation[] = [];
@@ -196,16 +197,13 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
 
     agregarAsociation(asoc: IBDAsociation) {
         console.log('Componente ' + this._name + ': agregarAsociation: asoc.asoc_id ─> ', asoc.id_asociation);
-        // this.listAsociations.push(asoc);
+        this.listAsociations.push(asoc);
+
+        this.dataSource.data = this.listAsociations;
+
         // this.dataSource = new MatTableDataSource<IBDAsociation>(this.listAsociations);
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
-
-        // this._snackBar.open('La Asociación fue añadida con exito', '', {
-        //     duration: this.durationInSeconds * 1000,
-        //     horizontalPosition: this.horizontalPosition,
-        //     verticalPosition: this.verticalPosition,
-        // });
     }
 
     editarAsociation(asocEdit: IBDAsociation) {
@@ -230,21 +228,16 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
             return asoc;
         });
 
-        this.dataSource.data = this.dataSource.data;
+        this.dataSource.data = this.listAsociations;
         // this.dataSource = new MatTableDataSource<IBDAsociation>(this.listAsociations);
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
-
-        // this._toastr.info('La asociación fue modificada con exito', 'Update asociation').onHidden.subscribe(() => {
-        //     console.log('Componente ' + this._name + ': manageAsociation: ─> La asociación fue modificada con exito');
-        //     this.loading = false;
-        // });
     }
 
     eliminarAsociation(uid: string) {
         console.log('Componente ' + this._name + ': eliminarAsociation: uid ─> ', uid);
-        this.listAsociations = this.listAsociations.filter((asoc) => asoc.id_asociation.toString() !== uid);
-        this.dataSource.data = this.dataSource.data;
+        this.listAsociations = this.listAsociations.filter((asoc) => asoc.id_asociation.toString() !== uid.toString());
+        this.dataSource.data = this.listAsociations;
         // this.dataSource = new MatTableDataSource<IBDAsociation>(this.listAsociations);
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
@@ -267,13 +260,13 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
 
         switch (action) {
             case 'create':
-                // component = CrearAsociationComponent;
+                component = CreateAsociationComponent;
                 dataDialog = {
                     id: 'create',
                     title: 'Crear Asociación',
                     button: 'Crear Asociation',
                     record: null,
-                    options: null,
+                    options: { num: this.listAsociations.length },
                 };
                 width = '70%';
                 height = '100%';

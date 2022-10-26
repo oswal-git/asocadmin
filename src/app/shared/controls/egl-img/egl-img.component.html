@@ -8,37 +8,40 @@
             <div class="component--main">
                <div *ngIf="!src && !imgDefaultSrc">Imagen</div>
                <img class="component--main-svg" *ngIf="!src && imgDefaultSrc" [src]="imgDefaultSrc" />
+
                <img class="component--main-img" *ngIf="src" [src]="src" />
                <label class="component--label" *ngIf="label !== ''">{{ label }}</label>
             </div>
 
             <div class="component--img-icons" *ngIf="!readOnly">
                <div class="component--img-folder">
-                  <label for="btn-input">
+                  <label [for]="id">
                      <span class="component--span-icon-folder">
                         <fa-icon [icon]="faPhotoFilm"></fa-icon>
                      </span>
                   </label>
                   <input
                      name="picture"
-                     id="btn-input"
+                     [id]="id"
                      type="file"
-                     style="display: none"
+                     class="no-display"
                      onclick="this.value = null;"
                      (click)="clickFile($event)"
                      (change)="selectFile($event)"
                   />
+                  <div class="tooltip" data-text="Seleccionar nueva imagen"></div>
                </div>
-
                <div *ngIf="src && isImgDefault" class="component--img-erase" (click)="defaultImage()">
                   <span class="component--span-icon-erase">
                      <fa-icon [icon]="faCircleXmark"></fa-icon>
                   </span>
+                  <div class="tooltip" data-text="Dejar la imagen por defecto"></div>
                </div>
                <div *ngIf="canRestoreImage" class="component--img-restore" (click)="restoreImage()">
                   <span class="component--span-icon-restore">
                      <fa-icon [icon]="faArrowRotateLeft"></fa-icon>
                   </span>
+                  <div class="tooltip" data-text="Restaurar imagen inicial"></div>
                </div>
             </div>
          </div>

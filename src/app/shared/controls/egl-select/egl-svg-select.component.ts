@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
 
 @Component({
     selector: 'egl-svg-select',
@@ -8,6 +8,7 @@ import { Component, Input } from '@angular/core';
         </svg>
     `,
     styles: [],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EglSvgSelectComponent {
     @Input() icon!: 'chevron';

@@ -1,0 +1,262 @@
+* {
+   margin: 0;
+   padding: 0;
+   font-family: sans-serif;
+   // border: 1px dashed rgb(248, 240, 10);
+   // background: #181818;
+}
+:host {
+   // border: 1px dashed rgb(22, 248, 10);
+   background: #fff;
+}
+
+.main {
+   background: #eee;
+   color: #222;
+   line-height: 1.6;
+   font-family: "Quicksand", sans-serif;
+   padding: 1em;
+   font-size: 0.8rem;
+   // height: 100vh;
+   margin: auto;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+   // border: 2px dashed rgb(165, 176, 15);
+   // height: 100vh;
+
+   .content {
+      // border: 2px dashed rgb(51, 241, 4);
+      // min-width: 300px;
+
+      width: 95%;
+      // max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      // padding: 1rem;
+      font-size: 16px;
+      line-height: 30px;
+      font-weight: 300;
+
+      .content__title {
+         text-align: center;
+         font-size: 24px;
+         line-height: 40px;
+         margin-top: 0.5rem;
+         margin-bottom: 2rem;
+         font-weight: 600;
+
+         .span {
+            color: #b70e21;
+         }
+      }
+
+      .content__article {
+         // border: 2px dashed rgb(60, 176, 15);
+         padding-bottom: 1rem;
+         max-width: 1100px;
+         margin: 0 auto;
+
+         // > * {
+         //    padding: 2rem;
+         // }
+
+         .article {
+            // border: 2px dashed rgb(60, 176, 15);
+
+            .article__container {
+               // border: 2px solid red;
+
+               .article__user {
+                  margin: 0 auto;
+                  // padding: 1rem;
+
+                  .article__user-content {
+                     display: flex;
+                     justify-content: flex-start;
+                     align-items: center;
+
+                     .article__user-avatar {
+                        .article__user-img {
+                           border-radius: 50%;
+                           width: 40px;
+                           height: 40px;
+                           // width: 90%;
+                           // max-width: 120px;
+                           margin: auto;
+                        }
+                     }
+
+                     .article__user-data {
+                        display: flex;
+                        flex-direction: column;
+                        padding-left: 10px;
+                        font-size: 14px;
+
+                        .article__user-name {
+                           font-weight: 600;
+                        }
+                     }
+                  }
+               }
+
+               .publication_date_article {
+                  font-style: italic;
+               }
+
+               .article__category {
+                  margin-bottom: 30px;
+                  font-size: 12px;
+                  font-style: oblique;
+
+                  span {
+                     // font-style: normal;
+                     font-weight: bold;
+                  }
+               }
+
+               .article__image {
+                  margin-bottom: 30px;
+                  .article__img {
+                     margin: 10px auto 20px;
+                     display: block;
+                     max-width: 400px;
+                     border-radius: 24px;
+                     width: 100%;
+                     padding: 10px;
+                  }
+               }
+
+               .abstract_article {
+                  text-align: center;
+                  margin-bottom: 30px;
+               }
+
+               .effective_date_article {
+                  font-size: 12px;
+                  margin-top: 30px;
+               }
+
+               .article__group-item {
+                  // border: 1px solid rgb(100, 140, 240);
+                  display: flex;
+                  justify-content: center;
+                  flex-direction: column;
+
+                  .article__item {
+                     // border: 1px solid rgb(100, 140, 240);
+                     margin: 20px 0;
+                     .article__item-image {
+                        // border: 1px solid rgb(29, 14, 200);
+                        .article__item__img {
+                           // border: 1px solid rgb(236, 103, 32);
+                           margin: auto;
+                           display: block;
+                           max-width: 600px;
+                           border-radius: 24px;
+                           width: 100%;
+                           padding: 10px;
+                        }
+                     }
+
+                     .article__item-text {
+                        width: 100%;
+                        .article__item-html {
+                           // text-align: justify;
+                           width: 100%;
+                           padding-bottom: 20px;
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+
+.text-red-500 {
+   color: red;
+}
+.text-xs {
+   font-size: 80%;
+}
+
+.italic {
+   font-style: italic;
+}
+
+.ancho {
+   width: 100%;
+}
+
+/* MEDIUM SIZE */
+@media (min-width: 1300px) {
+   .main {
+      .content {
+         .content__article {
+            .article {
+               .article__container {
+                  margin-bottom: 20px;
+                  .article__image {
+                     .article__img {
+                        margin: auto;
+                        display: block;
+                        max-width: 500px;
+                        border-radius: 24px;
+                        width: 100%;
+                        padding: 10px;
+                     }
+                  }
+
+                  .abstract_article {
+                     margin-bottom: 30px;
+                  }
+
+                  .article__group-item {
+                     .article__item {
+                        display: flex;
+                        margin-bottom: 20px;
+
+                        .article__item-image {
+                           .article__item__img {
+                              // border: 1px solid rgb(236, 103, 32);
+                              display: block;
+                              min-width: 500px;
+                           }
+                           &.first {
+                              order: 1;
+                           }
+                           &.second {
+                              order: 2;
+                           }
+                        }
+
+                        .article__item-text {
+                           padding: 20px;
+                           margin: auto;
+                           text-align: justify;
+
+                           &.first {
+                              order: 1;
+                           }
+                           &.second {
+                              order: 2;
+                           }
+                           .article__item-html {
+                              width: 100%;
+                           }
+                        }
+                     }
+                  }
+               }
+            }
+         }
+      }
+   }
+}
+
+::ng-deep .success-snackbar {
+   background: #1fcd98;
+   white-space: pre-wrap;
+}

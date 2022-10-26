@@ -40,7 +40,14 @@
                      <label class="form__label" for="password_user">Password</label>
                      <div class="form__field-input">
                         <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
-                        <input type="password" class="form__input" formControlName="password_user" id="password_user" placeholder="Password" />
+                        <input
+                           type="password"
+                           class="form__input"
+                           formControlName="password_user"
+                           id="password_user"
+                           placeholder="Password"
+                           autocomplete="current-password"
+                        />
                      </div>
                      <div class="form__field-error" *ngIf="passwordField!.errors && passwordField!.touched">
                         <p *ngIf="passwordField!.hasError('required')">Es un campo requerido</p>
@@ -58,6 +65,7 @@
                            formControlName="new_password_user"
                            id="new_password_user"
                            placeholder="New password"
+                           autocomplete="new-password"
                         />
                      </div>
                      <div class="form__field-error" *ngIf="newPasswordField!.errors && newPasswordField!.touched">

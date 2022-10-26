@@ -1,8 +1,8 @@
-import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, forwardRef, Input, OnInit } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 export interface ISelectValues {
-    url: string;
+    url?: string;
     caption: string;
     id: number;
 }
@@ -17,13 +17,18 @@ export interface ISelectValues {
             multi: true,
         },
     ],
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EglSelectComponent implements OnInit, ControlValueAccessor {
-    private _name = 'EglSelectComponent';
+    // private _name = 'EglSelectComponent';
 
     @Input() type: 'id' | 'txt' = 'txt';
     @Input() label: string = 'Selector';
-    @Input() valores!: ISelectValues[];
+    listValues: ISelectValues[] = [];
+    @Input() set valores(value: ISelectValues[]) {
+        this.listValues = value;
+        this.onChangeOptions();
+    }
     @Input('placeholder') placeHolder: string = 'Selecciona una opción';
     @Input('showthumbnails') showThumbnails: boolean = false;
     @Input('imgdefault') imgDefault: string = '';
@@ -60,6 +65,7 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
 
     writeValue(value: any): void {
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : writeValue: value  ─> ', value);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : writeValue: this.listValues  ─> ', this.listValues);
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : writeValue: this.imgCtrl  ─> ', this.imgCtrl);
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : writeValue: this.selectImg  ─> ', this.selectImg);
         if (this.showThumbnails) this.selectImg = this.imgCtrl;
@@ -111,6 +117,25 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
         // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : expandOptions: this.selectedText  2  ─> ', this.selectedText);
     }
 
+    onChangeOptions() {
+        this.selectId = 0;
+        this.selectText = '';
+        this.lngTextSelected = this.selectText.length;
+        if (this.showThumbnails) this.imgSelect = this.imgCtrl;
+        this.expandValues = false;
+        this.selectedText = false;
+        this.isValid = false;
+        this.isInvalid = false;
+
+        if (this.type === 'txt') {
+            this.onChangefn(this.selectText);
+        } else {
+            this.onChangefn(this.selectId);
+        }
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : optionsClick: this.imgCtrl  ─> ', this.imgCtrl);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : optionsClick: this.selectImg  ─> ', this.selectImg);
+    }
+
     optionsClick(value: any) {
         this.selectId = value.id;
         this.selectText = value.caption;
@@ -131,14 +156,14 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
     }
 
     getIdSelect(): void {
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectedText ─> ', this.selectedText);
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectText ─> ', this.selectText);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectedText ─> ', this.selectedText);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectText ─> ', this.selectText);
         if (this.selectId) {
-            console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.valores ─> ', this.valores);
-            console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.selectId ─> ', this.selectId);
-            const val = this.valores.filter((ele) => ele.id.toString() === this.selectId.toString());
+            // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.listValues ─> ', this.listValues);
+            // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: this.selectId ─> ', this.selectId);
+            const val = this.listValues.filter((ele) => ele.id.toString() === this.selectId.toString());
             if (val) {
-                console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: val ─> ', val);
+                // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdgSelect: val ─> ', val);
                 this.selectText = val[0].caption;
                 if (val[0].url !== null && val[0].url !== '') {
                     this.selectImg + val[0].url;
@@ -154,16 +179,16 @@ export class EglSelectComponent implements OnInit, ControlValueAccessor {
             this.selectImg = this.imgCtrl;
         }
         this.lngTextSelected = this.selectText.length;
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.imgCtrl  ─> ', this.imgCtrl);
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectImg  ─> ', this.selectImg);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.imgCtrl  ─> ', this.imgCtrl);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getIdSelect: this.selectImg  ─> ', this.selectImg);
     }
 
     getTxtSelect(): void {
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectedText ─> ', this.selectedText);
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectText ─> ', this.selectText);
-        console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.valores ─> ', this.valores);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectedText ─> ', this.selectedText);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.selectText ─> ', this.selectText);
+        // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getTxtSelect: this.listValues ─> ', this.listValues);
         if (this.selectedText) {
-            const val: ISelectValues[] = this.valores.filter((val: ISelectValues) => val.caption === this.selectText);
+            const val: ISelectValues[] = this.listValues.filter((val: ISelectValues) => val.caption === this.selectText);
             if (val) {
                 // console.log('Componente ' + this._name + ' (' + this.showThumbnails + ') : getImgSelect: val ─> ', val);
                 this.selectId = val[0].id;

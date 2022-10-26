@@ -33,10 +33,13 @@
 // @import "~@swimlane/ngx-datatable/themes/material.css";
 // @import "~@swimlane/ngx-datatable/assets/icons.css";
 
-html,
-body {
-   height: 100%;
+* {
+   box-sizing: border-box;
 }
+// html,
+// body {
+// height: 100%;
+// }
 body {
    margin: 0;
    font-family: Roboto, "Helvetica Neue", sans-serif;
@@ -78,11 +81,11 @@ body {
 
 // configuracion diálogos modales
 
-.create-asociation-modalbox,
 .browse-asociation-modalbox,
-.edit-asociation-modalbox,
-.create-user-modalbox,
 .browse-user-modalbox,
+.create-asociation-modalbox,
+.create-user-modalbox,
+.edit-asociation-modalbox,
 .edit-user-modalbox {
    display: flex;
    align-items: center;
@@ -109,17 +112,16 @@ body {
    }
 }
 
-.delete-user-modalbox,
-.delete-asociation-modalbox {
+.edit-article-modalbox,
+.browse-article-modalbox {
    display: flex;
    align-items: center;
-   justify-content: center;
+   max-width: 100% !important;
 
    mat-dialog-container.mat-dialog-container {
-      max-width: 550px;
-      border-radius: 30px;
-      padding-left: 0;
-      padding-right: 0;
+      // height: 75%;
+      // height: 90%;
+      width: 100%;
       padding: 0;
 
       background: #181818;
@@ -131,8 +133,14 @@ body {
       &::-webkit-scrollbar {
          display: none;
       }
+
+      & scrollbar {
+         display: none;
+      }
    }
 }
+
+.delete-article-modalbox,
 .delete-user-modalbox,
 .delete-asociation-modalbox {
    display: flex;
@@ -249,4 +257,9 @@ p.innerH figure img,
          font-weight: 400;
       }
    }
+}
+
+.ck-content {
+   background: #222222 !important;
+   color: #fff !important;
 }

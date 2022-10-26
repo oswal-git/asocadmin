@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { IBDAsociation, IIdAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
+import { IBDAsociation, ICreateAsociation, IIdAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 import { BdmysqlService } from './bdmysql.service';
 import { UsersService } from './users.service';
 
@@ -46,7 +46,9 @@ export class AsociationsService {
         return this._db.getListAsociations();
     }
 
-    async createAsociation() {}
+    createAsociation(data: ICreateAsociation) {
+        return this._db.createAsociation(data, this._usersService.getAuthHeaders());
+    }
 
     async insertProfile() {}
 

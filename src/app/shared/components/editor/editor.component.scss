@@ -1,18 +1,39 @@
-// :host ::ng-deep .ck-editor__editable_inline {
-//   min-height: 200px;
-//   max-width: 90vh;
-//   margin:  0 auto;
-// }
+:host ::ng-deep .ck-editor__editable_inline {
+   min-height: 200px;
+   // max-width: 90vh;
+   margin: 0 auto;
+   margin-bottom: 5px;
+}
+.container {
+   margin: 0;
 
-.contain-editor {
-  min-height: 200px;
-  max-width: 90vh;
-  margin:  0 auto;
+   .contain-editor {
+      // border: 3px solid rgb(153, 255, 165);
+      min-height: 200px;
+      // max-width: 90vh;
+      // margin: 0 auto;
+   }
 }
 
+// ::ng-deep .ck-content {
+// }
 
 p.innerH figure img,
 .ck-content .image-inline img,
 .ck-content .image-inline picture {
-  width: 100px !important;
+   width: 100px !important;
+}
+
+ckeditor .ck.ck-content {
+   background: #222222;
+   border-bottom-right-radius: 80px;
+   border-bottom-left-radius: 80px;
+}
+ckeditor .ck.ck-content.ck-rounded-corners {
+   border-bottom-right-radius: 80px;
+   border-bottom-left-radius: 80px;
+}
+
+::ng-deep .ck.ck-toolbar__items {
+   font-size: 10px;
 }

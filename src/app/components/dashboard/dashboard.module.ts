@@ -16,6 +16,15 @@ import { ListAsociationsComponent } from './asociations/list-asociations/list-as
 import { DeleteAsociationComponent } from './asociations/delete-asociation/delete-asociation.component';
 import { EditAsociationComponent } from './asociations/edit-asociation/edit-asociation.component';
 import { BrowseAsociationComponent } from './asociations/browse-asociation/browse-asociation.component';
+import { CreateAsociationComponent } from './asociations/create-asociation/create-asociation.component';
+import { ProfileAsociationComponent } from './asociations/profile-asociation/profile-asociation.component';
+import { NewArticleComponent } from './articles/new-article/new-article.component';
+import { PreviewArticleComponent } from './articles/preview-article/preview-article.component';
+import { ListArticlesComponent } from './articles/list-articles/list-articles.component';
+import { BrowseArticleComponent } from './articles/browse-article/browse-article.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
+import { EditArticleComponent } from './articles/edit-article/edit-article.component';
+import { DeleteArticleComponent } from './articles/delete-article/delete-article.component';
 
 @NgModule({
     declarations: [
@@ -31,8 +40,16 @@ import { BrowseAsociationComponent } from './asociations/browse-asociation/brows
         ListAsociationsComponent,
         DeleteAsociationComponent,
         EditAsociationComponent,
+        ProfileAsociationComponent,
         BrowseAsociationComponent,
+        CreateAsociationComponent,
+        NewArticleComponent,
+        PreviewArticleComponent,
+        ListArticlesComponent,
+        BrowseArticleComponent,
+        EditArticleComponent,
+        DeleteArticleComponent,
     ],
-    imports: [CommonModule, DashboardRoutingModule, ComponentsModule],
+    imports: [CommonModule, DashboardRoutingModule, ComponentsModule, FontAwesomeModule],
 })
 export class DashboardModule {}

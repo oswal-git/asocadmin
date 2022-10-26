@@ -96,6 +96,7 @@ $tam: 1.5rem;
    height: $tam;
    font-size: ($tam * 0.5);
 }
+
 .action-button {
    width: $tam;
    height: $tam;
@@ -145,25 +146,10 @@ $tam: 1.5rem;
 //    left: -13px;
 // }
 
-$widthActions: 85px;
-$widthColumns: 4;
-$dividers: 20;
-
-$fixWidth: calc(2 * #{$widthActions});
-$freeWidth: calc(calc(100% - #{$fixWidth}) + 0px);
-$portion: calc(#{$freeWidth} / #{$dividers});
-$portion7: calc(#{$portion} * 7);
-$portion4: calc(#{$portion} * 4);
-$portion2: calc(#{$portion} * 2);
-
-// .mat-column-phone_asociation {
-// width: (100% / $dividers * 3);
-// width: $portion2;
-// }
+$fixed-column: 110px;
 
 .mat-column-logo_asociation {
-   // width: calc($portion * 2);
-   width: $widthActions;
+   width: $fixed-column;
    padding: 0px;
    // text-align: center;
    // text-align: -webkit-center;
@@ -179,30 +165,25 @@ $portion2: calc(#{$portion} * 2);
 }
 
 .mat-column-actions {
-   // width: (100% / $dividers * 1);
-   width: $widthActions;
-   min-width: 85px;
+   width: $fixed-column;
+   min-width: 110px;
 }
 
 @media screen and (min-width: 1600px) {
    .mat-column-long_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 30%;
       padding-left: 1rem;
    }
 
    .mat-column-short_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 15%;
    }
 
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       width: 20%;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 25%;
    }
 }
@@ -212,21 +193,15 @@ $portion2: calc(#{$portion} * 2);
    }
 
    .mat-column-long_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
       padding-left: 1rem;
    }
 
-   // .mat-column-short_name_asociation {
-   // }
-
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       width: 20%;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
    }
 }
@@ -238,7 +213,6 @@ $portion2: calc(#{$portion} * 2);
    }
 
    .mat-column-long_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
       padding-left: 1rem;
    }
@@ -247,13 +221,11 @@ $portion2: calc(#{$portion} * 2);
    // }
 
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       // width: 20%;
       min-width: 120px;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
    }
 }
@@ -265,7 +237,6 @@ $portion2: calc(#{$portion} * 2);
    }
 
    .mat-column-short_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 20%;
       padding-left: 1rem;
    }
@@ -274,13 +245,11 @@ $portion2: calc(#{$portion} * 2);
    // }
 
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       // width: 20%;
       min-width: 200px;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
    }
 
@@ -303,7 +272,6 @@ $portion2: calc(#{$portion} * 2);
    }
 
    .mat-column-long_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
       padding-left: 1rem;
    }
@@ -312,13 +280,11 @@ $portion2: calc(#{$portion} * 2);
    // }
 
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       // width: 20%;
       min-width: 200px;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
    }
 }
@@ -331,7 +297,6 @@ $portion2: calc(#{$portion} * 2);
    }
 
    .mat-column-short_name_asociation {
-      // width: (100% / $dividers * 3);
       width: 20%;
       padding-left: 1rem;
    }
@@ -340,13 +305,11 @@ $portion2: calc(#{$portion} * 2);
    // }
 
    .mat-column-name_contact_asociation {
-      // width: (100% / $dividers * 3);
       // width: 20%;
       min-width: 200px;
    }
 
    .mat-column-email_asociation {
-      // width: (100% / $dividers * 3);
       width: 35%;
    }
 
@@ -374,15 +337,6 @@ $portion2: calc(#{$portion} * 2);
       width: 30%;
       padding-left: 1rem;
    }
-
-   // .mat-column-short_name_asociation {
-   // }
-
-   // .mat-column-name_contact_asociation {
-   //    // width: (100% / $dividers * 3);
-   //    // width: 20%;
-   //    min-width: 200px;
-   // }
 
    .mat-column-email_asociation {
       width: 60%;

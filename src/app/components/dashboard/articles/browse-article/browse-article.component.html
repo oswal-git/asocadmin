@@ -1,0 +1,75 @@
+<div #eglmain class="main">
+   <div class="content">
+      <h1 class="content__title">{{ article.title_article }}</h1>
+      <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+      <div class="content__article">
+         <div class="icons">
+            <fa-icon class="icon__back" name="back" (click)="close(null)" [icon]="faArrowRightFromBracket"></fa-icon>
+         </div>
+         <div class="article" [ngStyle]="{ 'padding-top': true ? '0' : '1rem' }">
+            <div class="article__container">
+               <div class="article__user">
+                  <div class="article__user-content">
+                     <div class="article__user-avatar">
+                        <img id="id" class="article__user-img" [src]="article.avatar_user" />
+                     </div>
+                     <div class="article__user-data">
+                        <div>
+                           Por <span class="article__user-name">{{ article.name_user }} {{ article.last_name_user }}</span>
+                        </div>
+                        <div class="article__user-profile">{{ userProfile.profile_user }}</div>
+                     </div>
+                  </div>
+               </div>
+               <div class="publication_date_article">Publicado el {{ article.publication_date_article | date: "dd 'de' MMMM 'de' yyyy" }}</div>
+
+               <div class="article__category">
+                  categoría:
+                  <span>
+                     <a href="#">{{ article.category_article }}</a
+                     >/<a href="#">{{ article.subcategory_article }}</a>
+                  </span>
+               </div>
+
+               <div class="article__image" *ngIf="article.cover_image_article.src">
+                  <img class="article__img" [src]="article.cover_image_article.src" />
+               </div>
+
+               <div class="abstract_article" *ngIf="article.abstract_article !== ''">
+                  <div class="abstract_article-text">{{ article.abstract_article }}</div>
+               </div>
+
+               <div class="article__group-item">
+                  <div class="article__item" *ngFor="let itemArticle of article.items_article; let item = index; first as isFirst">
+                     <div
+                        class="article__item-image"
+                        [ngClass]="item % 2 == 0 ? 'first' : 'second'"
+                        *ngIf="itemArticle.image_item_article.src"
+                        [ngStyle]="{ margin: itemArticle.text_item_article === '' ? 'auto' : '0' }"
+                     >
+                        <img class="article__item__img" [src]="itemArticle.image_item_article.src" />
+                     </div>
+
+                     <div class="article__item-text" [ngClass]="item % 2 == 0 ? 'second' : 'first'" *ngIf="itemArticle.text_item_article !== ''">
+                        <div class="article__item-html" [innerHTML]="itemArticle.text_item_article"></div>
+                     </div>
+                  </div>
+               </div>
+
+               <div class="field"></div>
+
+               <div class="effective_date_article">
+                  Fecha vigencia publicación
+                  <span *ngIf="article.expiration_date_article; else elseBlock">del</span>
+                  <ng-template #elseBlock> a partir del </ng-template>
+                  {{ article.effective_date_article | date: "dd 'de' MMMM 'de' yyyy" }}
+                  <ng-container *ngIf="article.expiration_date_article">
+                     al
+                     {{ article.expiration_date_article | date: "dd 'de' MMMM 'de' yyyy" }}
+                  </ng-container>
+               </div>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

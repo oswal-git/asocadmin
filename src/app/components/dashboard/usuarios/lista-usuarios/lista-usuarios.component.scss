@@ -157,6 +157,14 @@ $tam: 1.5rem;
 //   left: -13px;
 // }
 
+.mat-header-user_name_user.list-admin {
+   padding-left: 1rem;
+}
+
+.mat-column-user_name_user.list-admin {
+   padding-left: 1rem;
+}
+
 // columns without actions
 $widthColumns: 8;
 $dividers: 60;
@@ -201,8 +209,8 @@ $portion: calc(100vw - 85px) / $dividers;
 }
 .mat-column-actions {
    // width: (100% / $dividers * 1);
-   width: 85px;
-   min-width: 85px;
+   width: 110px;
+   min-width: 110px;
 }
 
 @media screen and (min-width: 1600px) {
@@ -267,6 +275,10 @@ $portion: calc(100vw - 85px) / $dividers;
    .mat-column-id_asociation_user,
    .mat-column-phone_user {
       display: none;
+   }
+
+   .mat-column-user_name_user {
+      padding-left: 1rem;
    }
 
    ::ng-deep.mat-paginator-page-size {

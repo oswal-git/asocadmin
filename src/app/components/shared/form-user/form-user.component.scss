@@ -141,6 +141,12 @@
 
                      .form__select {
                         border-bottom: 1px solid #d63031;
+
+                        &:disabled {
+                           background: rgb(34, 34, 34);
+                           color: #aaa;
+                           cursor: none;
+                        }
                      }
 
                      .form__field-error {

@@ -80,7 +80,7 @@ export class RegisterComponent implements OnInit {
             }
             this.router.navigate(['/dashboard']);
         } else {
-            this.router.navigate(['/login']);
+            this.router.navigate(['/dashboard']);
         }
     }
 }

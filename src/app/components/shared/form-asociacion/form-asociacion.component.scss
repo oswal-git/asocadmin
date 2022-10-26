@@ -78,7 +78,7 @@
 
                   .img_logo {
                      width: 90%;
-                     max-width: 120px;
+                     max-width: 150px;
                      margin: auto;
                   }
 
@@ -348,4 +348,12 @@
 ::ng-deep .success-snackbar {
    background: #1fcd98;
    white-space: pre-wrap;
+}
+
+.focus {
+   position: absolute;
+   top: 0;
+   left: -500px;
+   display: transparent;
+   z-index: -1000;
 }

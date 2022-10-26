@@ -1,2 +1,273 @@
-<h1>Artículo 1</h1>
-<app-form-item-article  [(ngModel)]="itemArticle"></app-form-item-article>
+<div #eglmain class="main">
+   <div class="content">
+      <div class="content__container">
+         <div class="title" [ngClass]="{ 'title-create': optionsDialog.id === 'create' }">
+            <h1 class="content__title" [innerHTML]="optionsDialog.title"></h1>
+            <div class="icons">
+               <div (click)="save()" class="icon__save">
+                  <fa-icon class="save" [icon]="faFloppyDisk"></fa-icon>
+                  <div class="tooltip save" data-text="Save article"></div>
+               </div>
+               <div (click)="previewClick()" class="icon__preview">
+                  <fa-icon class="preview" [icon]="faTv"></fa-icon>
+                  <div class="tooltip preview" data-text="Preview article"></div>
+               </div>
+               <div (click)="salirClick()" class="icon__delete">
+                  <fa-icon class="delete" [icon]="faRightFromBracket"></fa-icon>
+                  <div class="tooltip delete" data-text="Delete article"></div>
+               </div>
+            </div>
+         </div>
+         <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
+         <div class="content__article">
+            <div class="form__article" [ngStyle]="{ 'padding-top': optionsDialog.second_title ? '0' : '1rem' }">
+               <h2 class="form__article-title" *ngIf="optionsDialog.second_title">{{ optionsDialog.second_title }}</h2>
+               <form class="form__container grid" [formGroup]="form" (ngSubmit)="save()" autocomplete="off">
+                  <input autocomplete="false" name="hidden" type="text" style="display: none" />
+                  <div class="form__field-image">
+                     <label class="form__label" for="articleImg">Cover</label>
+                     <egl-img
+                        [id]="'articleImg'"
+                        class="img_article"
+                        [label]="''"
+                        formControlName="cover_image_article"
+                        [imagedefault]="articleUrlDefault"
+                        [readonly]="imgReadonly"
+                     ></egl-img>
+                  </div>
+                  <div class="form__group">
+                     <div class="form__field">
+                        <label class="form__label" for="title_article">Título</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                           <textarea
+                              type="text"
+                              class="form__input"
+                              formControlName="title_article"
+                              id="title_article"
+                              placeholder="Introduce el título del artículo"
+                              rows="1"
+                              #titlearticle
+                           ></textarea>
+                        </div>
+                        <div class="form__field-error" *ngIf="titleArticleField!.errors && titleArticleField!.touched">
+                           <p *ngIf="titleArticleField!.hasError('required')">Es un campo requerido</p>
+                           <p *ngIf="titleArticleField!.hasError('minlength')">
+                              Te has quedado corto, mínimo deben haber {{ titleArticleMinLength }} caracteres.
+                           </p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="abstract_article">Abstract</label>
+                        <div class="form__field-input">
+                           <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon>
+                           <textarea
+                              type="text"
+                              class="form__input"
+                              formControlName="abstract_article"
+                              id="abstract_article"
+                              tabindex="0"
+                              placeholder="Introduce el abstract del artículo"
+                              rows="1"
+                              #abstractarticle
+                           ></textarea>
+                        </div>
+                        <div class="form__field-error" *ngIf="abstractArticleField!.errors && abstractArticleField!.touched">
+                           <p *ngIf="abstractArticleField!.hasError('required')">Es un campo requerido</p>
+                           <p *ngIf="abstractArticleField!.hasError('minlength')">
+                              Te has quedado corto, mínimo deben haber {{ abstractArticleMinLength }} caracteres.
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="form__group-lateral">
+                     <div class="form__field">
+                        <label class="form__label" for="category_article">Categoría</label>
+                        <div class="form__field-select">
+                           <egl-select
+                              class="form__select"
+                              type="txt"
+                              id="category_article"
+                              formControlName="category_article"
+                              [valores]="categoryArticle"
+                              [label]="'Categoría'"
+                              placeHolder="Selecciona una categoría"
+                              [showthumbnails]="false"
+                              [isvalid]="categoryArticleIsValid"
+                              [isinvalid]="categoryArticleIsInvalid"
+                           >
+                           </egl-select>
+                        </div>
+                        <div class="form__field-error" *ngIf="categoryArticleField!.errors && categoryArticleField!.touched">
+                           <p *ngIf="categoryArticleField!.hasError('required')">Es un campo requerido</p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="subcategory_article">Subcategoría</label>
+                        <div class="form__field-select">
+                           <egl-select
+                              class="form__select"
+                              type="txt"
+                              id="subcategory_article"
+                              formControlName="subcategory_article"
+                              [valores]="subCategoryArticle"
+                              [label]="'Subcategoría'"
+                              placeHolder="Selecciona una categoría"
+                              [showthumbnails]="false"
+                              [isvalid]="subCategoryArticleIsValid"
+                              [isinvalid]="subCategoryArticleIsInvalid"
+                           >
+                           </egl-select>
+                        </div>
+                        <div class="form__field-error" *ngIf="subCategoryArticleField!.errors && subCategoryArticleField!.touched">
+                           <p *ngIf="subCategoryArticleField!.hasError('required')">Es un campo requerido</p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="state_article">Estado del artículo</label>
+                        <div class="form__field-select">
+                           <egl-select
+                              class="form__select"
+                              type="txt"
+                              id="state_article"
+                              formControlName="state_article"
+                              [valores]="stateArticle"
+                              [label]="'Estado'"
+                              placeHolder="Selecciona un estado"
+                              [showthumbnails]="false"
+                              [isvalid]="stateArticleIsValid"
+                              [isinvalid]="stateArticleIsInvalid"
+                           >
+                           </egl-select>
+                        </div>
+                        <div class="form__field-error" *ngIf="stateArticleField!.errors && stateArticleField!.touched">
+                           <p *ngIf="stateArticleField!.hasError('required')">Es un campo requerido</p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="publication_date_article">Fecha de publicación</label>
+                        <div class="form__field-input">
+                           <!-- <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon> -->
+                           <input
+                              #datepicker
+                              id="publication_date_article"
+                              type="date"
+                              class="form__input-date"
+                              formControlName="publication_date_article"
+                              placeholder="Introduce la fecha de publicación del artículo"
+                              [min]="minPublicatonDateArticle"
+                              [max]="maxPublicatonDateArticle"
+                           />
+                        </div>
+                        <div class="form__field-error" *ngIf="publicatonDateField!.errors && publicatonDateField!.touched">
+                           <p *ngIf="publicatonDateField!.hasError('required')">Es un campo requerido</p>
+                           <p *ngIf="publicatonDateField!.hasError('minlength')">
+                              Te has quedado corto, mínimo deben haber {{ titleArticleMinLength }} caracteres.
+                           </p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="effective_date_article">Fecha de vigencia publicación</label>
+                        <div class="form__field-input">
+                           <!-- <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon> -->
+                           <input
+                              id="effective_date_article"
+                              type="date"
+                              class="form__input-date"
+                              formControlName="effective_date_article"
+                              placeholder="Introduce la fecha e publicación del artículo"
+                              [min]="minEffectiveDateArticle"
+                              [max]="maxEffectiveDateArticle"
+                           />
+                        </div>
+                        <div class="form__field-error" *ngIf="effectiveDateField!.errors && effectiveDateField!.touched">
+                           <p *ngIf="effectiveDateField!.hasError('required')">Es un campo requerido</p>
+                           <p *ngIf="effectiveDateField!.hasError('minlength')">
+                              Te has quedado corto, mínimo deben haber {{ titleArticleMinLength }} caracteres.
+                           </p>
+                        </div>
+                     </div>
+                     <div class="form__field">
+                        <label class="form__label" for="expiration_date_article">Fecha de expiración publicación</label>
+                        <div class="form__field-input">
+                           <!-- <fa-icon class="form__input-icon" [icon]="faKeyboard"></fa-icon> -->
+                           <input
+                              id="expiration_date_article"
+                              type="date"
+                              class="form__input-date"
+                              formControlName="expiration_date_article"
+                              placeholder="Introduce la fecha e expiración del artículo"
+                              [min]="minExpirationDateArticle"
+                              [max]="maxExpirationDateArticle"
+                           />
+                        </div>
+                        <div class="form__field-error" *ngIf="expirationDateField!.errors && expirationDateField!.touched">
+                           <p *ngIf="expirationDateField!.hasError('required')">Es un campo requerido</p>
+                           <p *ngIf="expirationDateField!.hasError('minlength')">
+                              Te has quedado corto, mínimo deben haber {{ titleArticleMinLength }} caracteres.
+                           </p>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="form__group-item">
+                     <div class="form__button" *ngIf="itemsArticleField.controls.length === 0">
+                        <button type="button" class="form__btn" (click)="addItemArticle(0)">Agregar secciones</button>
+                     </div>
+                     <div
+                        class="form__item"
+                        formArrayName="items_article"
+                        *ngFor="let itemArticle of itemsArticleField.controls; let item = index; first as isFirst"
+                     >
+                        <div class="item-buttons">
+                           <div class="item-up" (click)="moveItemArticle(-1, item)" *ngIf="item > 0">
+                              <div class="item-up--span-icon">
+                                 <fa-icon style="color: #fff" class="item-up--fa-icon" [icon]="faCircleUp"></fa-icon>
+                              </div>
+                              <div class="tooltip" data-text="Mover sección hacia arriba"></div>
+                           </div>
+                           <div class="item-down" (click)="moveItemArticle(1, item)" *ngIf="item < itemsArticleField.controls.length - 1">
+                              <div class="item-down--span-icon">
+                                 <fa-icon style="color: #fff" class="item-down--fa-icon" [icon]="faCircleDown"></fa-icon>
+                              </div>
+                              <div class="tooltip" data-text="Mover sección hacia abajo"></div>
+                           </div>
+                           <div class="item-add" (click)="addItemArticle(item)">
+                              <div class="item-add--span-icon">
+                                 <fa-icon style="color: #fff" class="item-add--fa-icon" [icon]="faCirclePlus"></fa-icon>
+                              </div>
+                              <div class="tooltip" data-text="Añadir sección abajo"></div>
+                           </div>
+                           <div class="item-erase" (click)="deleteItemArticle(item)">
+                              <div class="item-erase--span-icon">
+                                 <fa-icon style="color: #fff" class="item-erase--fa-icon" [icon]="faCircleXmark"></fa-icon>
+                              </div>
+                              <div class="tooltip" data-text="Eliminar sección"></div>
+                           </div>
+                        </div>
+                        <!-- <div class="form__button">
+                           <button type="button" class="form__btn" (click)="deleteItemArticle(item)">Eliminar ítem</button>
+                        </div> -->
+                        <div class="form__field-item">
+                           <app-form-item-article *ngIf="!loading" [formControlName]="item" [item]="item"></app-form-item-article>
+                        </div>
+                     </div>
+                  </div>
+                  <!-- <div class="form__group-button">
+                     <div class="form__button-area">
+                        <div class="form__button">
+                           <button class="form__btn">Guardar</button>
+                        </div>
+                        <div class="form__button">
+                           <button type="button" class="form__btn" (click)="previewClick()">Preview</button>
+                        </div>
+                        <div class="form__button">
+                           <button type="button" class="form__btn" (click)="salirClick()">Salir</button>
+                        </div>
+                     </div>
+                  </div> -->
+               </form>
+            </div>
+         </div>
+      </div>
+   </div>
+</div>

@@ -10,10 +10,10 @@
       </p>
       <egl-svg-select [icon]="icon" id="arrowIcon" [ngClass]="{ rotate: !expandValues }" *ngIf="!isDisabled"> </egl-svg-select>
    </div>
-   <div class="options-list" [ngClass]="{ hide: !expandValues }" *ngIf="valores">
+   <div class="options-list" [ngClass]="{ hide: !expandValues }" *ngIf="listValues">
       <ul id="list">
          <li
-            *ngFor="let valor of valores; index as i; first as isFirst"
+            *ngFor="let valor of listValues; index as i; first as isFirst"
             (click)="optionsClick(valor)"
             [ngClass]="{ images: !showThumbnails || !valor.url, options: true, txtselect: valor.caption == selectText }"
          >

@@ -22,6 +22,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
     isLogin: boolean = false;
     avatar = '';
     sadmin = false;
+    admin = false;
 
     sizes: IScreenSize[] = screenSizes;
     size: IScreenSize = this.sizes[this.sizes.length - 1];
@@ -42,17 +43,19 @@ export class NavbarComponent implements OnInit, OnDestroy {
     ) {
         this.menu = menuData;
         this.sadmin = false;
-        console.log('Componente ' + this._name + ': constructor: this.userProfileOSubscription ─> ', this.userProfileOSubscription);
-        console.log('Componente ' + this._name + ': constructor: !this.userProfileOSubscription ─> ', !this.userProfileOSubscription);
+        // console.log('Componente ' + this._name + ': constructor: this.userProfileOSubscription ─> ', this.userProfileOSubscription);
+        // console.log('Componente ' + this._name + ': constructor: !this.userProfileOSubscription ─> ', !this.userProfileOSubscription);
         if (!this.userProfileOSubscription) {
-            console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
             this.userProfileOSubscription = this._usersService.userProfileO$.subscribe({
                 next: (user: IUserConnected) => {
-                    console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
                     this.isLogin = user.token_user !== '' ? true : false;
                     this.avatar = user.avatar_user === '' ? environment.urlApi + '/assets/images/user.png' : user.avatar_user;
                     if (user.profile_user === 'superadmin') {
                         this.sadmin = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.admin = true;
                     }
                 },
                 error: (err: any) => {
@@ -95,7 +98,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     getMediaScren(): IScreenSize {
         if (this.size !== this.last_size) {
-            console.log('Componente ' + this._name + ': getMediaScren: this.size ─> ', this.size);
+            // console.log('Componente ' + this._name + ': getMediaScren: this.size ─> ', this.size);
             this.last_size = this.size;
         }
         return this.size;
@@ -103,6 +106,10 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     login() {
         this.router.navigateByUrl('/login');
+    }
+
+    register() {
+        this.router.navigateByUrl('/register');
     }
 
     change() {
@@ -115,10 +122,11 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     logout() {
         this._usersService.logout().subscribe({
-            next: (resp: any) => {
-                console.log('Componente ' + this._name + ': logout: ─> resp', resp);
-                const userProfileOk = this._usersService.resetStoredProfile();
-                console.log('Componente ' + this._name + ': logout: ─> userProfileOk', userProfileOk);
+            next: (_resp: any) => {
+                // console.log('Componente ' + this._name + ': logout: ─> resp', resp);
+                // const userProfileOk = this._usersService.resetStoredProfile();
+                this._usersService.resetStoredProfile();
+                // console.log('Componente ' + this._name + ': logout: ─> userProfileOk', userProfileOk);
                 this.msg('Desconection successfull. Come back soon!!');
 
                 // this.isLogin = this._usersService.userProfile.profile_user ? true : false;
@@ -129,11 +137,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 this.avatar = environment.urlApi + '/assets/images/user.png';
                 this.isLogin = false;
                 this.sadmin = false;
-                console.log('Componente ' + this._name + ': logout: this.sadmin ─> ', this.sadmin);
-                console.log('Componente ' + this._name + ': logout: this.isLogin ─> ', this.isLogin);
-                console.log('Componente ' + this._name + ': logout: this.avatar ─> ', this.avatar);
+                // console.log('Componente ' + this._name + ': logout: this.sadmin ─> ', this.sadmin);
+                // console.log('Componente ' + this._name + ': logout: this.isLogin ─> ', this.isLogin);
+                // console.log('Componente ' + this._name + ': logout: this.avatar ─> ', this.avatar);
 
-                this.router.navigateByUrl('/dashboard');
+                // this.router.navigateByUrl('/dashboard');
+                this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate(['/dashboard']));
             },
             error: (err: any) => {
                 const userProfileErr = this._usersService.resetStoredProfile();
@@ -148,6 +157,18 @@ export class NavbarComponent implements OnInit, OnDestroy {
             },
         });
     }
+
+    eval = (cond: string) => {
+        if (this.sadmin && cond.includes('super')) {
+            return true;
+        } else if (this.admin && cond.includes('admin')) {
+            return true;
+        } else if (cond.includes('all')) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 
     msg(msg: string) {
         this._snackBar.open(msg, '', {

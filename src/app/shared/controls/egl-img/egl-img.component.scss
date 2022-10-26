@@ -22,6 +22,7 @@ $radius2: 2rem;
 
    .component {
       position: relative;
+      padding: 20px;
 
       .component--container {
          // border: 2px solid #333;
@@ -88,7 +89,7 @@ $radius2: 2rem;
                position: relative;
                box-shadow: rgb(38, 57, 77) 0px 10px 10px -10px;
                width: 100%;
-               padding: 2px;
+               // padding: 2px;
                border-radius: $radius;
                display: flex;
                justify-content: center;
@@ -144,7 +145,7 @@ $radius2: 2rem;
                .component--img-icons {
                   position: absolute;
                   top: -0.8rem;
-                  right: -1.1rem;
+                  right: -10px;
                   z-index: 1000;
 
                   .component--img-folder {
@@ -161,6 +162,10 @@ $radius2: 2rem;
                            color: #b5ddf1;
                            // background: #06465a;
                         }
+                     }
+
+                     .no-display {
+                        display: none;
                      }
                   }
 
@@ -240,5 +245,49 @@ $radius2: 2rem;
          rgba(16, 24, 15, 0.31836484593837533) 60%,
          rgba(116, 210, 230, 0.27354691876750703) 100%
       );
+   }
+}
+
+.component--img-restore,
+.component--img-erase,
+.component--img-folder {
+   position: relative;
+
+   &:hover .tooltip:before {
+      opacity: 1;
+   }
+}
+
+.tooltip {
+   // position: relative; /* making the .tooltip span a container for the tooltip text */
+   // border-bottom: 1px dashed #000; /* little indicater to indicate it's hoverable */
+   display: flex;
+   align-items: center;
+
+   &:before {
+      content: attr(data-text); /* here's the magic */
+      position: absolute;
+
+      /* vertically center */
+      top: -15px;
+      transform: translateY(100%);
+
+      /* move to right */
+      right: 25px;
+      // margin-left: 15px; /* and add a small left margin */
+      /* basic styles */
+      width: max-content;
+      padding: 0 10px;
+      border-radius: 20px;
+      background: #cacfb2;
+      color: #01031a;
+      text-align: center;
+      font-size: 12px;
+
+      // display: none; /* hide by default */
+      opacity: 0;
+      transition: all 500ms ease-in-out;
+
+      z-index: 9999;
    }
 }

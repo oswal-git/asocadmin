@@ -9,35 +9,35 @@ import { BdmysqlService } from './bdmysql.service';
     providedIn: 'root',
 })
 export class UsersService {
-    private _name = 'UsersService';
+    // private _name = 'UsersService';
 
     private _userprofile: IUserConnected = {
-        id_user: 0,
-        id_asociation_user: 0,
-        user_name_user: '',
-        email_user: '',
-        recover_password_user: 0,
-        token_user: '',
-        token_exp_user: '',
-        profile_user: '',
-        status_user: '',
-        name_user: '',
-        last_name_user: '',
         avatar_user: '',
-        phone_user: '',
-        date_deleted_user: '',
         date_created_user: '',
+        date_deleted_user: '',
         date_updated_user: '',
+        email_user: '',
         id_asoc_admin: 0,
+        id_asociation_user: 0,
+        id_user: 0,
+        last_name_user: '',
         long_name_asoc: '',
+        name_user: '',
+        phone_user: '',
+        profile_user: '',
+        recover_password_user: 0,
         short_name_asoc: '',
+        status_user: '',
+        token_exp_user: '',
+        token_user: '',
+        user_name_user: '',
     };
 
     private _userProfileO: IUserConnected = this._userprofile;
     // private sharedUserPerfilObservable: BehaviorSubject<IUserConnected> = new BehaviorSubject<IUserConnected>(this._userProfileO);
 
     get userProfileO$(): Observable<IUserConnected> {
-        console.log('Componente ' + this._name + ': userProfileO: this._userProfileO ─> ', this._userProfileO);
+        // console.log('Componente ' + this._name + ': userProfileO: this._userProfileO ─> ', this._userProfileO);
         // return this.sharedUserPerfilObservable.asObservable().pipe(distinctUntilChanged());
         return this.userProfileSubject.asObservable();
     }
@@ -54,13 +54,13 @@ export class UsersService {
     // }
 
     get userProfile(): IUserConnected {
-        console.log('Componente ' + this._name + ': userProfile: this._userprofile ─> ', this._userprofile);
+        // console.log('Componente ' + this._name + ': userProfile: this._userprofile ─> ', this._userprofile);
         this.userProfileSubject.next(this._userprofile);
         return this._userprofile;
     }
 
     set userProfileData(data: IUserConnected) {
-        console.log('Componente ' + this._name + ': userProfileData: data ─> ', data);
+        // console.log('Componente ' + this._name + ': userProfileData: data ─> ', data);
         this._userprofile = data;
         this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(data);
@@ -68,7 +68,7 @@ export class UsersService {
     }
 
     set userProfileAvatar(avatar: string) {
-        console.log('Componente ' + this._name + ': userProfileAvatar: avatar ─> ', avatar);
+        // console.log('Componente ' + this._name + ': userProfileAvatar: avatar ─> ', avatar);
         this._userprofile.avatar_user = avatar;
         this._userProfileO.avatar_user = avatar;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
@@ -247,27 +247,42 @@ export class UsersService {
         // console.log('Componente ' + this._name + ': actualizeProfile: user  ─> ', user);
         // console.log('Componente ' + this._name + ': actualizeProfile: asoc  ─> ', asoc);
 
-        this._userprofile.id_user = user.id_user;
-        this._userprofile.id_asociation_user = user.id_asociation_user;
-        this._userprofile.user_name_user = user.user_name_user;
-        this._userprofile.email_user = user.email_user;
-        this._userprofile.recover_password_user = user.recover_password_user;
-        this._userprofile.token_user = user.token_user;
-        this._userprofile.token_exp_user = user.token_exp_user;
-        this._userprofile.profile_user = user.profile_user;
-        this._userprofile.status_user = user.status_user;
-        this._userprofile.name_user = user.name_user;
-        this._userprofile.last_name_user = user.last_name_user;
         this._userprofile.avatar_user = user.avatar_user;
-        this._userprofile.phone_user = user.phone_user;
-        this._userprofile.date_deleted_user = user.date_deleted_user;
         this._userprofile.date_created_user = user.date_created_user;
+        this._userprofile.date_deleted_user = user.date_deleted_user;
         this._userprofile.date_updated_user = user.date_updated_user;
+        this._userprofile.email_user = user.email_user;
+        this._userprofile.id_asociation_user = user.id_asociation_user;
+        this._userprofile.id_user = user.id_user;
+        this._userprofile.last_name_user = user.last_name_user;
+        this._userprofile.name_user = user.name_user;
+        this._userprofile.phone_user = user.phone_user;
+        this._userprofile.profile_user = user.profile_user;
+        this._userprofile.recover_password_user = user.recover_password_user;
+        this._userprofile.status_user = user.status_user;
+        this._userprofile.token_exp_user = user.token_exp_user;
+        this._userprofile.token_user = user.token_user;
+        this._userprofile.user_name_user = user.user_name_user;
 
         this._userprofile.id_asoc_admin = user.profile_user === 'admin' ? user.id_asociation_user : 0;
 
         this._userprofile.long_name_asoc = user.long_name_asociation;
         this._userprofile.short_name_asoc = user.short_name_asociation;
+
+        localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
+
+        this._userProfileO = this._userprofile;
+        // this.sharedUserPerfilObservable.next(this._userProfileO);
+        this.userProfileSubject.next(this._userprofile);
+
+        return this._userprofile;
+    }
+
+    modifyDataAsociationStoreProfile(asoc: IBDAsociation) {
+        // console.log('Componente ' + this._name + ': actualizeProfile: asoc  ─> ', asoc);
+
+        this._userprofile.long_name_asoc = asoc.long_name_asociation;
+        this._userprofile.short_name_asoc = asoc.short_name_asociation;
 
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
 

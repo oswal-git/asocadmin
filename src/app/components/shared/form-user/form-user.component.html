@@ -11,7 +11,7 @@
                <div class="form__field-image" *ngIf="!registerForm">
                   <label class="form__label" for="avartarImg">Avatar</label>
                   <egl-img
-                     id="avartarImg"
+                     [id]="'avartarImg'"
                      class="img_avatar"
                      [label]="''"
                      [imagedefault]="avatarUrlDefault"
@@ -21,7 +21,7 @@
                   ></egl-img>
                </div>
                <div class="form__group">
-                  <div class="form__field">
+                  <div class="form__field" *ngIf="!isSuper">
                      <label class="form__label" for="id_asociation_user">Asociación</label>
                      <div class="form__field-select">
                         <egl-select
@@ -29,7 +29,6 @@
                            type="id"
                            id="id_asociation_user"
                            formControlName="id_asociation_user"
-                           [disabled]="!isSuper || browseForm || (isSuper && profileForm) || (isAdmin && profileForm)"
                            [valores]="asociations"
                            [label]="'Asociación'"
                            placeHolder="Selecciona una asociación"
@@ -106,7 +105,14 @@
                      <label class="form__label" for="password_user">Password</label>
                      <div class="form__field-input">
                         <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
-                        <input type="password" class="form__input" formControlName="password_user" id="password_user" placeholder="Password" />
+                        <input
+                           type="password"
+                           class="form__input"
+                           formControlName="password_user"
+                           id="password_user"
+                           placeholder="Password"
+                           autocomplete="new-password"
+                        />
                      </div>
                      <div class="form__field-error" *ngIf="passwordField!.errors && passwordField!.touched">
                         <p *ngIf="passwordField!.hasError('required')">Es un campo requerido</p>
@@ -141,7 +147,6 @@
                            formControlName="profile_user"
                            [valores]="profiles"
                            [label]="'Perfil'"
-                           [disabled]="browseForm || profileForm"
                            placeHolder="Selecciona un perfil"
                            [imgctrl]="profileImgCtrl"
                            [showthumbnails]="false"
@@ -163,7 +168,6 @@
                            formControlName="status_user"
                            [valores]="status"
                            [label]="'Estado'"
-                           [disabled]="browseForm || profileForm"
                            placeHolder="Selecciona un estado"
                            [imgctrl]="statusImgCtrl"
                            [showthumbnails]="true"
@@ -198,15 +202,15 @@
 
                <div
                   [ngClass]="{
-                     'form__group-button': !browseForm,
-                     'form__group-button_single': browseForm
+                     'form__group-button': !browseForm || profileForm,
+                     'form__group-button_single': browseForm || profileForm
                   }"
                >
                   <div class="form__button" *ngIf="!browseForm">
                      <button type="submit" class="form__btn">{{ optionsDialog.button }}</button>
                   </div>
                   <div class="form__button">
-                     <button type="button" (click)="exitForm(null)" class="form__btn cancel">Salir</button>
+                     <button type="button" (click)="exitForm(null)" class="form__btn cancel" *ngIf="!profileForm">Salir</button>
                   </div>
                </div>
                <div class="form__link" *ngIf="registerForm"><a [routerLink]="['/login']">Ya estás registrado? Accede aquí</a></div>

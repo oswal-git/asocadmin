@@ -8,7 +8,9 @@ export interface IEglImagen {
     nameFile: string;
     filePath: string;
     fileImage: any;
-    isSelectedFile: boolean;
+    isSelectedFile: boolean; // if image has changed
+    isDefault: boolean; // if is default image
+    isChange: boolean; // if image has not changed
 }
 
 @Component({
@@ -24,13 +26,13 @@ export interface IEglImagen {
     ],
 })
 export class EglImgComponent implements OnInit, ControlValueAccessor {
-    // private _name = 'EglImgComponent';
-
+    private _name = 'EglImgComponent';
     value!: string;
     onChangefn = (_: any) => {};
     onTouchfn = () => {};
     isDisabled!: boolean;
 
+    @Input('id') id: string = 'input-image';
     @Input() label!: string;
     @Input('readonly') readOnly: boolean = false;
     @Input('imagedefault') imgDefaultSrc: string = '';
@@ -54,15 +56,24 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
 
     canRestoreImage: boolean = false;
 
+    today!: Date;
+    time = '';
+
     constructor(
         // private sanitizer: DomSanitizer,
         private spinnerService: NgxSpinnerService
-    ) {}
+    ) {
+        // const start = Date.now();
+        // this.today = new Date();
+        // this.time = this.today.getHours() + ':' + this.today.getMinutes() + ':' + this.today.getSeconds() + '_' + start;
+        // this._name = 'EglImgComponent' + '-' + this.time;
+        // console.log('Componente ' + this._name + ': constructor ─> ');
+    }
 
     ngOnInit(): void {}
 
     clickFile(_event: any) {
-        // console.log('Componente ' + this._name + ': clickFile:  ─> ');
+        console.log('Componente ' + this._name + ': clickFile:  ─> ');
     }
 
     async selectFile(event: any) {
@@ -96,14 +107,19 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
             // this.isImgDefault = false;
             this.canRestoreImage = true;
 
-            this.onTouchfn();
-            this.onChangefn({
+            const img = {
                 src: this.src,
                 nameFile: this.nameFile,
                 fileImage: this.fileImage,
                 isSelectedFile: this.isSelectedFile,
                 filePath: '',
-            });
+                isDefault: false,
+                isChange: true,
+            };
+            // console.log('Componente ' + this._name + ': selectFile: img ─> ', img);
+
+            this.onTouchfn();
+            this.onChangefn(img);
             this.spinnerService.hide();
         } else {
             // console.log('Componente ' + this._name + ': selectFile extractBase64: error ─> ', image.status);
@@ -122,14 +138,19 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
         this.filePath = '';
         this.canRestoreImage = true;
 
-        this.onTouchfn();
-        this.onChangefn({
+        const img = {
             src: this.src,
             nameFile: this.nameFile,
-            filePath: '',
             fileImage: this.fileImage,
             isSelectedFile: this.isSelectedFile,
-        });
+            filePath: '',
+            isDefault: true,
+            isChange: this.imgDefaultSrc !== this.fileBefore.src,
+        };
+        // console.log('Componente ' + this._name + ': defaultImage: img ─> ', img);
+
+        this.onTouchfn();
+        this.onChangefn(img);
     }
 
     restoreImage() {
@@ -143,14 +164,19 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
         this.nameFile = this.fileBefore.nameFile;
         this.canRestoreImage = false;
 
-        // console.log('Componente ' + this._name + ': restoreImage: src ─> ', this.src);
-        this.onTouchfn();
-        this.onChangefn({
+        const img = {
             src: this.src,
             nameFile: this.nameFile,
             fileImage: this.fileImage,
             isSelectedFile: this.isSelectedFile,
-        });
+            filePath: '',
+            isDefault: this.imgDefaultSrc === this.fileBefore.src,
+            isChange: false,
+        };
+        // console.log('Componente ' + this._name + ': restoreImage: img ─> ', img);
+
+        this.onTouchfn();
+        this.onChangefn(img);
     }
 
     // Metodes Interface ControlValueAccessor ->
@@ -183,7 +209,7 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
     extractBase64 = async ($event: any) =>
         new Promise((resolve, reject) => {
             try {
-                // console.log('Componente ' + this._name + ': extractBase64: $event ─> ', $event);
+                console.log('Componente ' + this._name + ': extractBase64: $event ─> ', $event);
 
                 const reader = new FileReader();
                 // let srcEncoded: any = null;
@@ -191,28 +217,28 @@ export class EglImgComponent implements OnInit, ControlValueAccessor {
                 reader.onload = (_event) => {
                     const imageElement: any = document.createElement('img');
                     imageElement.src = reader.result;
-                    // console.log('Componente ' + this._name + ': extractBase64: imageElement.src ─> ', imageElement.src);
+                    console.log('Componente ' + this._name + ': extractBase64: imageElement.src ─> ', imageElement.src);
                     imageElement.onload = (e: any) => {
                         const canvas = document.createElement('canvas');
                         const MAX_WIDTH = 600;
-                        // const MAX_HEIGTH = 112.5;
+                        const MAX_HEIGTH = 500;
 
                         // console.log('Componente ' + this._name + ': extractBase64: imageElement.onload e ─> ', e);
                         // console.log('Componente ' + this._name + ': extractBase64: imageElement.onload e.target ─> ', e.target);
                         // console.log('Componente ' + this._name + ': extractBase64: imageElement.onload e.target.width ─> ', e.target.width);
                         // console.log('Componente ' + this._name + ': extractBase64: imageElement.onload e.target.height ─> ', e.target.height);
-                        // if (e.target.width >= e.target.height) {
-                        this.fileWidth = e.target.width;
-                        this.fileHeight = e.target.height;
+                        if (e.target.width >= e.target.height) {
+                            this.fileWidth = e.target.width;
+                            this.fileHeight = e.target.height;
 
-                        const scaleSize = MAX_WIDTH / e.target.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = e.target.height * scaleSize;
-                        // } else {
-                        //     const scaleSize = MAX_HEIGTH / e.target.height;
-                        //     canvas.width = e.target.width * scaleSize;
-                        //     canvas.height = MAX_HEIGTH;
-                        // }
+                            const scaleSize = MAX_WIDTH / e.target.width;
+                            canvas.width = MAX_WIDTH;
+                            canvas.height = e.target.height * scaleSize;
+                        } else {
+                            const scaleSize = MAX_HEIGTH / e.target.height;
+                            canvas.width = e.target.width * scaleSize;
+                            canvas.height = MAX_HEIGTH;
+                        }
 
                         const ctx: any = canvas.getContext('2d');
 

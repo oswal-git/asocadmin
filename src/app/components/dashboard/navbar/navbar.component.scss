@@ -8,6 +8,11 @@
    right: 0;
 }
 
+.mat-toolbar-row,
+.mat-toolbar-single-row {
+   height: 56px;
+}
+
 .navbar-menu {
    display: flex;
 }
@@ -62,6 +67,6 @@ h1.navbar-app-name {
    border-radius: 50%;
    width: 40px;
    height: 40px;
-   margin-right: 20px;
+   // margin-right: 20px;
    cursor: pointer;
 }

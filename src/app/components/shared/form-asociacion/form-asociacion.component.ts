@@ -1,12 +1,11 @@
 import { HttpEventType } from '@angular/common/http';
-import { Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, DoCheck, ElementRef, EventEmitter, Input, OnChanges, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
-import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
+import { IBDAsociation, ICreateAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog, IReplay, IResponseActionsUsers } from '@app/interfaces/ui/dialogs.interface';
 import { AsociationsService } from '@app/services/bd/asociations.service';
-// import { BdmysqlService } from '@app/services/bd/bdmysql.service';
 import { UsersService } from '@app/services/bd/users.service';
 import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
@@ -18,47 +17,54 @@ import { ToastrService } from 'ngx-toastr';
     templateUrl: './form-asociacion.component.html',
     styleUrls: ['./form-asociacion.component.scss'],
 })
-export class FormAsociacionComponent implements OnInit, OnChanges {
+export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
     private _name = 'FormAsociacionComponent';
     private userProfile!: IUserConnected;
 
     @Input('options') optionsDialog!: IOptionsDialog;
     @Output() salir = new EventEmitter<IResponseActionsUsers>();
 
-    @ViewChild('eglphone') eglPhone!: ElementRef;
+    @ViewChild('eglmain') eglMain!: ElementRef;
 
     loading = false;
     form!: UntypedFormGroup;
     createForm = false;
+    profileForm = false;
     browseForm = true;
     editForm = false;
     asocResp: IResponseActionsUsers = { action: '', data: '', replay: { status: '', message: '' } };
 
     // logo
-    logoUrlDefault = environment.urlApi + '/assets/images/images.jpg';
-    logoScrDefault = environment.urlApi + '/assets/images/images.jpg';
+    logoSrcDefault = environment.urlApi + '/assets/images/asociation_default.png';
+    logoUrlDefault = environment.urlApi + '/assets/images/asociation_default.png';
+
+    src = this.logoSrcDefault;
     logoImg: IEglImagen = {
-        src: this.logoScrDefault,
+        src: this.src,
         nameFile: '',
         filePath: '',
         fileImage: null,
         isSelectedFile: false,
+        isDefault: this.logoSrcDefault === this.src,
+        isChange: false,
     };
     isLogoUrlDefault = true;
+    imgReadonly = false;
 
     oldRecord: IBDAsociation = {
         id_asociation: 0,
         long_name_asociation: '',
         short_name_asociation: '',
-        logo_asociation: '',
+        logo_asociation: this.logoUrlDefault,
         email_asociation: '',
         name_contact_asociation: '',
         phone_asociation: '',
         date_deleted_asociation: '',
-        date_created_asociation: this.logoUrlDefault,
+        date_created_asociation: '',
         date_updated_asociation: '',
     };
 
+    checkOpts = true;
     isSuper = false;
     isAdmin = false;
 
@@ -94,82 +100,197 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
         this.isAdmin = _usersService.userProfile.id_asoc_admin === 0 ? false : true;
     }
 
-    ngOnInit(): void {}
-
-    ngAfterViewInit() {
-        console.log('Componente ' + this._name + ': ngAfterViewInit: this.eglPhone.nativeElement ─> ', this.eglPhone.nativeElement);
-        this.eglPhone.nativeElement.focus();
-    }
-
-    ngOnChanges(): void {
-        console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog in ─> ', this.optionsDialog);
-        console.log('Componente ' + this._name + ': ngOnChanges: this.oldRecord in ─> ', this.oldRecord);
-
-        if (this.optionsDialog) {
-            this.asocResp.action = this.optionsDialog.id;
-            if (this.optionsDialog.id !== 'create') {
-                this.oldRecord = this.optionsDialog.record;
-                this.oldRecord.logo_asociation =
-                    this.optionsDialog.record.logo_asociation !== '' ? this.optionsDialog.record.logo_asociation : this.logoScrDefault;
-                console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog in ─> ', this.optionsDialog);
-                console.log('Componente ' + this._name + ': ngOnChanges: this.oldRecord in ─> ', this.oldRecord);
+    ngOnInit(): void {
+        (async () => {
+            // console.log('Componente ' + this._name + ': ngOnInit:  ─> ');
+            console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog  ─>', this.optionsDialog);
+            if (this.optionsDialog.id === 'profile') {
+                this.checkOpts = false;
+                this.asocResp.action = this.optionsDialog.id;
+                console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog.id   ─>', this.optionsDialog.id);
+                await this.getAsocUserConnected();
+                // console.log('Componente ' + this._name + ': ngOnInit: this.oldRecord ─> ', this.oldRecord);
+                if (this.oldRecord.logo_asociation === '') {
+                    // this.avatarUrl = this.avatarUrlDefault;
+                    this.oldRecord.logo_asociation = this.logoUrlDefault;
+                }
                 this.logoImg = {
                     src: this.oldRecord.logo_asociation,
                     nameFile: this.oldRecord.logo_asociation.split(/[\\/]/).pop() || '',
                     filePath: '',
                     fileImage: null,
                     isSelectedFile: false,
+                    isDefault: this.logoSrcDefault === this.oldRecord.logo_asociation,
+                    isChange: false,
                 };
+
+                this.asocResp.data = this.oldRecord;
+                console.log('Componente ' + this._name + ': ngOnInit: this.asocResp ─> ', this.asocResp);
+                this.browseForm = false;
+                this.profileForm = true;
+                // console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog ─> ', this.optionsDialog);
+
+                this.fillFormData();
+                this.loading = false;
+            } else {
+                this.checkOpts = true;
             }
+            // this.checkOptions();
+        })();
+    }
 
-            if (this._usersService.userProfile.id_asociation_user !== 0) {
-                this.oldRecord.id_asociation = this._usersService.userProfile.id_asociation_user;
-            }
+    ngOnChanges(): void {
+        console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog in ─> ', this.optionsDialog);
+        console.log('Componente ' + this._name + ': ngOnChanges: this.oldRecord in ─> ', this.oldRecord);
 
-            this.createForm = this.optionsDialog.id === 'create';
-            this.editForm = this.optionsDialog.id === 'edit';
-            this.browseForm = this.optionsDialog.id === 'browse';
-
-            console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog out ─> ', this.optionsDialog);
-
-            this.asocResp.data = this.oldRecord;
-
-            this.fillFormData();
-            this.loading = false;
+        if (this.optionsDialog.options.fin === undefined) {
+            console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options 2  ─> ', this.optionsDialog.options);
+            this.optionsDialog.options['fin'] = true;
         }
+    }
+
+    ngDoCheck() {
+        // console.log('Componente ' + this._name + ': ngDoCheck:  ─> ');
+        // console.log('Componente ' + this._name + ': ngDoCheck: this.optionsDialog ─> ', this.optionsDialog);
+        if (this.checkOpts) {
+            this.checkOptions();
+        }
+    }
+
+    checkOptions() {
+        if (this.checkOpts) {
+            if (this.optionsDialog) {
+                this.asocResp.action = this.optionsDialog.id;
+                if (this.optionsDialog.id !== 'create' && this.optionsDialog.id !== 'profile') {
+                    this.oldRecord = this.optionsDialog.record;
+                    this.oldRecord.logo_asociation =
+                        this.optionsDialog.record.logo_asociation !== '' ? this.optionsDialog.record.logo_asociation : this.logoSrcDefault;
+                    console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog in ─> ', this.optionsDialog);
+                    console.log('Componente ' + this._name + ': ngOnChanges: this.oldRecord in ─> ', this.oldRecord);
+                    this.logoImg = {
+                        src: this.oldRecord.logo_asociation,
+                        nameFile: this.oldRecord.logo_asociation.split(/[\\/]/).pop() || '',
+                        filePath: '',
+                        fileImage: null,
+                        isSelectedFile: false,
+                        isDefault: this.logoSrcDefault === this.oldRecord.logo_asociation,
+                        isChange: false,
+                    };
+                }
+
+                if (this._usersService.userProfile.id_asociation_user !== 0) {
+                    this.oldRecord.id_asociation = this._usersService.userProfile.id_asociation_user;
+                }
+
+                this.createForm = this.optionsDialog.id === 'create';
+                this.editForm = this.optionsDialog.id === 'edit';
+                this.browseForm = this.optionsDialog.id === 'browse';
+
+                if (this.createForm) console.log('Componente ' + this._name + ': checkOptions: this.createForm ─> ', this.createForm);
+                if (this.editForm) console.log('Componente ' + this._name + ': checkOptions: this.editForm ─> ', this.editForm);
+                if (this.browseForm) console.log('Componente ' + this._name + ': checkOptions: this.browseForm ─> ', this.browseForm);
+
+                console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog out ─> ', this.optionsDialog);
+
+                if (this.optionsDialog.options.fin) {
+                    console.log('Componente ' + this._name + ': checkOptions: this.checkOpts ─> ', this.checkOpts, ' -> false');
+                    this.checkOpts = false;
+                    this.asocResp.data = this.oldRecord;
+                    console.log('Componente ' + this._name + ': checkOptions: this.userResp.data ─> ', this.asocResp.data);
+                    this.fillFormData();
+                    this.loading = false;
+                }
+            }
+        }
+    }
+
+    getAsocUserConnected(): Promise<boolean> {
+        console.log(
+            'Componente ' + this._name + ': getAsocUserConnected: this.userProfile.id_asociation_user: ',
+            this._usersService.userProfile.id_asociation_user
+        );
+        return new Promise((resolve, reject) => {
+            try {
+                this._asociationsService.getAllAsociations().subscribe({
+                    next: (resp: any) => {
+                        console.log('Componente ' + this._name + ': getAsocUserConnected: ─> resp', resp);
+                        if (resp.status === 200) {
+                            this.oldRecord = resp.result.records[0];
+                            console.log('Componente ' + this._name + ': getAsocUserConnected: ─> this.asociations', this.oldRecord);
+                        } else {
+                            console.log('Componente ' + this._name + ': getAsocUserConnected: ─> resp.message', resp.message);
+                        }
+                        this.loading = false;
+                        resolve(true);
+                    },
+                    error: (err: any) => {
+                        console.log('Componente ' + this._name + ': getAsocUserConnected: error ─> ', err);
+                        reject(true);
+                    },
+                    complete: () => {
+                        console.log('Componente ' + this._name + ': getAsocUserConnected: complete ─> ');
+                    },
+                });
+            } catch (err: any) {
+                console.log('Componente ' + this._name + ': getAsocUserConnected: err ─> ', err);
+                reject(true);
+            }
+        });
     }
 
     fillFormData() {
         this.form = this._formBuilder.group({
+            logo_asociation: new UntypedFormControl({ value: this.logoImg, disabled: false }, Validators.compose([])),
             long_name_asociation: new UntypedFormControl(
-                { value: this.oldRecord.long_name_asociation, disabled: this.browseForm ? true : false },
+                { value: this.oldRecord.long_name_asociation, disabled: false },
                 Validators.compose([Validators.required])
             ),
             short_name_asociation: new UntypedFormControl(
-                { value: this.oldRecord.short_name_asociation, disabled: this.browseForm ? true : false },
+                { value: this.oldRecord.short_name_asociation, disabled: false },
                 Validators.compose([Validators.required, Validators.maxLength(20)])
             ),
             email_asociation: new UntypedFormControl(
-                { value: this.oldRecord.email_asociation, disabled: this.browseForm ? true : false },
+                { value: this.oldRecord.email_asociation, disabled: false },
                 Validators.compose([Validators.required, Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])
             ),
             name_contact_asociation: new UntypedFormControl(
-                { value: this.oldRecord.name_contact_asociation, disabled: this.browseForm ? true : false },
-                Validators.compose([Validators.required, Validators.maxLength(100)])
+                { value: this.oldRecord.name_contact_asociation, disabled: false },
+                Validators.compose([Validators.maxLength(100)])
             ),
             phone_asociation: new UntypedFormControl(
-                { value: this.oldRecord.phone_asociation, disabled: this.browseForm ? true : false },
+                { value: this.oldRecord.phone_asociation, disabled: false },
                 Validators.compose([Validators.pattern('')])
             ),
         });
 
         if (!this.isSuper && this._usersService.userProfile.id_asoc_admin.toString() !== this.oldRecord.id_asociation.toString()) {
             console.log('Componente ' + this._name + ': fillFormData: data ─> disable');
+            this.logoAsociationField.disable();
             this.emailAsociationField.disable();
             this.phoneAsociationField.disable();
             this.nameContactAsociationField.disable();
             this.shortNameAsociationField.disable();
             this.longNameAsociationField.disable();
+
+            this.imgReadonly = false;
+        } else if (this.browseForm) {
+            this.logoAsociationField.disable();
+            this.longNameAsociationField.disable();
+            this.shortNameAsociationField.disable();
+            this.nameContactAsociationField.disable();
+            this.emailAsociationField.disable();
+            this.phoneAsociationField.disable();
+
+            this.imgReadonly = true;
+        } else {
+            this.logoAsociationField.enable();
+            this.longNameAsociationField.enable();
+            this.shortNameAsociationField.enable();
+            this.nameContactAsociationField.enable();
+            this.emailAsociationField.enable();
+            this.phoneAsociationField.enable();
+
+            this.imgReadonly = false;
         }
 
         console.log('Componente ' + this._name + ': fillFormData: fin ─> ');
@@ -178,187 +299,265 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
     async manageAsociation() {
         console.log('Componente ' + this._name + ': manageAsociation:  this.form.value ─> ', this.form.value);
         console.log('Componente ' + this._name + ': manageAsociation:  this.oldRecord ─> ', this.oldRecord);
-        try {
-            if (this.optionsDialog.id === 'create') {
-                console.log('Componente ' + this._name + ': manageAsociation: ─> createAsociation');
-                await this.createAsociacion();
-                return;
-            } else if (this.optionsDialog.id === 'edit') {
-                console.log('Componente ' + this._name + ': manageAsociation: this.optionsDialog.id ─> ', this.optionsDialog.id);
-                console.log('Componente ' + this._name + ': manageAsociation: this.oldRecord ─> ', this.oldRecord);
+        if (this.form.valid) {
+            try {
+                if (this.optionsDialog.id === 'create') {
+                    console.log('Componente ' + this._name + ': manageAsociation: this.optionsDialog.id ─> ', this.optionsDialog.id);
+                    console.log('Componente ' + this._name + ': manageAsociation: this.oldRecord ─> ', this.oldRecord);
 
-                if (
-                    this.oldRecord.long_name_asociation === this.form.value.long_name_asociation &&
-                    this.oldRecord.short_name_asociation === this.form.value.short_name_asociation &&
-                    this.oldRecord.email_asociation === this.form.value.email_asociation &&
-                    this.oldRecord.phone_asociation === this.form.value.phone_asociation &&
-                    this.logoImg.src === this.oldRecord.logo_asociation
-                ) {
-                    console.log('Componente ' + this._name + ': manageAsociation: error ─> not data changed');
-                    this._toastr.error('Nothing for update.<br> No action made.', 'Not data changed');
-                    this.loading = false;
-                    return;
-                }
-
-                let message = '';
-                let msgEdit = { status: '', message: '' };
-                let msgEditLogo = { status: '', message: '' };
-
-                if (
-                    this.oldRecord.long_name_asociation !== this.form.value.long_name_asociation ||
-                    this.oldRecord.short_name_asociation !== this.form.value.short_name_asociation ||
-                    this.oldRecord.email_asociation !== this.form.value.email_asociation ||
-                    this.oldRecord.phone_asociation !== this.form.value.phone_asociation
-                ) {
-                    msgEdit = await this.updateAsociacion();
-                    message = msgEdit.message;
-                }
-
-                if (msgEdit.status === '' || msgEdit.status === 'ok') {
-                    console.log('Componente ' + this._name + ': manageAsociation: msgEdit ─> ', msgEdit.status);
-                    // console.log('Componente ' + this._name + ': manageAsociation: this.logoImg.src ─> ', this.logoImg.src);
-                    console.log(
-                        'Componente ' + this._name + ': manageAsociation: this.oldRecord.logo_asociation ─> ',
-                        this.oldRecord.logo_asociation
-                    );
-                    if (this.logoImg.src !== this.oldRecord.logo_asociation) {
-                        console.log('Componente ' + this._name + ': manageAsociation: ─> updateLogo');
-                        msgEditLogo = await this.updateLogo();
-                        console.log('Componente ' + this._name + ': manageAsociation: msgEditLogo ─> ', msgEditLogo);
-                        message += message === '' ? msgEditLogo.message : ' <br>' + msgEditLogo.message;
+                    if (
+                        this.form.value.long_name_asociation === '' ||
+                        this.form.value.short_name_asociation === '' ||
+                        this.form.value.email_asociation === ''
+                    ) {
+                        console.log('Componente ' + this._name + ': manageAsociation: error ─> not all data filled');
+                        this._toastr.error('Missing required fields to fill.<br> Fill it in, please.', 'Not all data filled');
+                        this.loading = false;
+                        return;
                     }
-                }
 
-                if (msgEdit.status === 'ok' && msgEditLogo.status === 'ok') {
-                    this.loading = false;
-                    this._toastr.success(message, 'Updated asociation').onHidden.subscribe(() => {
-                        console.log('Componente ' + this._name + ': manageAsociation editUser 1: this.asocResp ─> ', this.asocResp);
-                        this.exitForm(this.asocResp);
-                    });
-                } else if ((msgEdit.status === 'ok' && msgEditLogo.status === '') || (msgEdit.status === '' && msgEditLogo.status === 'ok')) {
-                    this.loading = false;
-                    this._toastr.info(message, 'Updated asociation').onHidden.subscribe(() => {
-                        console.log('Componente ' + this._name + ': manageAsociation editUser 1: this.asocResp ─> ', this.asocResp);
-                        this.exitForm(this.asocResp);
-                    });
+                    let message = '';
+                    let msgCreate = { status: '', message: '' };
+                    let msgCreateLogo = { status: '', message: '' };
+
+                    msgCreate = await this.createAsociation();
+                    message = msgCreate.message;
+
+                    if (msgCreate.status === 'ok') {
+                        console.log('Componente ' + this._name + ': manageAsociation: msgCreate ─> ', msgCreate.status);
+                        // console.log('Componente ' + this._name + ': manageAsociation: this.logoImg.src ─> ', this.logoImg.src);
+                        console.log('Componente ' + this._name + ': manageAsociation: this.oldRecord ─> ', this.oldRecord);
+                        // if (this.logoImg.src !== this.oldRecord.logo_asociation) {
+                        console.log(
+                            'Componente ' + this._name + ': manageAsociation: this.oldRecord.logo_asociation ─> ',
+                            this.oldRecord.logo_asociation
+                        );
+                        console.log(
+                            'Componente ' + this._name + ': manageAsociation: this.form.value.logo_asociation.src ─> ',
+                            this.form.value.logo_asociation.src
+                        );
+                        if (this.oldRecord.logo_asociation !== this.form.value.logo_asociation.src) {
+                            console.log('Componente ' + this._name + ': manageAsociation: ─> manageLogo');
+                            msgCreateLogo = await this.manageLogo();
+                            console.log('Componente ' + this._name + ': manageAsociation: msgCreateLogo ─> ', msgCreateLogo);
+                            message += message === '' ? msgCreateLogo.message : ' <br>' + msgCreateLogo.message;
+                        }
+                    }
+
+                    if (msgCreate.status === 'ok' && msgCreateLogo.status === 'ok') {
+                        this.loading = false;
+                        this._toastr.success(message, 'Asociation created ').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation createAsociation 1: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else if (msgCreate.status === 'ok' && msgCreateLogo.status === '') {
+                        this.loading = false;
+                        this._toastr.info(message, 'Asociation created').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation createAsociation 2: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else {
+                        this.loading = false;
+                        console.log('Componente ' + this._name + ': manageAsociation: error message ─> ', message);
+                        this._toastr.error(message, 'Error creating Asociation');
+                    }
+                } else if (this.optionsDialog.id === 'edit') {
+                    console.log('Componente ' + this._name + ': manageAsociation: this.optionsDialog.id ─> ', this.optionsDialog.id);
+                    console.log('Componente ' + this._name + ': manageAsociation: this.oldRecord ─> ', this.oldRecord);
+
+                    if (
+                        this.oldRecord.long_name_asociation === this.form.value.long_name_asociation &&
+                        this.oldRecord.short_name_asociation === this.form.value.short_name_asociation &&
+                        this.oldRecord.email_asociation === this.form.value.email_asociation &&
+                        this.oldRecord.phone_asociation === this.form.value.phone_asociation &&
+                        this.oldRecord.logo_asociation === this.form.value.logo_asociation.src
+                        // this.logoImg.src === this.oldRecord.logo_asociation
+                    ) {
+                        console.log('Componente ' + this._name + ': manageAsociation: error ─> not data changed');
+                        this._toastr.error('Nothing for update.<br> No action made.', 'Not data changed');
+                        this.loading = false;
+                        return;
+                    }
+
+                    let message = '';
+                    let msgEdit = { status: '', message: '' };
+                    let msgEditLogo = { status: '', message: '' };
+
+                    if (
+                        this.oldRecord.long_name_asociation !== this.form.value.long_name_asociation ||
+                        this.oldRecord.short_name_asociation !== this.form.value.short_name_asociation ||
+                        this.oldRecord.email_asociation !== this.form.value.email_asociation ||
+                        this.oldRecord.phone_asociation !== this.form.value.phone_asociation
+                    ) {
+                        msgEdit = await this.updateAsociacion();
+                        message = msgEdit.message;
+                    }
+
+                    if (msgEdit.status === '' || msgEdit.status === 'ok') {
+                        console.log('Componente ' + this._name + ': manageAsociation: msgEdit ─> ', msgEdit.status);
+                        // console.log('Componente ' + this._name + ': manageAsociation: this.logoImg.src ─> ', this.logoImg.src);
+                        console.log(
+                            'Componente ' + this._name + ': manageAsociation: this.oldRecord.logo_asociation ─> ',
+                            this.oldRecord.logo_asociation
+                        );
+                        // if (this.logoImg.src !== this.oldRecord.logo_asociation) {
+                        if (this.oldRecord.logo_asociation !== this.form.value.logo_asociation.src) {
+                            console.log('Componente ' + this._name + ': manageAsociation: ─> manageLogo');
+                            msgEditLogo = await this.manageLogo();
+                            console.log('Componente ' + this._name + ': manageAsociation: msgEditLogo ─> ', msgEditLogo);
+                            message += message === '' ? msgEditLogo.message : ' <br>' + msgEditLogo.message;
+                        }
+                    }
+
+                    if (msgEdit.status === 'ok' && msgEditLogo.status === 'ok') {
+                        this.loading = false;
+                        this._toastr.success(message, 'Updated asociation').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation updateAsociacion 1: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else if ((msgEdit.status === 'ok' && msgEditLogo.status === '') || (msgEdit.status === '' && msgEditLogo.status === 'ok')) {
+                        this.loading = false;
+                        this._toastr.info(message, 'Updated asociation').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation updateAsociacion 2: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else {
+                        this.loading = false;
+                        console.log('Componente ' + this._name + ': manageAsociation: error message ─> ', message);
+                        this._toastr.error(message, 'Error Asociation Updated');
+                    }
+                } else if (this.optionsDialog.id === 'profile') {
+                    console.log('Componente ' + this._name + ': manageAsociation: this.optionsDialog.id ─> ', this.optionsDialog.id);
+                    console.log('Componente ' + this._name + ': manageAsociation: this.oldRecord ─> ', this.oldRecord);
+
+                    if (
+                        this.oldRecord.long_name_asociation === this.form.value.long_name_asociation &&
+                        this.oldRecord.short_name_asociation === this.form.value.short_name_asociation &&
+                        this.oldRecord.email_asociation === this.form.value.email_asociation &&
+                        this.oldRecord.name_contact_asociation === this.form.value.name_contact_asociation &&
+                        this.oldRecord.phone_asociation === this.form.value.phone_asociation &&
+                        this.oldRecord.logo_asociation === this.form.value.logo_asociation.src
+                        // this.logoImg.src === this.oldRecord.logo_asociation
+                    ) {
+                        console.log('Componente ' + this._name + ': manageAsociation: error ─> not data changed');
+                        this._toastr.error('Nothing for update.<br> No action made.', 'Not data changed');
+                        this.loading = false;
+                        return;
+                    }
+
+                    let message = '';
+                    let msgEdit = { status: '', message: '' };
+                    let msgEditLogo = { status: '', message: '' };
+
+                    if (
+                        this.oldRecord.long_name_asociation !== this.form.value.long_name_asociation ||
+                        this.oldRecord.name_contact_asociation !== this.form.value.name_contact_asociation ||
+                        this.oldRecord.short_name_asociation !== this.form.value.short_name_asociation ||
+                        this.oldRecord.email_asociation !== this.form.value.email_asociation ||
+                        this.oldRecord.phone_asociation !== this.form.value.phone_asociation
+                    ) {
+                        msgEdit = await this.updateAsociacion();
+                        message = msgEdit.message;
+                    }
+
+                    if (msgEdit.status === '' || msgEdit.status === 'ok') {
+                        console.log('Componente ' + this._name + ': manageAsociation: msgEdit ─> ', msgEdit.status);
+                        // console.log('Componente ' + this._name + ': manageAsociation: this.logoImg.src ─> ', this.logoImg.src);
+                        console.log(
+                            'Componente ' + this._name + ': manageAsociation: this.oldRecord.logo_asociation ─> ',
+                            this.oldRecord.logo_asociation
+                        );
+                        // if (this.logoImg.src !== this.oldRecord.logo_asociation) {
+                        if (this.oldRecord.logo_asociation !== this.form.value.logo_asociation.src) {
+                            console.log('Componente ' + this._name + ': manageAsociation: ─> manageLogo');
+                            msgEditLogo = await this.manageLogo();
+                            console.log('Componente ' + this._name + ': manageAsociation: msgEditLogo ─> ', msgEditLogo);
+                            message += message === '' ? msgEditLogo.message : ' <br>' + msgEditLogo.message;
+                        }
+                    }
+
+                    if (msgEdit.status === 'ok' && msgEditLogo.status === 'ok') {
+                        this.loading = false;
+                        this._toastr.success(message, 'Updated asociation').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation updateAsociacion 1: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else if ((msgEdit.status === 'ok' && msgEditLogo.status === '') || (msgEdit.status === '' && msgEditLogo.status === 'ok')) {
+                        this.loading = false;
+                        this._toastr.info(message, 'Updated asociation').onHidden.subscribe(() => {
+                            console.log('Componente ' + this._name + ': manageAsociation updateAsociacion 2: this.asocResp ─> ', this.asocResp);
+                            this.exitForm(this.asocResp);
+                        });
+                    } else {
+                        this.loading = false;
+                        console.log('Componente ' + this._name + ': manageAsociation: error message ─> ', message);
+                        this._toastr.error(message, 'Error Asociation Updated');
+                    }
                 } else {
-                    this.loading = false;
-                    console.log('Componente ' + this._name + ': manageAsociation: error message ─> ', message);
-                    this._toastr.error(message, 'Error User Updated');
+                    this._toastr.info('Not options expected', 'Error updating asociation').onHidden.subscribe(() => {
+                        console.log('Componente ' + this._name + ': manageAsociation: error ─> not options expected');
+                        this.loading = false;
+                    });
                 }
-            } else {
-                this._toastr.info('Not options expected', 'Error updating asociation').onHidden.subscribe(() => {
-                    console.log('Componente ' + this._name + ': manageAsociation: error ─> not options expected');
+            } catch (err: any) {
+                this._toastr.info(err, 'Error updating asociation').onHidden.subscribe(() => {
+                    console.log('Componente ' + this._name + ': manageAsociation: err ─> ', err);
                     this.loading = false;
                 });
             }
-        } catch (err: any) {
-            this._toastr.info(err, 'Error updating asociation').onHidden.subscribe(() => {
-                console.log('Componente ' + this._name + ': manageAsociation: err ─> ', err);
-                this.loading = false;
+        } else {
+            this.loading = false;
+            this.form.markAllAsTouched();
+            this._toastr.error('Faltan datos por rellenar', 'Error data asociation', {
+                timeOut: 3000,
             });
         }
     }
 
-    async createAsociacion() {
-        console.log('Componente ' + this._name + ': updateAsociacion: ─> *********************************************************');
+    async createAsociation(): Promise<IReplay> {
+        console.log('Componente ' + this._name + ': createAsociation: ─> *********************************************************');
 
-        // this.validations()
-        //     .then(async (res) => {
-        //         try {
-        //             if (res.error) {
-        //                 console.log('Componente ' + this._name + ': createAsociacion: existemail_asociation: res ─> ', res);
-        //                 throw new Error(
-        //                     '* email_asociation ' + this.form.value.email_asociation + ', ya existe en la asociacion ' + res.long_name_asociation
-        //                 );
-        //                 // reject('email_asociation ' + this.form.value.email_asociation + ', ya existe en la asociacion ' + res);
-        //             } else {
-        //                 try {
-        //                     const ulrCreateAsociation = environment.urlApi + '/asocs';
-        //                     const authHeaders = await this._usersService.getAuthHeaders();
-        //                     console.log('Componente ' + this._name + ': createAsociation: logoImg ─> ', this.logoImg);
-        //                     const data = {
-        //                         logo_img: this.logoImg,
-        //                         data: {
-        //                             id_asociacion: '',
-        //                             long_name_asociation: this.form.value.long_name_asociation,
-        //                             short_name_asociation: this.form.value.short_name_asociation,
-        //                             email_asociation: this.form.value.email_asociation,
-        //                             logo: this.logoUrl,
-        //                             phone_asociation: this.form.value.phone_asociation,
-        //                             fecha_alta: '',
-        //                             date_updated_asociation: '',
-        //                             fecha_baja: '',
-        //                         },
-        //                     };
-        //                     console.log('Componente ' + this._name + ': createAsociation: data ─> ', data);
-        //                     try {
-        //                         this.loading = true;
-        //                         this.http.post(ulrCreateAsociation, data, authHeaders.headers).subscribe({
-        //                             next: async (asoc: any) => {
-        //                                 console.log('Componente ' + this._name + ': createAsociation: asoc ─> ', asoc);
-        //                                 console.log('Componente ' + this._name + ': createAsociation: asoc.id_asociacion ─> ', asoc.id_asociacion);
-        //                                 if (asoc.id_asociacion) {
-        //                                     data.data.id_asociacion = asoc.id_asociacion;
-        //                                     data.data.fecha_alta = asoc.fecha_alta;
-        //                                     data.data.date_updated_asociation = asoc.date_updated_asociation;
-        //                                     this.asocResp.data = data;
-        //                                     try {
-        //                                         console.log('Componente ' + this._name + ': createAsociation: uploadlogo ─> ');
+        return new Promise((resolve) => {
+            const data: ICreateAsociation = {
+                long_name_asociation: this.form.value.long_name_asociation,
+                short_name_asociation: this.form.value.short_name_asociation,
+                email_asociation: this.form.value.email_asociation,
+                name_contact_asociation: this.form.value.name_contact_asociation,
+                phone_asociation: this.form.value.phone_asociation,
+            };
 
-        //                                         console.log('Componente ' + this._name + ': createAsociation: uploadlogo () ─> ');
-        //                                         const respUpload = await this.uploadLogo(asoc.id_asociacion);
-        //                                         console.log('Componente ' + this._name + ': createAsociation: uploadlogo respUpload ─> ', respUpload);
-        //                                         this.loading = false;
-        //                                         this.asocResp.replay = { status: 'ok', message: 'asoc created with logo' };
-        //                                         this.exitForm(this.asocResp);
-        //                                     } catch (error) {
-        //                                         this.loading = false;
-        //                                         console.log('Componente ' + this._name + ': createAsociation: uploadlogo error ─> ', error);
-        //                                         this.msg('asoc created. Unexpected error uploading logo');
-        //                                         this.asocResp.replay = {
-        //                                             status: 'error',
-        //                                             message: 'asoc created. Unexpected error uploading logo',
-        //                                         };
-        //                                         this.exitForm(this.asocResp);
-        //                                     }
-        //                                 } else {
-        //                                     console.log(
-        //                                         'Componente ' + this._name + ': createAsociation: ulrCreateAsociation error ─> not user created'
-        //                                     );
-        //                                     this.msg('User not created. Unexpected error');
-        //                                     this.loading = false;
-        //                                     // this.exitForm({ accion: 'create', data: data.profile });
-        //                                 }
-        //                             },
-        //                             error: (err: any) => {
-        //                                 this.loading = false;
-        //                                 console.log('Componente ' + this._name + ': createAsociation: error ─> ', err);
-        //                                 this.msg('Unexpected error creando el usuario');
-        //                             },
-        //                             complete: () => {
-        //                                 console.log('Componente ' + this._name + ': createAsociation: complete ─> post');
-        //                             },
-        //                         });
-        //                     } catch (error: any) {
-        //                         this.loading = false;
-        //                         console.log('Componente ' + this._name + ': createAsociation: catch error ─> ', error);
-        //                         this.msg(error);
-        //                     }
-        //                 } catch (error: any) {
-        //                     this.msg(error.message);
-        //                     console.log('Componente ' + this._name + ': createAsociacion: error.message 1 ─> ', error.message);
-        //                 }
-        //             }
-        //         } catch (error: any) {
-        //             this.msg(error.message);
-        //             console.log('Componente ' + this._name + ': createAsociacion: error.message 2 ─> ', error.message);
-        //         }
-        //     })
-        //     .catch((reject) => {
-        //         console.log('Componente ' + this._name + ': createAsociacion: reject 2 ─> ', reject);
-        //         this.msg(reject);
-        //     });
+            console.log('Componente ' + this._name + ': createAsociation: data ─> ', data);
+            try {
+                this.loading = true;
+                this._asociationsService.createAsociation(data).subscribe({
+                    next: async (resp: any) => {
+                        console.log('Componente ' + this._name + ': createAsociation: resp ─> ', resp);
+                        if (resp.status === 200) {
+                            this.asocResp.data = resp.result.records[0];
+                            resolve({ status: 'ok', message: 'La asociación se actualizó con exito' });
+                        } else {
+                            // this.userProfile = this._usersService.resetStoredProfile();
+                            // this.msg(resp.message);
+                            resolve({ status: 'error', message: resp.message });
+                        }
+                        // this.loading = false;
+                    },
+                    error: (err: any) => {
+                        console.log('Componente ' + this._name + ': createAsociation: error ─> perfil', err.message);
+                        // this.userProfile = this._usersService.resetStoredProfile();
+                        resolve({ status: 'error', message: err.message });
+                    },
+                    complete: () => {
+                        console.log('Componente ' + this._name + ': createAsociation: complete ─> perfil');
+                    },
+                });
+            } catch (error: any) {
+                // this.loading = false;
+                console.log('Componente ' + this._name + ': createAsociation: catch error ─> ', error);
+                // this.msg(error);
+                resolve({ status: 'abort', message: error });
+            }
+        });
     }
 
     async updateAsociacion(): Promise<IReplay> {
@@ -379,10 +578,11 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
                 this.loading = true;
                 this._asociationsService.modifyAsociation(data).subscribe({
                     next: async (resp: any) => {
+                        console.log('Componente ' + this._name + ': updateAsociacion: resp ─> ', resp);
                         if (resp.status === 200) {
-                            this.asocResp.data = resp.result.data_asoc;
+                            this.asocResp.data = resp.result.records[0];
                             if (this.asocResp.data.id_asociation === this._usersService.userProfile.id_asoc_admin) {
-                                this.userProfile = this._usersService.modifyStoreProfile(this.asocResp.data);
+                                this.userProfile = this._usersService.modifyDataAsociationStoreProfile(this.asocResp.data);
                             }
                             resolve({ status: 'ok', message: 'La asociación se actualizó con exito' });
                         } else {
@@ -463,66 +663,72 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
         });
     }
 
-    async updateLogo() {
-        if (this.logoImg.src === this.logoUrlDefault && this.oldRecord.logo_asociation !== this.logoUrlDefault) {
+    async manageLogo() {
+        // if (this.logoImg.src === this.logoUrlDefault && this.oldRecord.logo_asociation !== this.logoUrlDefault) {
+        if (this.form.value.logo_asociation.src === this.logoUrlDefault && this.oldRecord.logo_asociation !== this.logoUrlDefault) {
             try {
                 const respDelete: any = await this.deleteLogo();
-                console.log('Componente ' + this._name + ': updateLogo: deleteLogo ─> ', respDelete);
+                console.log('Componente ' + this._name + ': manageLogo: deleteLogo ─> ', respDelete);
                 if (respDelete.message === 'ok') {
                     this.asocResp.data = respDelete.result.records[0];
-                    console.log('Componente ' + this._name + ': updateLogo: deleteLogo ok ─> ', respDelete);
+                    console.log('Componente ' + this._name + ': manageLogo: deleteLogo ok ─> ', respDelete);
                     return { status: 'ok', message: 'Logo deleted successfully' };
                 } else {
-                    console.log('Componente ' + this._name + ': updateLogo: deleteLogo error ─> ', respDelete.message, respDelete.code);
+                    console.log('Componente ' + this._name + ': manageLogo: deleteLogo error ─> ', respDelete.message, respDelete.code);
                     return { status: 'error', message: respDelete.body.message };
                 }
             } catch (error: any) {
-                console.log('Componente ' + this._name + ': updateLogo: deleteLogo error ─> ', error);
+                console.log('Componente ' + this._name + ': manageLogo: deleteLogo error ─> ', error);
                 return { status: 'abort', message: 'Unexpected error deleting logo' };
             }
         } else {
-            if (this.oldRecord.logo_asociation !== this.logoImg.src) {
+            // if (this.oldRecord.logo_asociation !== this.logoImg.src) {
+            if (this.oldRecord.logo_asociation !== this.form.value.logo_asociation.src) {
                 try {
-                    console.log('Componente ' + this._name + ': updateLogo: uploadLogo () ─> ');
+                    console.log('Componente ' + this._name + ': manageLogo: uploadLogo () ─> ');
                     const respUpload: any = await this.uploadLogo();
-                    console.log('Componente ' + this._name + ': updateLogo: uploadLogo respUpload ─> ', respUpload);
+                    console.log('Componente ' + this._name + ': manageLogo: uploadLogo respUpload ─> ', respUpload);
                     if (respUpload.body.message === 'ok') {
                         this.asocResp.data = respUpload.body.result.records[0];
-                        console.log('Componente ' + this._name + ': updateLogo: uploadLogo this.asocResp ─> ', this.asocResp);
+                        console.log('Componente ' + this._name + ': manageLogo: uploadLogo this.asocResp ─> ', this.asocResp);
                         return { status: 'ok', message: 'Logo modified successfully' };
                     } else {
-                        console.log('Componente ' + this._name + ': updateLogo: uploadLogo respUpload.body.message ─> ', respUpload.body.message);
+                        console.log('Componente ' + this._name + ': manageLogo: uploadLogo respUpload.body.message ─> ', respUpload.body.message);
                         return { status: 'error', message: respUpload.body.message };
                     }
                 } catch (error: any) {
-                    console.log('Componente ' + this._name + ': updateLogo: uploadLogo error ─> ', error);
+                    console.log('Componente ' + this._name + ': manageLogo: uploadLogo error ─> ', error);
                     return { status: 'error', message: 'Unknown error uploading logo' };
                 }
             } else {
-                console.log('Componente ' + this._name + ': updateLogo: uploadLogo  ─> ', 'Nothing to upload.');
+                console.log('Componente ' + this._name + ': manageLogo: uploadLogo  ─> ', 'Nothing to upload.');
                 return { status: 'error', message: 'Nothing to upload.' };
             }
         }
     }
 
-    async uploadLogo(): Promise<any> {
+    uploadLogo(): Promise<any> {
         // const authHeaders = ''; // await this._usersService.getAuthHeaders();
 
         return new Promise(async (resolve, _reject) => {
-            const fd = new FormData();
-            // console.log('Componente ' + this._name + ': uploadLogo: this.logoImg.isSelectedFile ─> ', this.logoImg.isSelectedFile);
-            if (this.logoImg.isSelectedFile) {
+            console.log('Componente ' + this._name + ': uploadLogo: this.asocResp.data ─> ', this.asocResp.data);
+            console.log('Componente ' + this._name + ': uploadLogo: this.logoImg.isSelectedFile ─> ', this.logoImg.isSelectedFile);
+            console.log(
+                'Componente ' + this._name + ': uploadLogo: this.form.value.logo_asociation.isSelectedFile ─> ',
+                this.form.value.logo_asociation.isSelectedFile
+            );
+            // if (this.logoImg.isSelectedFile) {
+            if (this.form.value.logo_asociation.isSelectedFile) {
+                const fd = new FormData();
                 fd.append('action', 'asociation');
                 fd.append('token', this._usersService.userProfile.token_user);
-                fd.append('user_id', this.oldRecord.id_asociation.toString());
+                fd.append('user_id', this.asocResp.data.id_asociation.toString());
                 fd.append('module', 'asociations');
-                fd.append('prefix', 'logos' + '/asociation-' + this.oldRecord.id_asociation);
+                fd.append('prefix', 'logos' + '/asociation-' + this.asocResp.data.id_asociation);
                 // fd.append('name', this.logoImg.nameFile);
                 fd.append('name', this.form.value.short_name_asociation.replace(' ', '_') + '.png');
-                fd.append('date_updated_asociation', this.asocResp.data.date_updated_asociation);
-                // console.log('Componente ' + this._name + ': uploadLogo: this.logoImg!.fileImage ─> ', typeof this.logoImg!.fileImage);
-                // fd.append('file', this.logoImg.fileImage, this.logoImg.nameFile);
-                fd.append('file', this.logoImg.fileImage, this.oldRecord.short_name_asociation.replace(' ', '_') + '.png');
+                fd.append('date_updated', this.asocResp.data.date_updated_asociation);
+                fd.append('file', this.form.value.logo_asociation.fileImage, this.asocResp.data.short_name_asociation.replace(' ', '_') + '.png');
                 // if (this.logoImg.fileImage !== null) {
                 // }
                 this._asociationsService.uploadLogo(fd).subscribe({
@@ -561,7 +767,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
             fd.append('module', 'asociations');
             fd.append('prefix', 'logos' + '/asociation-' + this.oldRecord.id_asociation);
             fd.append('name', this.logoImg.nameFile);
-            fd.append('date_updated_asociation', this.asocResp.data.date_updated_asociation);
+            fd.append('date_updated', this.asocResp.data.date_updated_asociation);
             this._asociationsService.deleteLogo(fd).subscribe({
                 next: (event: any) => {
                     console.log('Componente ' + this._name + ': deleteLogo: event ─> ', event);
@@ -584,6 +790,18 @@ export class FormAsociacionComponent implements OnInit, OnChanges {
         }
         console.log('Componente ' + this._name + ': exitForm:  ─> this.salir.emit: ', datosSalida);
         this.salir.emit(datosSalida);
+    }
+
+    get logoAsociationField(): any {
+        return this.form.get('logo_asociation');
+    }
+
+    get logoAsociationIsValid(): boolean {
+        return this.form.get('logo_asociation')!.valid && this.form.get('logo_asociation')!.touched;
+    }
+
+    get logoAsociationIsInvalid(): boolean {
+        return this.form.get('logo_asociation')!.invalid && this.form.get('logo_asociation')!.touched;
     }
 
     get longNameAsociationField(): any {

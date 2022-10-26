@@ -27,8 +27,12 @@
                </ng-container>
                <!-- Usuario Column -->
                <ng-container matColumnDef="user_name_user">
-                  <th mat-header-cell *matHeaderCellDef mat-sort-header>Usuario</th>
-                  <td mat-cell *matCellDef="let element">{{ element.user_name_user }}</td>
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header [ngClass]="{ 'list-admin': this.userProfile.id_asociation_user !== 0 }">
+                     Usuario
+                  </th>
+                  <td mat-cell *matCellDef="let element" [ngClass]="{ 'list-admin': this.userProfile.id_asociation_user !== 0 }">
+                     {{ element.user_name_user }}
+                  </td>
                </ng-container>
                <!-- Nombre Column -->
                <ng-container matColumnDef="name_user">

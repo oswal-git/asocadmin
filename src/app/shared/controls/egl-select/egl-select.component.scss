@@ -25,19 +25,20 @@ $radius: 10px;
    position: relative;
 
    #selectField {
-      // border: 2px solid #baccf7;
-      // border-radius: $radius;
       width: 100%;
-      // margin-bottom: 15px;
       box-sizing: border-box;
       background-color: #222222;
-      // padding: 7px 20px;
-      // padding: 18px 20px 8px; // cambio
-      // padding: 16px 20px 6px; // cambio
       padding: 8px 20px 1px; // cambio
+      display: flex;
+      align-items: center;
+      cursor: pointer;
 
       &.input-ok {
          border-bottom: 2px solid #3df704;
+
+         &:disabled {
+            cursor: none;
+         }
       }
 
       &.input-ko {
@@ -50,16 +51,12 @@ $radius: 10px;
 
       &.input-disabled {
          color: #aaa;
+         cursor: default;
 
          &:hover {
             background: #222222;
          }
       }
-
-      display: flex;
-      // justify-content: space-between;
-      align-items: center;
-      cursor: pointer;
 
       label {
          position: absolute;
@@ -119,6 +116,14 @@ $radius: 10px;
          background: #222222;
          border: 2px solid #baccf7;
          max-height: 20rem;
+
+         overflow-y: scroll;
+         scrollbar-color: #181818 #181818;
+         scrollbar-width: thin !important;
+
+         &::-webkit-scrollbar {
+            display: none;
+         }
 
          // li
          .options {

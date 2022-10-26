@@ -1,19 +1,37 @@
 export const ARTICLES_CONST = {
-    ARTICLES_CATEGORY: [ 'new', 'minutes','report'    ],
-    ARTICLES_SUBCATEGORY: [
+    ARTICLES_CATEGORY: [
         {
-            name: 'new',
-            subcategory: ['municipality', 'urbanization'],
+            id: 1,
+            caption: 'noticias',
+            subcategory: [
+                { id: 1, caption: 'municipio' },
+                { id: 2, caption: 'urbanización' },
+            ],
         },
         {
-            name: 'minutes',
-            subcategory: ['meeting', 'assembly'],
+            id: 2,
+            caption: 'actas',
+            subcategory: [
+                { id: 1, caption: 'reuniones' },
+                { id: 2, caption: 'asambleas' },
+            ],
         },
         {
-            name: 'report',
-            subcategory: ['services', 'meetings', 'assemblies'],
+            id: 3,
+            caption: 'información',
+            subcategory: [
+                { id: 1, caption: 'servicios' },
+                { id: 2, caption: 'reuniones' },
+                { id: 3, caption: 'asambleas' },
+            ],
         },
     ],
     ARTICLES_CLASS: [],
-    ARTICLES_STATE: ['redaction', 'published', 'expired', 'unsubscribe', 'deleted'],
+    ARTICLES_STATE: [
+        { id: 1, caption: 'redacción' },
+        { id: 2, caption: 'publicado' },
+        { id: 3, caption: 'expirado' },
+        { id: 4, caption: 'anulado' },
+        { id: 5, caption: 'borrado' },
+    ],
 };

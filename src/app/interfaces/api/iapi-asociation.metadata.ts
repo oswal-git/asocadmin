@@ -20,3 +20,11 @@ export interface IIdAsociation {
     date_updated_asociation: string;
     force?: boolean;
 }
+export interface ICreateAsociation {
+    long_name_asociation: string;
+    short_name_asociation: string;
+    email_asociation: string;
+    name_contact_asociation: string;
+    phone_asociation: string;
+    logo_asociation?: string;
+}

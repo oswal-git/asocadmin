@@ -1,5 +1,5 @@
 import { AsociationsService } from '@app/services/bd/asociations.service';
-import { Component } from '@angular/core';
+import { Component, DoCheck, OnInit } from '@angular/core';
 import { environment } from '@env/environment';
 import { EventEmitter, Input, OnChanges, Output } from '@angular/core';
 import { faCalendarPlus, faCircleXmark, faClockRotateLeft, faEnvelope, faKey, faKeyboard, faMobileScreen } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +20,7 @@ import { IListAsociationData } from '@app/interfaces/api/iapi-asociation.metadat
     templateUrl: './form-user.component.html',
     styleUrls: ['./form-user.component.scss'],
 })
-export class FormUserComponent implements OnChanges {
+export class FormUserComponent implements OnInit, OnChanges, DoCheck {
     private _name = 'FormUserComponent';
     private userProfile!: IUserConnected;
 
@@ -46,6 +46,8 @@ export class FormUserComponent implements OnChanges {
         filePath: '',
         fileImage: null,
         isSelectedFile: false,
+        isDefault: this.avatarUrlDefault === this.avatarScrDefault,
+        isChange: false,
     };
     isAvatarUrlDefault = true;
     // avatarUrl = this.avatarUrlDefault;
@@ -125,15 +127,17 @@ export class FormUserComponent implements OnChanges {
         this.isSuper = _usersService.userProfile.profile_user === 'superadmin' ? true : false;
         this.isAdmin = _usersService.userProfile.id_asoc_admin === 0 ? false : true;
 
-        console.log('Componente ' + this._name + ': constructor: this.optionsDialog  ─> ', this.optionsDialog);
+        // console.log('Componente ' + this._name + ': constructor: this.optionsDialog  ─> ', this.optionsDialog);
         // console.log('Componente ' + this._name + ': constructor: userPerfil(' + this.count + ') ─> ', this._usersService.userProfile);
         // console.log('Componente ' + this._name + ': constructor: oldRecord(' + this.count + ') ─> ', this.oldRecord);
+        // this.getAsociations();
+        // this.getStatusAndProfiles();
     }
 
     ngOnChanges(): void {
         ++this.count;
         // console.log('Componente ' + this._name + ': ngOnChanges:  ─> ');
-        console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog 1 (' + this.count + ') ─> ', this.optionsDialog);
+        // console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog 1 (' + this.count + ') ─> ', this.optionsDialog);
         // console.log('Componente ' + this._name + ': ngOnChanges: this.count ─> ', this.count);
         // console.log(
         //     'Componente ' + this._name + ': ngOnChanges: typeof this.optionsDialog.options (' + this.count + ') ─> ',
@@ -142,10 +146,10 @@ export class FormUserComponent implements OnChanges {
         // console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options (' + this.count + ') ─> ', this.optionsDialog.options);
 
         if (this.optionsDialog.options.fin === undefined) {
-            console.log(
-                'Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options 2 (' + this.count + ') ─> ',
-                this.optionsDialog.options
-            );
+            // console.log(
+            //     'Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options 2 (' + this.count + ') ─> ',
+            //     this.optionsDialog.options
+            // );
             // console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options.fin ─> ', this.optionsDialog.options.fin);
             this.optionsDialog.options['fin'] = true;
             // console.log('Componente ' + this._name + ': ngOnChanges: this.optionsDialog.options.fin 2 ─> ', this.optionsDialog.options.fin);
@@ -154,37 +158,38 @@ export class FormUserComponent implements OnChanges {
 
     ngOnInit() {
         ++this.countInit;
+        // console.log('Componente ' + this._name + ': ngOnInit:  ─> ');
         (async () => {
-            // console.log('Componente ' + this._name + ': ngOnInit:  ─> ');
+            this.getStatusAndProfiles();
             await this.getAsociations();
-            this.getUserProfiles();
-            console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog(' + this.countInit + ')  ─>', this.optionsDialog);
-            if (this.optionsDialog.id === 'profile') {
-                this.checkOpts = false;
-                this.userResp.action = this.optionsDialog.id;
-                console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog.id (' + this.countInit + ')  ─>', this.optionsDialog.id);
-                this.getDataUserConnected();
-                // console.log('Componente ' + this._name + ': ngOnInit: this.oldRecord(' + this.countInit + ') ─> ', this.oldRecord);
-                if (this.oldRecord.avatar_user === '') {
-                    // this.avatarUrl = this.avatarUrlDefault;
-                    this.oldRecord.avatar_user = this.avatarUrlDefault;
-                } else {
-                    // this.avatarUrl = this.oldRecord.avatar_user;
-                }
-
-                this.userResp.data = this.oldRecord;
-                console.log('Componente ' + this._name + ': ngOnInit: this.userResp(' + this.countInit + ') ─> ', this.userResp);
-                this.browseForm = false;
-                this.profileForm = this.optionsDialog.id === 'profile';
-                // console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog(' + this.countInit + ') ─> ', this.optionsDialog);
-
-                // this.fillFormData();
-                // this.loading = false;
-            } else {
-                this.checkOpts = true;
-            }
-            // this.checkOptions();
         })();
+
+        // console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog(' + this.countInit + ')  ─>', this.optionsDialog);
+        if (this.optionsDialog.id === 'profile') {
+            this.checkOpts = false;
+            this.userResp.action = this.optionsDialog.id;
+            // console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog.id (' + this.countInit + ')  ─>', this.optionsDialog.id);
+            this.getDataUserConnected();
+            // console.log('Componente ' + this._name + ': ngOnInit: this.oldRecord(' + this.countInit + ') ─> ', this.oldRecord);
+            if (this.oldRecord.avatar_user === '') {
+                // this.avatarUrl = this.avatarUrlDefault;
+                this.oldRecord.avatar_user = this.avatarUrlDefault;
+            } else {
+                // this.avatarUrl = this.oldRecord.avatar_user;
+            }
+
+            this.userResp.data = this.oldRecord;
+            // console.log('Componente ' + this._name + ': ngOnInit: this.userResp(' + this.countInit + ') ─> ', this.userResp);
+            this.browseForm = false;
+            this.profileForm = this.optionsDialog.id === 'profile';
+            // console.log('Componente ' + this._name + ': ngOnInit: this.optionsDialog(' + this.countInit + ') ─> ', this.optionsDialog);
+
+            // this.fillFormData();
+            // this.loading = false;
+        } else {
+            this.checkOpts = true;
+        }
+        // this.checkOptions();
     }
 
     ngDoCheck() {
@@ -199,14 +204,15 @@ export class FormUserComponent implements OnChanges {
     checkOptions() {
         // console.log('Componente ' + this._name + ': checkOptions: this.checkOpts(' + this.countCheck + ') ─> ', this.checkOpts);
         if (this.checkOpts) {
-            console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ', this.optionsDialog);
+            // console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ', this.optionsDialog);
 
             if (this.optionsDialog) {
-                console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ');
+                // console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ');
                 this.userResp.action = this.optionsDialog.id;
+                this.hasUser = true;
                 if (this.optionsDialog.id !== 'create' && this.optionsDialog.id !== 'register' && this.optionsDialog.id !== 'profile') {
                     this.oldRecord = this.optionsDialog.record;
-                    console.log('Componente ' + this._name + ': checkOptions: this.oldRecord(' + this.countCheck + ') ─> ', this.oldRecord);
+                    // console.log('Componente ' + this._name + ': checkOptions: this.oldRecord(' + this.countCheck + ') ─> ', this.oldRecord);
                     this.oldRecord.avatar_user = this.oldRecord.avatar_user !== '' ? this.oldRecord.avatar_user : this.avatarScrDefault;
                     this.avatarImg = {
                         src: this.oldRecord.avatar_user,
@@ -214,20 +220,22 @@ export class FormUserComponent implements OnChanges {
                         filePath: '',
                         fileImage: null,
                         isSelectedFile: false,
+                        isDefault: this.avatarUrlDefault === this.oldRecord.avatar_user,
+                        isChange: false,
                     };
                 }
 
-                console.log('Componente ' + this._name + ': checkOptions: this.oldRecord2(' + this.countCheck + ') ─> ', this.oldRecord);
-                console.log(
-                    'Componente ' + this._name + ': checkOptions: this._usersService.userProfile (' + this.countCheck + ') ─> ',
-                    this._usersService.userProfile
-                );
+                // console.log('Componente ' + this._name + ': checkOptions: this.oldRecord2(' + this.countCheck + ') ─> ', this.oldRecord);
+                // console.log(
+                //     'Componente ' + this._name + ': checkOptions: this._usersService.userProfile (' + this.countCheck + ') ─> ',
+                //     this._usersService.userProfile
+                // );
 
                 if (this._usersService.userProfile.id_asociation_user !== 0) {
                     this.oldRecord.id_asociation_user = this._usersService.userProfile.id_asociation_user;
                 }
 
-                console.log('Componente ' + this._name + ': checkOptions: this.oldRecord3(' + this.countCheck + ') ─> ', this.oldRecord);
+                // console.log('Componente ' + this._name + ': checkOptions: this.oldRecord3(' + this.countCheck + ') ─> ', this.oldRecord);
 
                 this.createForm = this.optionsDialog.id === 'create';
                 this.editForm = this.optionsDialog.id === 'edit';
@@ -243,15 +251,16 @@ export class FormUserComponent implements OnChanges {
                 if (this.profileForm) console.log('Componente ' + this._name + ': checkOptions: this.profileForm ─> ', this.profileForm);
                 if (this.loginForm) console.log('Componente ' + this._name + ': checkOptions: this.loginForm ─> ', this.loginForm);
 
-                console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ', this.optionsDialog);
+                // console.log('Componente ' + this._name + ': checkOptions: this.optionsDialog(' + this.countCheck + ') ─> ', this.optionsDialog);
             }
 
             if (this.optionsDialog.options.fin) {
-                console.log('Componente ' + this._name + ': checkOptions: this.checkOpts(' + this.countCheck + ') ─> ', this.checkOpts, ' -> false');
-                if (this.hasAsociations) {
-                    this.checkOpts = false;
-                    this.userResp.data = this.oldRecord;
-                    console.log('Componente ' + this._name + ': checkOptions: this.userResp.data(' + this.countCheck + ') ─> ', this.userResp.data);
+                // console.log('Componente ' + this._name + ': checkOptions: this.checkOpts(' + this.countCheck + ') ─> ', this.checkOpts, ' -> false');
+                this.checkOpts = false;
+                this.userResp.data = this.oldRecord;
+                // console.log('Componente ' + this._name + ': checkOptions: this.userResp.data(' + this.countCheck + ') ─> ', this.userResp.data);
+                if (this.hasAsociations && this.hasUser) {
+                    // console.log('Componente ' + this._name + ': checkOptions: fillFormData(' + this.countCheck + ') ─> ');
                     this.fillFormData();
                     this.loading = false;
                 }
@@ -260,50 +269,42 @@ export class FormUserComponent implements OnChanges {
     }
 
     fillFormData() {
-        console.log('Componente ' + this._name + ': fillFormData: this.oldRecord(' + this.count + ') ─> ', this.oldRecord);
-        console.log('Componente ' + this._name + ': fillFormData: this.userResp(' + this.count + ') ─> ', this.userResp);
+        // console.log('Componente ' + this._name + ': fillFormData: this.oldRecord(' + this.count + ') ─> ', this.oldRecord);
+        // console.log('Componente ' + this._name + ': fillFormData: this.userResp(' + this.count + ') ─> ', this.userResp);
 
         this.form = this._formBuilder.group({
-            user_name_user: new UntypedFormControl(
-                { value: this.oldRecord.user_name_user, disabled: this.browseForm ? true : false },
-                Validators.compose([Validators.required])
-            ),
-            name_user: new UntypedFormControl(
-                { value: this.oldRecord.name_user, disabled: this.browseForm ? true : false },
-                Validators.compose([Validators.required])
-            ),
+            user_name_user: new UntypedFormControl(this.oldRecord.user_name_user, Validators.compose([Validators.required])),
+            name_user: new UntypedFormControl({ value: this.oldRecord.name_user, disabled: false }, Validators.compose([Validators.required])),
             last_name_user: new UntypedFormControl(
-                { value: this.oldRecord.last_name_user, disabled: this.browseForm ? true : false },
+                { value: this.oldRecord.last_name_user, disabled: false },
                 Validators.compose([Validators.required])
             ),
-            status_user: new UntypedFormControl(
-                { value: this.oldRecord.status_user, disabled: this.browseForm || this.registerForm || this.profileForm ? true : false },
-                Validators.compose([Validators.required])
-            ),
+            status_user: new UntypedFormControl(this.oldRecord.status_user, Validators.compose([Validators.required])),
             id_asociation_user: new UntypedFormControl(
                 {
                     value: this.oldRecord.id_asociation_user === 0 ? 0 : this.oldRecord.id_asociation_user,
-                    disabled: this.isSuper || this.registerForm || this.profileForm ? false : !this.createForm ? true : true,
+                    disabled: false,
+                    // disabled: this.isSuper || this.registerForm || this.profileForm ? false : !this.createForm ? true : true,
                 },
                 Validators.compose([Validators.required])
             ),
             email_user: new UntypedFormControl(
-                { value: this.oldRecord.email_user, disabled: this.createForm || this.registerForm ? false : true },
+                { value: this.oldRecord.email_user, disabled: false },
                 Validators.compose([Validators.required, Validators.pattern('^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+.[a-zA-Z0-9-.]+$')])
             ),
             // avatar: new FormControl({ value: this.avatarUrl, disabled: this.browseForm ? true : false }, Validators.compose([])),
             profile_user: new UntypedFormControl(
                 {
                     value: this.oldRecord.profile_user,
-                    disabled: this.browseForm || this.registerForm || this.profileForm ? true : false,
+                    disabled: false,
                 },
                 Validators.compose([Validators.required])
             ),
-            phone_user: new UntypedFormControl(
-                { value: this.oldRecord.phone_user, disabled: this.browseForm ? true : false },
-                Validators.compose([Validators.pattern('')])
+            phone_user: new UntypedFormControl({ value: this.oldRecord.phone_user, disabled: false }, Validators.compose([Validators.pattern('')])),
+            password_user: new UntypedFormControl(
+                { value: '', disabled: false },
+                Validators.compose([Validators.required, Validators.minLength(this.passwordMinLength)])
             ),
-            password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(this.passwordMinLength)])),
         });
 
         if (this.createForm || this.registerForm) {
@@ -317,31 +318,113 @@ export class FormUserComponent implements OnChanges {
             this.form.get('id_asociation_user')!.clearValidators();
             this.form.get('password_user')!.clearValidators();
         }
-        console.log('Componente ' + this._name + ': fillFormData: this.form.value(' + this.count + ') ─> ', this.form.value);
+        // console.log('Componente ' + this._name + ': fillFormData: this.form.value(' + this.count + ') ─> ', this.form.value);
 
-        console.log('Componente ' + this._name + ': fillFormData: this.isAdmin(' + this.count + ') ─> ', this.isAdmin);
-        console.log(
-            'Componente ' + this._name + ': fillFormData: this._usersService.userProfile.id_user(' + this.count + ') ─> ',
-            this._usersService.userProfile.id_user
-        );
-        console.log(
-            'Componente ' + this._name + ': fillFormData: typeof this._usersService.userProfile.id_user(' + this.count + ') ─> ',
-            typeof this._usersService.userProfile.id_user
-        );
-        console.log('Componente ' + this._name + ': fillFormData: this.oldRecord.id_user(' + this.count + ') ─> ', this.oldRecord.id_user);
-        console.log(
-            'Componente ' + this._name + ': fillFormData: typeof this.oldRecord.id_user(' + this.count + ') ─> ',
-            typeof this.oldRecord.id_user
-        );
+        // console.log('Componente ' + this._name + ': fillFormData: this.isAdmin(' + this.count + ') ─> ', this.isAdmin);
+        // console.log(
+        //     'Componente ' + this._name + ': fillFormData: this._usersService.userProfile.id_user(' + this.count + ') ─> ',
+        //     this._usersService.userProfile.id_user
+        // );
+        // console.log(
+        //     'Componente ' + this._name + ': fillFormData: typeof this._usersService.userProfile.id_user(' + this.count + ') ─> ',
+        //     typeof this._usersService.userProfile.id_user
+        // );
+        // console.log('Componente ' + this._name + ': fillFormData: this.oldRecord.id_user(' + this.count + ') ─> ', this.oldRecord.id_user);
+        // console.log(
+        //     'Componente ' + this._name + ': fillFormData: typeof this.oldRecord.id_user(' + this.count + ') ─> ',
+        //     typeof this.oldRecord.id_user
+        // );
+
+        switch (true) {
+            case this.browseForm:
+                this.idAsociationUserField.disable();
+                this.userNameUserField.disable();
+                this.nameUserField.disable();
+                this.lastNameUserField.disable();
+                this.emailField.disable();
+                this.passwordField.disable();
+                this.phoneUserField.disable();
+                this.profileUserField.disable();
+                this.statusUserField.disable();
+
+                break;
+
+            case this.registerForm:
+                this.idAsociationUserField.enable();
+                this.userNameUserField.enable();
+                this.nameUserField.enable();
+                this.lastNameUserField.enable();
+                this.emailField.enable();
+                this.profileUserField.disable();
+                this.statusUserField.disable();
+                this.phoneUserField.enable();
+                this.passwordField.enable();
+
+                break;
+
+            case this.profileForm:
+                if (this.isAdmin) {
+                    this.idAsociationUserField.disable();
+                } else {
+                    this.idAsociationUserField.enable();
+                }
+                this.userNameUserField.enable();
+                this.nameUserField.enable();
+                this.lastNameUserField.enable();
+                this.emailField.disable();
+                this.passwordField.disable();
+                this.profileUserField.disable();
+                this.statusUserField.disable();
+                this.phoneUserField.enable();
+
+                break;
+
+            case this.createForm:
+                if (this.isSuper) {
+                    this.idAsociationUserField.enable();
+                } else {
+                    this.idAsociationUserField.disable();
+                }
+                this.userNameUserField.enable();
+                this.nameUserField.enable();
+                this.lastNameUserField.enable();
+                this.emailField.enable();
+                this.passwordField.enable();
+                this.phoneUserField.enable();
+                this.profileUserField.enable();
+                this.statusUserField.enable();
+
+                break;
+
+            case this.editForm:
+                if (this.isAdmin && this._usersService.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
+                    this.idAsociationUserField.disable();
+                    this.profileUserField.disable();
+                    this.statusUserField.disable();
+                } else {
+                    this.idAsociationUserField.enable();
+                    this.profileUserField.enable();
+                    this.statusUserField.enable();
+                }
+                this.userNameUserField.enable();
+                this.nameUserField.enable();
+                this.lastNameUserField.enable();
+                this.emailField.disable();
+                this.passwordField.disable();
+                this.phoneUserField.enable();
+
+                break;
+
+            default:
+                break;
+        }
 
         if (this.isAdmin && this._usersService.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
             console.log('Componente ' + this._name + ': fillFormData: userProfile(' + this.count + ') ─> disable');
             this.profileUserField.disable();
+            this.statusUserField.disable();
+            this.idAsociationUserField.disable();
         }
-
-        // Controls can also be enabled/disabled after creation:
-        // form.get('first')?.enable();
-        // form.get('last')?.disable();
     }
 
     // funciones validadoras a incluir en el array Validators
@@ -361,33 +444,40 @@ export class FormUserComponent implements OnChanges {
     }
 
     async getAsociations(): Promise<boolean> {
-        console.log(
-            'Componente ' + this._name + ': getAsociations: this.userProfile.asociation_id(' + this.count + '): ',
-            this._usersService.userProfile.id_asociation_user
-        );
+        // console.log(
+        //     'Componente ' + this._name + ': getAsociations: this.userProfile.asociation_id(' + this.count + '): ',
+        //     this._usersService.userProfile.id_asociation_user
+        // );
         return new Promise((resolve, reject) => {
             try {
                 this._asociationsService.getListAsociations().subscribe({
                     next: (resp: any) => {
-                        console.log('Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> resp', resp);
-                        this.listAsociations = resp.result.records;
-                        console.log(
-                            'Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> this.listAsociations',
-                            this.listAsociations
-                        );
+                        // console.log('Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> resp', resp);
                         if (resp.status === 200) {
+                            this.listAsociations = resp.result.records;
+                            // console.log(
+                            //     'Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> this.listAsociations',
+                            //     this.listAsociations
+                            // );
                             this.asociations = this.listAsociations.map((record: any) => {
                                 return { url: record.logo_asociation, caption: record.long_name_asociation, id: record.id_asociation };
                             });
-                            console.log('Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> this.asociations', this.asociations);
+                            // console.log('Componente ' + this._name + ': getAsociations:(' + this.count + ') ─> this.asociations', this.asociations);
                         } else {
+                            console.log('Componente ' + this._name + ': getAsociations: resp.message(' + this.count + ') ─> ', resp.message);
                             this.msg(resp.message);
                         }
                         this.hasAsociations = true;
+                        // console.log(
+                        //     'Componente ' + this._name + ': getAsociations: this.hasAsociations(' + this.countCheck + ') ─> ',
+                        //     this.hasAsociations
+                        // );
                         if (this.hasAsociations && this.hasUser) {
+                            // console.log('Componente ' + this._name + ': getAsociations: fillFormData(' + this.countCheck + ') ─> ');
                             this.fillFormData();
                             this.loading = false;
                         }
+                        // console.log('Componente ' + this._name + ': getAsociations: resolve(' + this.countCheck + ') ─> ');
                         resolve(true);
                     },
                     error: (err: any) => {
@@ -395,7 +485,7 @@ export class FormUserComponent implements OnChanges {
                         reject(err);
                     },
                     complete: () => {
-                        console.log('Componente ' + this._name + ': getAsociaciones: complete(' + this.count + ') ─> ');
+                        // console.log('Componente ' + this._name + ': getAsociaciones: complete(' + this.count + ') ─> ');
                     },
                 });
             } catch (err: any) {
@@ -436,7 +526,7 @@ export class FormUserComponent implements OnChanges {
         }
     }
 
-    getUserProfiles() {
+    getStatusAndProfiles() {
         this.profiles = USERS_CONST.USERS_PROFILES;
         this.status = USERS_CONST.USERS_SITUATION;
         return '';
@@ -444,7 +534,10 @@ export class FormUserComponent implements OnChanges {
 
     getDataUserConnected() {
         if (this._usersService.userProfile.token_user !== '') {
-            console.log('Componente ' + this._name + ': getDataUserConnected: data(' + this.count + ') ─> ');
+            console.log(
+                'Componente ' + this._name + ': getDataUserConnected: this._usersService.userProfile (' + this.count + ') ─> ',
+                this._usersService.userProfile
+            );
             try {
                 this.oldRecord = {
                     id_user: this._usersService.userProfile.id_user,
@@ -471,11 +564,15 @@ export class FormUserComponent implements OnChanges {
                     filePath: '',
                     fileImage: null,
                     isSelectedFile: false,
+                    isDefault: this.avatarUrlDefault === src,
+                    isChange: false,
                 };
                 console.log('Componente ' + this._name + ': getDataUserConnected: this.avatarImg ─> ', this.avatarImg);
 
                 this.hasUser = true;
+                console.log('Componente ' + this._name + ': getDataUserConnected: this.hasUser(' + this.countCheck + ') ─> ', this.hasUser);
                 if (this.hasAsociations && this.hasUser) {
+                    console.log('Componente ' + this._name + ': getDataUserConnected: fillFormData(' + this.countCheck + ') ─> ');
                     this.fillFormData();
                     this.loading = false;
                 }
@@ -497,6 +594,20 @@ export class FormUserComponent implements OnChanges {
         if (this.form.valid) {
             try {
                 if (this.optionsDialog.id === 'register') {
+                    if (
+                        this.form.value.id_asociation_user === 0 &&
+                        this.form.value.user_name_user === '' &&
+                        this.form.value.name_user === '' &&
+                        this.form.value.last_name_user === '' &&
+                        this.form.value.email_user === '' &&
+                        this.form.value.password_user === ''
+                    ) {
+                        console.log('Componente ' + this._name + ': manageUser: error ─> not all data filled');
+                        this._toastr.error('Missing fields to fill.<br> Fill it in, please.', 'Not all data filled');
+                        this.loading = false;
+                        return;
+                    }
+
                     let message = '';
                     let msgRegisterProfile = { status: '', message: '' };
                     // let msgRegisterAvatar = { status: 'ok', message: '' };
@@ -506,8 +617,8 @@ export class FormUserComponent implements OnChanges {
                     message = msgRegisterProfile.message;
 
                     // if (this.avatarImg.isSelectedFile) {
-                    //     console.log('Componente ' + this._name + ': manageUser: updateAvatar ─> updateAvatar');
-                    //     msgRegisterAvatar = await this.updateAvatar();
+                    //     console.log('Componente ' + this._name + ': manageUser: manageAvatar ─> manageAvatar');
+                    //     msgRegisterAvatar = await this.manageAvatar();
                     //     message += message === '' ? msgRegisterAvatar.message : ' \n' + msgRegisterAvatar.message;
                     // }
 
@@ -528,19 +639,17 @@ export class FormUserComponent implements OnChanges {
                 } else if (this.optionsDialog.id === 'create') {
                     console.log('Componente ' + this._name + ': manageUser: ─> createUser');
                     if (
-                        this.form.value.id_asociation_user === 0 &&
-                        this.form.value.user_name_user === '' &&
-                        this.form.value.name_user === '' &&
-                        this.form.value.last_name_user === '' &&
-                        this.form.value.email_user === '' &&
-                        this.form.value.password_user === '' &&
-                        this.form.value.phone_user === '' &&
-                        this.form.value.profile_user === '' &&
-                        this.form.value.status_user === '' &&
-                        this.avatarImg.src === ''
+                        (!this.isSuper && this.form.value.id_asociation_user === 0) ||
+                        this.form.value.user_name_user === '' ||
+                        this.form.value.name_user === '' ||
+                        this.form.value.last_name_user === '' ||
+                        this.form.value.email_user === '' ||
+                        this.form.value.password_user === '' ||
+                        this.form.value.profile_user === '' ||
+                        this.form.value.status_user === ''
                     ) {
                         console.log('Componente ' + this._name + ': manageUser: error ─> not all data filled');
-                        this._toastr.error('Missing fields to fill.<br> Fill it in, please.', 'Not all data filled');
+                        this._toastr.error('Missing required fields to fill.<br> Fill it in, please.', 'Not all data filled');
                         this.loading = false;
                         return;
                     }
@@ -569,8 +678,8 @@ export class FormUserComponent implements OnChanges {
                         // console.log('Componente ' + this._name + ': manageUser: this.avatarImg.src ─> ', this.avatarImg.src);
                         console.log('Componente ' + this._name + ': manageUser: this.oldRecord.avatar_user ─> ', this.oldRecord.avatar_user);
                         if (this.avatarImg.src !== this.oldRecord.avatar_user) {
-                            console.log('Componente ' + this._name + ': manageUser: updateAvatar ─> updateAvatar');
-                            msgCreateAvatar = await this.updateAvatar(ACTION_AVATAR.user);
+                            console.log('Componente ' + this._name + ': manageUser: manageAvatar ─> manageAvatar');
+                            msgCreateAvatar = await this.manageAvatar(ACTION_AVATAR.user);
                             message += message === '' ? msgCreateAvatar.message : ' <br>' + msgCreateAvatar.message;
                         }
                     }
@@ -634,8 +743,8 @@ export class FormUserComponent implements OnChanges {
                         // console.log('Componente ' + this._name + ': manageUser: this.avatarImg.src ─> ', this.avatarImg.src);
                         console.log('Componente ' + this._name + ': manageUser: this.oldRecord.avatar_user ─> ', this.oldRecord.avatar_user);
                         if (this.avatarImg.src !== this.oldRecord.avatar_user) {
-                            console.log('Componente ' + this._name + ': manageUser: ─> updateAvatar');
-                            msgEditAvatar = await this.updateAvatar(ACTION_AVATAR.user);
+                            console.log('Componente ' + this._name + ': manageUser: ─> manageAvatar');
+                            msgEditAvatar = await this.manageAvatar(ACTION_AVATAR.user);
                             console.log('Componente ' + this._name + ': manageUser: msgEditAvatar ─> ', msgEditAvatar);
                             message += message === '' ? msgEditAvatar.message : ' <br>' + msgEditAvatar.message;
                         }
@@ -643,13 +752,13 @@ export class FormUserComponent implements OnChanges {
 
                     if (msgEdit.status === 'ok' && msgEditAvatar.status === 'ok') {
                         this.loading = false;
-                        this._toastr.success(message, 'Updated profile').onHidden.subscribe(() => {
+                        this._toastr.success(message, 'Updated user').onHidden.subscribe(() => {
                             console.log('Componente ' + this._name + ': manageUser editUser 1: this.userResp ─> ', this.userResp);
                             this.exitForm(this.userResp);
                         });
                     } else if ((msgEdit.status === 'ok' && msgEditAvatar.status === '') || (msgEdit.status === '' && msgEditAvatar.status === 'ok')) {
                         this.loading = false;
-                        this._toastr.info(message, 'Updated profile').onHidden.subscribe(() => {
+                        this._toastr.info(message, 'Updated user').onHidden.subscribe(() => {
                             console.log('Componente ' + this._name + ': manageUser editUser 1: this.userResp ─> ', this.userResp);
                             this.exitForm(this.userResp);
                         });
@@ -664,7 +773,8 @@ export class FormUserComponent implements OnChanges {
                         this.oldRecord.name_user === this.form.value.name_user &&
                         this.oldRecord.last_name_user === this.form.value.last_name_user &&
                         this.oldRecord.phone_user === this.form.value.phone_user &&
-                        this.oldRecord.id_asociation_user === this.form.value.id_asociation_user &&
+                        this.oldRecord.id_asociation_user ===
+                            (this.isAdmin ? this.oldRecord.id_asociation_user : this.form.value.id_asociation_user) &&
                         this.avatarImg.src === this.oldRecord.avatar_user
                     ) {
                         console.log('Componente ' + this._name + ': manageUser: error ─> not data changed');
@@ -675,14 +785,14 @@ export class FormUserComponent implements OnChanges {
 
                     let message = '';
                     let msgUpdateProfile = { status: 'ok', message: '' };
-                    let msgUpdateAvatar = { status: 'ok', message: '' };
+                    let msgmanageAvatar = { status: 'ok', message: '' };
 
                     if (
                         this.oldRecord.user_name_user !== this.form.value.user_name_user ||
                         this.oldRecord.name_user !== this.form.value.name_user ||
                         this.oldRecord.last_name_user !== this.form.value.last_name_user ||
                         this.oldRecord.phone_user !== this.form.value.phone_user ||
-                        this.oldRecord.id_asociation_user !== this.form.value.id_asociation_user
+                        this.oldRecord.id_asociation_user !== (this.isAdmin ? this.oldRecord.id_asociation_user : this.form.value.id_asociation_user)
                     ) {
                         msgUpdateProfile = await this.updateProfile();
                         message = msgUpdateProfile.message;
@@ -693,22 +803,22 @@ export class FormUserComponent implements OnChanges {
                         // console.log('Componente ' + this._name + ': manageUser: this.avatarImg.src ─> ', this.avatarImg.src);
                         console.log('Componente ' + this._name + ': manageUser: this.oldRecord.avatar_user ─> ', this.oldRecord.avatar_user);
                         if (this.avatarImg.src !== this.oldRecord.avatar_user) {
-                            console.log('Componente ' + this._name + ': manageUser: ─> updateAvatar');
-                            msgUpdateAvatar = await this.updateAvatar(ACTION_AVATAR.profile);
-                            console.log('Componente ' + this._name + ': manageUser: msgUpdateAvatar ─> ', msgUpdateAvatar);
-                            message += message === '' ? msgUpdateAvatar.message : ' <br>' + msgUpdateAvatar.message;
+                            console.log('Componente ' + this._name + ': manageUser: ─> manageAvatar');
+                            msgmanageAvatar = await this.manageAvatar(ACTION_AVATAR.profile);
+                            console.log('Componente ' + this._name + ': manageUser: msgmanageAvatar ─> ', msgmanageAvatar);
+                            message += message === '' ? msgmanageAvatar.message : ' <br>' + msgmanageAvatar.message;
                         }
                     }
 
-                    if (msgUpdateProfile.status === 'ok' && msgUpdateAvatar.status === 'ok') {
+                    if (msgUpdateProfile.status === 'ok' && msgmanageAvatar.status === 'ok') {
                         this.loading = false;
                         this._toastr.success(message, 'Updated profile').onHidden.subscribe(() => {
-                            window.location.reload();
+                            // window.location.reload();
                         });
-                    } else if (msgUpdateProfile.status === 'ok' || msgUpdateAvatar.status === 'ok') {
+                    } else if (msgUpdateProfile.status === 'ok' || msgmanageAvatar.status === 'ok') {
                         this.loading = false;
                         this._toastr.info(message, 'Updated profile').onHidden.subscribe(() => {
-                            window.location.reload();
+                            // window.location.reload();
                         });
                     } else {
                         this.loading = false;
@@ -798,7 +908,8 @@ export class FormUserComponent implements OnChanges {
                 this._usersService.updateProfile(data).subscribe({
                     next: async (resp: any) => {
                         if (resp.status === 200) {
-                            this.userProfile = this._usersService.actualizeStoreProfile(resp.result.data_user, resp.result.data_asoc);
+                            this.userResp.data = resp.result.data_user;
+                            this.userProfile = this._usersService.modifyStoreProfile(this.userResp.data);
                             console.log('Componente ' + this._name + ': updateProfile: ─> this.userProfile', this.userProfile);
                             //TODO: upload image
                             // this.msg('El perfil se actualizao con exito');
@@ -854,17 +965,7 @@ export class FormUserComponent implements OnChanges {
                     next: async (resp: any) => {
                         console.log('Componente ' + this._name + ': createUser: resp ─> ', resp);
                         if (resp.status === 200) {
-                            this.userResp.data.id_user = resp.last_insertId;
-                            this.userResp.data.id_asociation_user = resp.result.id_asociation_user;
-                            this.userResp.data.user_name_user = resp.result.user_name_user;
-                            this.userResp.data.name_user = resp.result.name_user;
-                            this.userResp.data.last_name_user = resp.result.last_name_user;
-                            this.userResp.data.email_user = resp.result.email_user;
-                            this.userResp.data.password_user = resp.result.password_user;
-                            this.userResp.data.phone_user = resp.result.phone_user;
-                            this.userResp.data.profile_user = resp.result.profile_user;
-                            this.userResp.data.status_user = resp.result.status_user;
-                            this.userResp.data.date_updated_user = resp.result.date_updated_user;
+                            this.userResp.data = resp.result.records[0];
                             console.log('Componente ' + this._name + ': createUser: this.userResp ─> ', this.userResp);
                             resolve({ status: 'ok', message: 'El usuario se creó con exito' });
                         } else {
@@ -953,59 +1054,62 @@ export class FormUserComponent implements OnChanges {
     }
 
     // Gestión de los avatares
-    async updateAvatar(action: ACTION_AVATAR) {
-        console.log('Componente ' + this._name + ': updateAvatar: this.avatarUrlDefault ─> ', this.avatarUrlDefault);
-        console.log('Componente ' + this._name + ': updateAvatar: this.oldRecord.avatar_user ─> ', this.oldRecord.avatar_user);
-        // console.log('Componente ' + this._name + ': updateAvatar: this.avatarImg.src ─> ', this.avatarImg.src);
+    async manageAvatar(action: ACTION_AVATAR) {
+        console.log('Componente ' + this._name + ': manageAvatar: this.avatarUrlDefault ─> ', this.avatarUrlDefault);
+        console.log('Componente ' + this._name + ': manageAvatar: this.oldRecord.avatar_user ─> ', this.oldRecord.avatar_user);
+        // console.log('Componente ' + this._name + ': manageAvatar: this.avatarImg.src ─> ', this.avatarImg.src);
         if (this.avatarImg.src === this.avatarUrlDefault && this.oldRecord.avatar_user !== this.avatarUrlDefault) {
             try {
-                console.log('Componente ' + this._name + ': updateAvatar: deleteAvatars () ─> ');
+                console.log('Componente ' + this._name + ': manageAvatar: deleteAvatars () ─> ');
                 const respDelete: any = await this.deleteAvatars(action);
-                // console.log('Componente ' + this._name + ': updateAvatar: deleteAvatars respDelete ─> ', respDelete);
+                // console.log('Componente ' + this._name + ': manageAvatar: deleteAvatars respDelete ─> ', respDelete);
                 if (respDelete.message === 'ok') {
                     this._usersService.updateProfileAvatar(this.avatarUrlDefault);
                     this.userResp.data.avatar_user = '';
                     return { status: 'ok', message: 'Avatar modified successfully' };
                 } else {
-                    console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar respUpload.body.message ─> ', respDelete.body.message);
+                    console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar respUpload.body.message ─> ', respDelete.body.message);
                     // this.msg(respDelete.body.message);
                     return { status: 'error', message: respDelete.body.message };
                 }
             } catch (error) {
-                console.log('Componente ' + this._name + ': updateAvatar: deleteAvatars error ─> ', error);
+                console.log('Componente ' + this._name + ': manageAvatar: deleteAvatars error ─> ', error);
                 // this.msg('Unexpected error uploading avatar');
                 return { status: 'abort', message: 'Unexpected error uploading avatar' };
             }
         } else {
             if (this.oldRecord.avatar_user !== this.avatarImg.src) {
                 try {
-                    console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar () ─> ');
+                    console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar () ─> ');
                     const respUpload = await this.uploadAvatar(action);
-                    console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar respUpload ─> ', respUpload);
+                    console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar respUpload ─> ', respUpload);
                     if (respUpload.body.message === 'ok') {
+                        console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar this.userResp ─> ', this.userResp);
+                        this.userResp.data = respUpload.body.result.records[0];
                         // console.log(
-                        //     'Componente ' + this._name + ': updateAvatar: uploadAvatar respUpload.body.result.url ─> ',
+                        //     'Componente ' + this._name + ': manageAvatar: uploadAvatar respUpload.body.result.url ─> ',
                         //     respUpload.body.result.url
                         // );
-                        if (ACTION_AVATAR.profile) {
-                            this._usersService.updateProfileAvatar(respUpload.body.result.url);
+                        if (
+                            action === ACTION_AVATAR.profile ||
+                            this.userResp.data.id_user.toString() === this._usersService.userProfile.id_user.toString()
+                        ) {
+                            this._usersService.modifyStoreProfile(respUpload.body.result.records[0]);
                         }
-                        console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar this.userResp ─> ', this.userResp);
-                        this.userResp.data.avatar_user = respUpload.body.result.url;
-                        console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar this.userResp ─> ', this.userResp);
+                        console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar this.userResp ─> ', this.userResp);
                         return { status: 'ok', message: 'Avatar modified successfully' };
                     } else {
-                        console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar respUpload.body.message ─> ', respUpload.body.message);
+                        console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar respUpload.body.message ─> ', respUpload.body.message);
                         // this.msg(respUpload.body.message);
                         return { status: 'error', message: respUpload.body.message };
                     }
                 } catch (error) {
-                    console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar error ─> ', error);
+                    console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar error ─> ', error);
                     // this.msg('User created. Unexpected error uploading avatar');
                     return { status: 'abort', message: 'Unexpected error uploading avatar' };
                 }
             } else {
-                console.log('Componente ' + this._name + ': updateAvatar: uploadAvatar  ─> ', 'Nothing to upload.');
+                console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar  ─> ', 'Nothing to upload.');
                 // this.msg(respUpload.body.message);
                 return { status: 'error', message: 'Nothing to upload.' };
             }
@@ -1028,6 +1132,7 @@ export class FormUserComponent implements OnChanges {
                 fd.append('prefix', 'avatars' + '/user-' + id_user);
                 // fd.append('name', this.avatarImg.nameFile);
                 fd.append('name', user_name_user + '.png');
+                fd.append('date_updated', this.userResp.data.date_updated_user);
                 // console.log('Componente ' + this._name + ': uploadAvatar: this.avatarImg!.fileImage ─> ', typeof this.avatarImg!.fileImage);
                 // fd.append('file', this.avatarImg.fileImage, this.avatarImg.nameFile);
                 fd.append('file', this.avatarImg.fileImage, user_name_user + '.png');
@@ -1069,6 +1174,7 @@ export class FormUserComponent implements OnChanges {
             fd.append('module', 'users');
             fd.append('prefix', 'avatars' + '/user-' + id_user);
             fd.append('name', this.avatarImg.nameFile);
+            fd.append('date_updated', this.userResp.data.date_updated_user);
             // console.log('Componente ' + this._name + ': uploadAvatar: this.avatarImg!.fileImage ─> ', typeof this.avatarImg!.fileImage);
             // fd.append('file', this.avatarImg.fileImage, this.avatarImg.nameFile);
             // if (this.avatarImg.fileImage !== null) {

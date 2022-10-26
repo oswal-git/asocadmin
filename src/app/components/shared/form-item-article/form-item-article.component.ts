@@ -1,6 +1,9 @@
-import { Component, forwardRef, OnInit } from '@angular/core';
-import { AbstractControl, ControlValueAccessor, NG_VALUE_ACCESSOR, UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ToastrService } from 'ngx-toastr';
+import { Component, forwardRef, Input, OnInit } from '@angular/core';
+import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { environment } from '@env/environment';
+import { faKeyboard } from '@fortawesome/free-solid-svg-icons';
+import { IItemArticle } from '@app/interfaces/api/iapi-articles.metadata';
+import { IEglImagen } from '@app/shared/controls';
 
 @Component({
     selector: 'app-form-item-article',
@@ -16,65 +19,55 @@ import { ToastrService } from 'ngx-toastr';
 })
 export class FormItemArticleComponent implements OnInit, ControlValueAccessor {
     private _name = 'FormItemArticleComponent';
-    public htmlData: string = '';
 
-    form!: UntypedFormGroup;
+    @Input('item') item: number = 0;
+    id!: string;
 
-    // private onTouchfn: Function;
-    // private onChangefn!: Function;
+    itemArticleModel!: IItemArticle;
+    onChangefn!: (value: IItemArticle) => void;
+    onTouchfn!: () => void;
+
+    image_item_article!: IEglImagen;
+    text_item_article: String = '';
+
+    textItemArticleMinLength: number = 5;
+
+    itemArticleUrlDefault = environment.urlApi + '/assets/images/images.jpg';
+    imgReadonly = false;
+
+    faKeyboard = faKeyboard;
 
     // interface ControlValueAccessor - start
-    writeValue(obj: any): void {
-        console.log('Componente ' + this._name + ': changeHtml: obj ─> ', obj);
+    writeValue(obj: IItemArticle): void {
+        console.log('Componente ' + this._name + ': writeValue: obj ─> ', obj);
+        this.image_item_article = obj.image_item_article;
+        this.text_item_article = obj.text_item_article;
+        this.itemArticleModel = obj;
     }
-    registerOnChange(_fn: any): void {
-        // this.onChangefn = fn;
+    registerOnChange(fn: any): void {
+        this.onChangefn = fn;
     }
-    registerOnTouched(_fn: any): void {}
+    registerOnTouched(fn: any): void {
+        this.onTouchfn = fn;
+    }
     // interface ControlValueAccessor - fin
 
-    constructor(private _formBuilder: UntypedFormBuilder, private toastr: ToastrService) {
-        this.buildForm();
+    constructor() {}
+
+    ngOnInit(): void {
+        this.id = 'itemArticleImg' + this.item;
     }
 
-    ngOnInit(): void {}
-
-    buildForm() {
-        this.form = this._formBuilder.group({
-            title: ['', [Validators.required, Validators.minLength(4)]],
-            // category: ['', [Validators.required]],
-            // subcategory: ['', [Validators.required]],
-            // class: ['', [Validators.required]],
-            abstract: ['', [Validators.required, Validators.minLength(4), Validators.maxLength(50)]],
-            text: ['', [Validators.minLength(4), Validators.maxLength(500)]],
-            stock: [10, [Validators.required, Validators.min(5)]],
-        });
+    onChangeImg(event: any) {
+        // console.log('Componente ' + this._name + ': onChangeImg: event ─> ', event);
+        this.itemArticleModel.image_item_article = event;
+        this.onTouchfn();
+        this.onChangefn(this.itemArticleModel);
     }
-
-    save() {
-        if (this.form.valid) {
-            console.log('Componente ' + this._name + ': save: this.form.value ─> ', this.form.value);
-        } else {
-            this.form.markAllAsTouched;
-            this.toastr.error('Fields are required', 'Fill fields, please', {
-                timeOut: 3000,
-            });
-        }
-    }
-
-    get titleField(): AbstractControl {
-        return this.form.get('title')!;
-    }
-
-    get abstractField(): AbstractControl {
-        return this.form.get('abstract')!;
-    }
-
-    get textField(): AbstractControl {
-        return this.form.get('text')!;
-    }
-
-    get stockField(): AbstractControl {
-        return this.form.get('stock')!;
+    onChangeText(event: any) {
+        // console.log('Componente ' + this._name + ': onChangeText: event ─> ', event);
+        this.itemArticleModel.text_item_article = event;
+        this.onTouchfn();
+        this.onChangefn(this.itemArticleModel);
     }
 }

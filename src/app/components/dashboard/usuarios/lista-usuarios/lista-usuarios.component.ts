@@ -122,7 +122,7 @@ export class ListaUsuariosComponent implements OnInit {
         private router: Router
     ) {
         const res = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        // console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {
             this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
@@ -144,11 +144,11 @@ export class ListaUsuariosComponent implements OnInit {
     }
 
     async ngOnInit() {
-        console.log('\n NgOnInit...\n');
-        console.log('Componente ' + this._name + ': ngOnInit: userPerfil ─> ', this.userProfile);
-        console.log('Componente ' + this._name + ': ngOnInit: getAsociaciones ─> ');
+        // console.log('\n NgOnInit...\n');
+        // console.log('Componente ' + this._name + ': ngOnInit: userPerfil ─> ', this.userProfile);
+        // console.log('Componente ' + this._name + ': ngOnInit: getAsociaciones ─> ');
         await this.getAsociaciones();
-        console.log('Componente ' + this._name + ': ngOnInit: userLoad ─> ');
+        // console.log('Componente ' + this._name + ': ngOnInit: userLoad ─> ');
         await this.userLoad();
 
         for (let i = 0; i < this.listUsuarios.length; i = i + this.recordsPerPage) {
@@ -158,22 +158,22 @@ export class ListaUsuariosComponent implements OnInit {
 
         // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
         // this.dataSource.paginator = this.paginator;
-        console.log('Componente ' + this._name + ': ngOnInit: this.listUsuarios ─> ', this.listUsuarios);
+        // console.log('Componente ' + this._name + ': ngOnInit: this.listUsuarios ─> ', this.listUsuarios);
         this.dataSource.data = this.listUsuarios;
-        console.log('Componente ' + this._name + ': ngOnInit: this.dataSource.data ─> ', this.dataSource.data);
+        // console.log('Componente ' + this._name + ': ngOnInit: this.dataSource.data ─> ', this.dataSource.data);
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
     }
 
     async getAsociaciones() {
-        console.log(
-            'Componente ' + this._name + ': getAsociations: this.userProfile.asociation_id: ',
-            this._usersService.userProfile.id_asociation_user
-        );
+        // console.log(
+        //     'Componente ' + this._name + ': getAsociations: this.userProfile.asociation_id: ',
+        //     this._usersService.userProfile.id_asociation_user
+        // );
         try {
             this._asociationsService.getListAsociations().subscribe({
                 next: (resp: any) => {
-                    console.log('Componente ' + this._name + ': getAsociations: ─> resp', resp);
+                    // console.log('Componente ' + this._name + ': getAsociations: ─> resp', resp);
                     if (resp.status === 200) {
                         this.asociations = resp.result.records.map((record: any) => {
                             return {
@@ -183,7 +183,7 @@ export class ListaUsuariosComponent implements OnInit {
                                 id_asociation: record.id_asociation,
                             };
                         });
-                        console.log('Componente ' + this._name + ': getAsociations: ─> this.asociations', this.asociations);
+                        // console.log('Componente ' + this._name + ': getAsociations: ─> this.asociations', this.asociations);
                     } else {
                         console.log('Componente ' + this._name + ': getAsociations: ─> resp.message', resp.message);
                     }
@@ -205,13 +205,13 @@ export class ListaUsuariosComponent implements OnInit {
     }
 
     async userLoad(): Promise<boolean> {
-        console.log('Componente ' + this._name + ': userLoad: this.userProfile.asociation_id ─> ', this.userProfile.id_asociation_user);
+        // console.log('Componente ' + this._name + ': userLoad: this.userProfile.asociation_id ─> ', this.userProfile.id_asociation_user);
         return new Promise((resolve, reject) => {
             try {
                 this.loading = true;
                 this._usersService.getAllUsers().subscribe({
                     next: (resp: any) => {
-                        console.log('Componente ' + this._name + ': userLoad: ─> resp', resp);
+                        // console.log('Componente ' + this._name + ': userLoad: ─> resp', resp);
                         if (resp.status === 200) {
                             this.listUsuarios = resp.result.records;
                             // .map((record: any) => {
@@ -220,11 +220,9 @@ export class ListaUsuariosComponent implements OnInit {
                             // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
                             // this.dataSource.paginator = this.paginator;
                             // this.dataSource.sort = this.sort;
-                            console.log('Componente ' + this._name + ': userLoad: ─> this.asociations', this.asociations);
+                            // console.log('Componente ' + this._name + ': userLoad: ─> this.asociations', this.asociations);
                         } else {
-                            this._toastr.success(resp.message, 'Error retrieving user list').onHidden.subscribe(() => {
-                                // this.router.navigateByUrl('/login');
-                            });
+                            this._toastr.success(resp.message, 'Error retrieving user list');
                         }
                         this.hasUser = true;
                         if (this.hasAsociations && this.hasUser) {
@@ -270,24 +268,29 @@ export class ListaUsuariosComponent implements OnInit {
         return item.user_id;
     }
 
-    agregarUsuario(user: IProfileUsuario) {
-        console.log('Componente ' + this._name + ': agregarUsuario: user.user_id ─> ', user.id_user);
+    agregarUsuario(user: IUserAsociation) {
+        // console.log('Componente ' + this._name + ': agregarUsuario: user ─> ', user);
+        // console.log('Componente ' + this._name + ': agregarUsuario: user.id_user ─> ', user.id_user);
+        // console.log('Componente ' + this._name + ': agregarUsuario: this.listUsuarios before ─> ', this.listUsuarios);
         this.listUsuarios.push(user);
-        this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
-        this.dataSource.paginator = this.paginator;
-        this.dataSource.sort = this.sort;
+        // console.log('Componente ' + this._name + ': agregarUsuario: this.listUsuarios after ─> ', this.listUsuarios);
 
-        this._snackBar.open('El usuario fue añadido con exito', '', {
-            duration: this.durationInSeconds * 1000,
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-        });
+        this.dataSource.data = this.listUsuarios;
+        // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
+        // this.dataSource.paginator = this.paginator;
+        // this.dataSource.sort = this.sort;
+
+        // this._snackBar.open('El usuario fue añadido con exito', '', {
+        //     duration: this.durationInSeconds * 1000,
+        //     horizontalPosition: this.horizontalPosition,
+        //     verticalPosition: this.verticalPosition,
+        // });
     }
 
     editarUsuario(userEdit: IUserAsociation) {
-        console.log('Componente ' + this._name + ': editarUsuario: userEdit.user_id ─> ', userEdit.id_user);
-        console.log('Componente ' + this._name + ': editarUsuario: typeof userEdit.user_id ─> ', typeof userEdit.id_user);
-        console.log('Componente ' + this._name + ': editarUsuario: this.listUsuarios ─> ', this.listUsuarios);
+        // console.log('Componente ' + this._name + ': editarUsuario: userEdit.user_id ─> ', userEdit.id_user);
+        // console.log('Componente ' + this._name + ': editarUsuario: typeof userEdit.user_id ─> ', typeof userEdit.id_user);
+        // console.log('Componente ' + this._name + ': editarUsuario: this.listUsuarios ─> ', this.listUsuarios);
         this.dataSource.data = this.dataSource.data.map((user: IUserAsociation) => {
             console.log('Componente ' + this._name + ': editarUsuario: user ─> map', user);
             console.log('Componente ' + this._name + ': editarUsuario: typeof user.user_id ─> ', typeof user.id_user);
@@ -311,7 +314,7 @@ export class ListaUsuariosComponent implements OnInit {
             return user;
         });
 
-        console.log('Componente ' + this._name + ': editarUsuario: this.dataSource.data ─> ', this.dataSource.data);
+        // console.log('Componente ' + this._name + ': editarUsuario: this.dataSource.data ─> ', this.dataSource.data);
         this.dataSource.data = this.dataSource.data;
         // this.dataSource = this.listUsuarios;
         // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
@@ -326,18 +329,18 @@ export class ListaUsuariosComponent implements OnInit {
     }
 
     eliminarUsuario(uid: number) {
-        console.log('Componente ' + this._name + ': eliminarUsuario: uid ─> ', uid);
+        // console.log('Componente ' + this._name + ': eliminarUsuario: uid ─> ', uid);
         this.listUsuarios = this.listUsuarios.filter((user) => user.id_user !== uid);
         this.dataSource.data = this.listUsuarios;
         // this.dataSource = new MatTableDataSource<IProfileUsuario>(this.listUsuarios);
         // this.dataSource.paginator = this.paginator;
         // this.dataSource.sort = this.sort;
 
-        this._snackBar.open('El usuario fue eliminado con exito', '', {
-            duration: this.durationInSeconds * 1000,
-            horizontalPosition: this.horizontalPosition,
-            verticalPosition: this.verticalPosition,
-        });
+        // this._snackBar.open('El usuario fue eliminado con exito', '', {
+        //     duration: this.durationInSeconds * 1000,
+        //     horizontalPosition: this.horizontalPosition,
+        //     verticalPosition: this.verticalPosition,
+        // });
     }
 
     abrirDialogo(action: string, registro: IProfileUsuario | null = null, index: number = -1) {
@@ -428,7 +431,7 @@ export class ListaUsuariosComponent implements OnInit {
 
         dialogo1.afterClosed().subscribe({
             next: (retorno: IResponseActionsUsers) => {
-                console.log('Componente ' + this._name + ': afterClosed: retorno ─> ', retorno);
+                // console.log('Componente ' + this._name + ': afterClosed: retorno ─> ', retorno);
                 if (retorno && retorno.action) {
                     if (retorno.action === 'create') {
                         this.agregarUsuario(retorno.data);

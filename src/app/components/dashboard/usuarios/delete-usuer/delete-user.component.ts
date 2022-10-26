@@ -27,6 +27,8 @@ export class DeleteUserComponent implements OnInit {
         filePath: '',
         fileImage: null,
         isSelectedFile: false,
+        isDefault: this.avatarUrlDefault === this.avatarUrlDefault,
+        isChange: false,
     };
 
     loading = true;
