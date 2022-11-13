@@ -150,10 +150,10 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
     ngAfterViewChecked() {}
 
     loadAsociations(): Promise<boolean> {
-        console.log(
-            'Componente ' + this._name + ': loadAsociations: this.userProfile.id_asociation_user: ',
-            this._usersService.userProfile.id_asociation_user
-        );
+        // console.log(
+        //     'Componente ' + this._name + ': loadAsociations: this.userProfile.id_asociation_user: ',
+        //     this._usersService.userProfile.id_asociation_user
+        // );
         return new Promise((resolve, reject) => {
             try {
                 this._asociationsService.getAllAsociations().subscribe({

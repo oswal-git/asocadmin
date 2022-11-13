@@ -47,7 +47,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         // console.log('Componente ' + this._name + ': constructor: !this.userProfileOSubscription ─> ', !this.userProfileOSubscription);
         if (!this.userProfileOSubscription) {
             // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
-            this.userProfileOSubscription = this._usersService.userProfileO$.subscribe({
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
                 next: (user: IUserConnected) => {
                     // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
                     this.isLogin = user.token_user !== '' ? true : false;
@@ -75,18 +75,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.isLogin = this._usersService.userProfile.token_user !== '' ? true : false;
-        this.avatar =
-            this._usersService.userProfile.avatar_user === ''
-                ? environment.urlApi + '/assets/images/user.png'
-                : this._usersService.userProfile.avatar_user;
-        if (this._usersService.userProfile.profile_user === 'superadmin') {
-            this.sadmin = true;
-        }
+        // this.isLogin = this._usersService.userProfile.token_user !== '' ? true : false;
+        // this.avatar =
+        //     this._usersService.userProfile.avatar_user === ''
+        //         ? environment.urlApi + '/assets/images/user.png'
+        //         : this._usersService.userProfile.avatar_user;
+        // if (this._usersService.userProfile.profile_user === 'superadmin') {
+        //     this.sadmin = true;
+        // }
         // console.log('Componente ' + this._name + ': ngOnInit: this.sadmin ─> ', this.sadmin);
         // console.log('Componente ' + this._name + ': ngOnInit: this.isLogin ─> ', this.isLogin);
         // console.log('Componente ' + this._name + ': ngOnInit: this.avatar ─> ', this.avatar);
-
         // console.log('Componente ' + this._name + ': ngOnInit: this.size ─> ', this.size);
     }
 
@@ -158,17 +157,17 @@ export class NavbarComponent implements OnInit, OnDestroy {
         });
     }
 
-    eval = (cond: string) => {
-        if (this.sadmin && cond.includes('super')) {
-            return true;
-        } else if (this.admin && cond.includes('admin')) {
-            return true;
-        } else if (cond.includes('all')) {
-            return true;
-        } else {
-            return false;
-        }
-    };
+    // eval = (cond: string) => {
+    //     if (this.sadmin && cond.includes('super')) {
+    //         return true;
+    //     } else if (this.admin && cond.includes('admin')) {
+    //         return true;
+    //     } else if (cond.includes('all')) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // };
 
     msg(msg: string) {
         this._snackBar.open(msg, '', {

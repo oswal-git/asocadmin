@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 import { IBDUsuario, ICredentials, IIdUser, INewCredentials, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { ICreateUser } from '@app/interfaces/ui/dialogs.interface';
-import { Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, timer, switchMap } from 'rxjs';
 import { BdmysqlService } from './bdmysql.service';
 
 @Injectable({
@@ -11,6 +11,10 @@ import { BdmysqlService } from './bdmysql.service';
 export class UsersService {
     // private _name = 'UsersService';
 
+    hours: number = 0;
+    minuts: number = 0;
+    seconds: number = 10;
+    miliSeconds: number = ((this.hours * 60 + this.minuts) * 60 + this.seconds) * 1000;
     private _userprofile: IUserConnected = {
         avatar_user: '',
         date_created_user: '',
@@ -33,50 +37,40 @@ export class UsersService {
         user_name_user: '',
     };
 
-    private _userProfileO: IUserConnected = this._userprofile;
-    // private sharedUserPerfilObservable: BehaviorSubject<IUserConnected> = new BehaviorSubject<IUserConnected>(this._userProfileO);
+    // private _userProfileO: IUserConnected = this._userprofile;
 
-    get userProfileO$(): Observable<IUserConnected> {
-        // console.log('Componente ' + this._name + ': userProfileO: this._userProfileO ─> ', this._userProfileO);
-        // return this.sharedUserPerfilObservable.asObservable().pipe(distinctUntilChanged());
-        return this.userProfileSubject.asObservable();
+    get userProfile(): Observable<IUserConnected> {
+        return this.userProfileSubject$.asObservable();
     }
-    private userProfileSubject: Subject<IUserConnected>;
-
-    // set userProfileOData(data: IUserConnected) {
-    //     this._userProfileO = data;
-    //     this.sharedUserPerfilObservable.next(data);
-    // }
-
-    // set userProfileOAvatar(avatar: string) {
-    //     this._userProfileO.avatar_user = avatar;
-    //     this.sharedUserPerfilObservable.next(this._userProfileO);
-    // }
-
-    get userProfile(): IUserConnected {
-        // console.log('Componente ' + this._name + ': userProfile: this._userprofile ─> ', this._userprofile);
-        this.userProfileSubject.next(this._userprofile);
-        return this._userprofile;
-    }
+    private userProfileSubject$: BehaviorSubject<IUserConnected>;
 
     set userProfileData(data: IUserConnected) {
         // console.log('Componente ' + this._name + ': userProfileData: data ─> ', data);
         this._userprofile = data;
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(data);
-        this.userProfileSubject.next(data);
+        this.userProfileSubject$.next(this._userprofile);
     }
 
     set userProfileAvatar(avatar: string) {
         // console.log('Componente ' + this._name + ': userProfileAvatar: avatar ─> ', avatar);
         this._userprofile.avatar_user = avatar;
-        this._userProfileO.avatar_user = avatar;
+        // this._userProfileO.avatar_user = avatar;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
     }
 
     constructor(private _db: BdmysqlService) {
-        this.userProfileSubject = new Subject();
+        this.userProfileSubject$ = new BehaviorSubject(this._userprofile);
+        // this.pollUsers().subscribe((res) => console.log('Componente ' + this._name + ': constructor: pollUsers ─> ', res));
+    }
+
+    pollUsers(): Observable<any> {
+        return timer(this.seconds, this.miliSeconds).pipe(switchMap(() => this.getUserNotifications()));
+    }
+
+    getUserNotifications(): Observable<any> {
+        return this._db.getUserNotifications(this.getAuthHeaders());
     }
 
     getUserConnected() {
@@ -172,23 +166,19 @@ export class UsersService {
             this._userprofile = JSON.parse(item);
             if (this._userprofile.token_exp_user !== '') {
                 const now = Math.round(new Date().getTime() / 1000);
-                // console.log('Componente ' + this._name + ': getProfile: now  ─> ', now);
-                // console.log('Componente ' + this._name + ': getProfile: unixtime  ─> ', this._userprofile.token_exp_user);
                 if (now >= parseInt(this._userprofile.token_exp_user)) {
                     this.resetStoredProfile();
                     resp = {
                         msg: 'Token expired',
                         userprofile: this._userprofile,
                     };
-                    // console.log('Componente ' + this._name + ': getProfile: resp  ─> ', resp);
                     return resp;
                 } else {
                     resp = {
                         msg: 'User logged',
                         userprofile: this._userprofile,
                     };
-                    this.userProfileSubject.next(this._userprofile);
-                    // console.log('Componente ' + this._name + ': getProfile: resp  ─> ', resp);
+                    this.userProfileSubject$.next(this._userprofile);
                     return resp;
                 }
             } else {
@@ -197,16 +187,12 @@ export class UsersService {
                     msg: 'Not user logged',
                     userprofile: this._userprofile,
                 };
-                // console.log('Componente ' + this._name + ': getProfile: resp  ─> ', resp);
                 return resp;
             }
         }
     }
 
     actualizeStoreProfile(user: IBDUsuario, asoc: IBDAsociation) {
-        // console.log('Componente ' + this._name + ': actualizeProfile: user  ─> ', user);
-        // console.log('Componente ' + this._name + ': actualizeProfile: asoc  ─> ', asoc);
-
         this._userprofile.id_user = user.id_user;
         this._userprofile.id_asociation_user = user.id_asociation_user;
         this._userprofile.user_name_user = user.user_name_user;
@@ -236,9 +222,9 @@ export class UsersService {
 
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
 
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
 
         return this._userprofile;
     }
@@ -271,9 +257,9 @@ export class UsersService {
 
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
 
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
 
         return this._userprofile;
     }
@@ -286,9 +272,9 @@ export class UsersService {
 
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
 
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
 
         return this._userprofile;
     }
@@ -319,9 +305,9 @@ export class UsersService {
 
         localStorage.removeItem('userprofile');
 
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
 
         return this._userprofile;
     }
@@ -329,9 +315,9 @@ export class UsersService {
     updateProfileAvatar(avatar: string) {
         this._userprofile.avatar_user = avatar;
         localStorage.setItem('userprofile', JSON.stringify(this._userprofile));
-        this._userProfileO = this._userprofile;
+        // this._userProfileO = this._userprofile;
         // this.sharedUserPerfilObservable.next(this._userProfileO);
-        this.userProfileSubject.next(this._userprofile);
+        this.userProfileSubject$.next(this._userprofile);
         return this._userprofile;
     }
 

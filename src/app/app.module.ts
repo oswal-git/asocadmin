@@ -22,6 +22,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 @NgModule({
     declarations: [
         AppComponent,
+        // ShowForRolesDirective,
         // , AutofocusDirective
     ],
     imports: [
@@ -50,7 +51,7 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
         BdmysqlService,
     ],
     bootstrap: [AppComponent],
-    exports: [],
+    // exports: [ShowForRolesDirective],
 })
 export class AppModule {
     constructor(library: FaIconLibrary) {

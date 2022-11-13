@@ -16,6 +16,7 @@
    line-height: 1.6;
    font-family: "Quicksand", sans-serif;
    padding: 1em;
+   padding-top: 0;
    font-size: 0.8rem;
    // height: 100vh;
    // margin: auto;
@@ -39,19 +40,42 @@
       line-height: 30px;
       font-weight: 300;
 
-      .content_path {
-         border: 2px dashed rgb(60, 176, 15);
+      .content_tool {
+         // border: 1px solid rgb(176, 79, 15);
+         // background-color: #33909340;
+         width: auto;
          display: flex;
-         align-items: center;
-         position: fixed;
-         top: 70px;
-         left: 6px;
-         background-color: #33909340;
-         padding: 1px 10px;
-         margin-left: 12px;
-         font-size: 0.8rem;
-         font-weight: 600;
-         border-radius: 20px;
+         height: 70px;
+         position: sticky;
+         top: 0;
+         z-index: 999;
+
+         .content_tool-rel {
+            position: relative;
+            display: flex;
+            align-items: center;
+
+            .content_path {
+               // border: 2px dashed rgb(60, 176, 15);
+               display: flex;
+               align-items: center;
+               // position: fixed;
+               // top: 70px;
+               // left: 6px;
+               background-color: transparent;
+               margin-left: 12px;
+
+               .content_path-item {
+                  box-shadow: rgba(11, 43, 158, 1.37) 0px 6px 20px -6px;
+                  border-radius: 20px;
+                  padding: 1px 10px;
+                  font-size: 0.8rem;
+                  font-weight: 600;
+                  font-style: italic;
+                  margin-left: 8px;
+               }
+            }
+         }
       }
 
       .content__article {
@@ -184,6 +208,36 @@
 
                      .article__content {
                         padding: 24px 32px;
+
+                        &.redaccion {
+                           background: rgb(138, 227, 178);
+                        }
+
+                        &.anulado {
+                           background: rgb(230, 189, 189);
+                        }
+
+                        .publicado {
+                           color: #000;
+                           font-weight: bold;
+                           font-style: italic;
+                        }
+
+                        .redaccion {
+                           color: rgb(4, 74, 35);
+                           font-weight: bold;
+                           font-style: italic;
+
+                           &::before {
+                              content: "en ";
+                           }
+                        }
+
+                        .anulado {
+                           color: rgb(142, 12, 12);
+                           font-weight: bold;
+                           font-style: italic;
+                        }
 
                         .publication_date_article {
                            font-style: italic;
@@ -321,10 +375,6 @@
       }
    }
 
-   // span {
-   // margin-right: 16px;
-   // }
-
    input[type="checkbox"] {
       position: relative;
       border: none;
@@ -371,55 +421,6 @@
       opacity: 1;
    }
 }
-
-// // Tooltips
-// .icons {
-//    display: flex;
-//    position: absolute;
-//    top: 10px;
-//    right: 10px;
-//    z-index: 99;
-
-//    .icon__edit,
-//    .icon__delete {
-//       display: flex;
-//       justify-content: center;
-//       align-items: center;
-//       width: 35px;
-//       height: 35px;
-//       border-radius: 50%;
-//       background-color: #f1f1f1;
-//       box-shadow: 0 4px 6px -1px #0000001a, 0 2px 4px -1px #00000099;
-//       transition: 0.5s ease all;
-//       cursor: pointer;
-//       z-index: 1000;
-//       position: relative;
-
-//       &:hover {
-//          background-color: #303030;
-//          box-shadow: none;
-//          color: white;
-
-//          .tooltip.edit:before,
-//          .tooltip.delete:before {
-//             opacity: 1;
-//          }
-//       }
-
-//       &:nth-child(1) {
-//          margin-right: 8px;
-//       }
-
-//       .edit,
-//       .delete {
-//          display: block;
-//          font-size: 1rem;
-//          padding: 2px 0 0 1px;
-//          pointer-events: none;
-//          cursor: pointer;
-//       }
-//    }
-// }
 
 .tooltip__toggle-edit,
 .tooltip__add {

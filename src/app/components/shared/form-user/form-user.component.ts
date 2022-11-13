@@ -14,6 +14,7 @@ import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } 
 import { USERS_CONST } from '@app/data/constants/users.const';
 import { UsersService } from '@app/services/bd/users.service';
 import { IListAsociationData } from '@app/interfaces/api/iapi-asociation.metadata';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-form-user',
@@ -23,6 +24,8 @@ import { IListAsociationData } from '@app/interfaces/api/iapi-asociation.metadat
 export class FormUserComponent implements OnInit, OnChanges, DoCheck {
     private _name = 'FormUserComponent';
     private userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
 
     @Input('options') optionsDialog!: IOptionsDialog;
     @Output() salir = new EventEmitter<IResponseActionsUsers>();
@@ -124,14 +127,30 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
         private _asociationsService: AsociationsService
     ) {
         this.loading = true;
-        this.isSuper = _usersService.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = _usersService.userProfile.id_asoc_admin === 0 ? false : true;
+        this.isSuper = false;
+        this.isAdmin = false;
 
-        // console.log('Componente ' + this._name + ': constructor: this.optionsDialog  ─> ', this.optionsDialog);
-        // console.log('Componente ' + this._name + ': constructor: userPerfil(' + this.count + ') ─> ', this._usersService.userProfile);
-        // console.log('Componente ' + this._name + ': constructor: oldRecord(' + this.count + ') ─> ', this.oldRecord);
-        // this.getAsociations();
-        // this.getStatusAndProfiles();
+        if (!this.userProfileOSubscription) {
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
+                next: (user: IUserConnected) => {
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    this.userProfile = user;
+                    if (user.profile_user === 'superadmin') {
+                        this.isSuper = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.isAdmin = true;
+                    }
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
+            });
+        }
     }
 
     ngOnChanges(): void {
@@ -231,8 +250,8 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
                 //     this._usersService.userProfile
                 // );
 
-                if (this._usersService.userProfile.id_asociation_user !== 0) {
-                    this.oldRecord.id_asociation_user = this._usersService.userProfile.id_asociation_user;
+                if (this.userProfile.id_asociation_user !== 0) {
+                    this.oldRecord.id_asociation_user = this.userProfile.id_asociation_user;
                 }
 
                 // console.log('Componente ' + this._name + ': checkOptions: this.oldRecord3(' + this.countCheck + ') ─> ', this.oldRecord);
@@ -397,7 +416,7 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
                 break;
 
             case this.editForm:
-                if (this.isAdmin && this._usersService.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
+                if (this.isAdmin && this.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
                     this.idAsociationUserField.disable();
                     this.profileUserField.disable();
                     this.statusUserField.disable();
@@ -419,7 +438,7 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
                 break;
         }
 
-        if (this.isAdmin && this._usersService.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
+        if (this.isAdmin && this.userProfile.id_user.toString() === this.oldRecord.id_user.toString()) {
             console.log('Componente ' + this._name + ': fillFormData: userProfile(' + this.count + ') ─> disable');
             this.profileUserField.disable();
             this.statusUserField.disable();
@@ -533,31 +552,31 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
     }
 
     getDataUserConnected() {
-        if (this._usersService.userProfile.token_user !== '') {
+        if (this.userProfile.token_user !== '') {
             console.log(
                 'Componente ' + this._name + ': getDataUserConnected: this._usersService.userProfile (' + this.count + ') ─> ',
                 this._usersService.userProfile
             );
             try {
                 this.oldRecord = {
-                    id_user: this._usersService.userProfile.id_user,
-                    id_asociation_user: this._usersService.userProfile.id_asociation_user,
-                    user_name_user: this._usersService.userProfile.user_name_user,
-                    email_user: this._usersService.userProfile.email_user,
-                    token_user: this._usersService.userProfile.token_user,
-                    recover_password_user: this._usersService.userProfile.recover_password_user,
-                    token_exp_user: this._usersService.userProfile.token_exp_user,
-                    profile_user: this._usersService.userProfile.profile_user,
-                    status_user: this._usersService.userProfile.status_user,
-                    name_user: this._usersService.userProfile.name_user,
-                    last_name_user: this._usersService.userProfile.last_name_user,
-                    avatar_user: this._usersService.userProfile.avatar_user,
-                    phone_user: this._usersService.userProfile.phone_user,
-                    date_deleted_user: this._usersService.userProfile.date_deleted_user,
-                    date_created_user: this._usersService.userProfile.date_created_user,
-                    date_updated_user: this._usersService.userProfile.date_updated_user,
+                    id_user: this.userProfile.id_user,
+                    id_asociation_user: this.userProfile.id_asociation_user,
+                    user_name_user: this.userProfile.user_name_user,
+                    email_user: this.userProfile.email_user,
+                    token_user: this.userProfile.token_user,
+                    recover_password_user: this.userProfile.recover_password_user,
+                    token_exp_user: this.userProfile.token_exp_user,
+                    profile_user: this.userProfile.profile_user,
+                    status_user: this.userProfile.status_user,
+                    name_user: this.userProfile.name_user,
+                    last_name_user: this.userProfile.last_name_user,
+                    avatar_user: this.userProfile.avatar_user,
+                    phone_user: this.userProfile.phone_user,
+                    date_deleted_user: this.userProfile.date_deleted_user,
+                    date_created_user: this.userProfile.date_created_user,
+                    date_updated_user: this.userProfile.date_updated_user,
                 };
-                const src = this._usersService.userProfile.avatar_user !== '' ? this._usersService.userProfile.avatar_user : this.avatarScrDefault;
+                const src = this.userProfile.avatar_user !== '' ? this.userProfile.avatar_user : this.avatarScrDefault;
                 this.avatarImg = {
                     src: src,
                     nameFile: src.split(/[\\/]/).pop() || '',
@@ -946,9 +965,7 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
         return new Promise((resolve) => {
             const data: ICreateUser = {
                 id_asociation_user:
-                    this._usersService.userProfile.id_asociation_user === 0
-                        ? this.form.value.id_asociation_user
-                        : this._usersService.userProfile.id_asociation_user,
+                    this.userProfile.id_asociation_user === 0 ? this.form.value.id_asociation_user : this.userProfile.id_asociation_user,
                 user_name_user: this.form.value.user_name_user,
                 name_user: this.form.value.name_user,
                 last_name_user: this.form.value.last_name_user,
@@ -1023,7 +1040,7 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
                                     this.userResp.data.logo_asociation = '';
                                 }
                             }
-                            if (this.userResp.data.id_user === this._usersService.userProfile.id_user) {
+                            if (this.userResp.data.id_user === this.userProfile.id_user) {
                                 this.userProfile = this._usersService.modifyStoreProfile(this.userResp.data);
                             }
                             resolve({ status: 'ok', message: 'El usuario se actualizó con exito' });
@@ -1090,10 +1107,7 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
                         //     'Componente ' + this._name + ': manageAvatar: uploadAvatar respUpload.body.result.url ─> ',
                         //     respUpload.body.result.url
                         // );
-                        if (
-                            action === ACTION_AVATAR.profile ||
-                            this.userResp.data.id_user.toString() === this._usersService.userProfile.id_user.toString()
-                        ) {
+                        if (action === ACTION_AVATAR.profile || this.userResp.data.id_user.toString() === this.userProfile.id_user.toString()) {
                             this._usersService.modifyStoreProfile(respUpload.body.result.records[0]);
                         }
                         console.log('Componente ' + this._name + ': manageAvatar: uploadAvatar this.userResp ─> ', this.userResp);
@@ -1119,14 +1133,14 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
     async uploadAvatar(action: ACTION_AVATAR): Promise<any> {
         // console.log('Componente ' + this._name + ': uploadAvatar: ─> init');
         return new Promise((resolve, _reject) => {
-            const id_user = action === ACTION_AVATAR.user ? this.userResp.data.id_user : this._usersService.userProfile.id_user.toString();
-            const user_name_user = action === ACTION_AVATAR.user ? this.userResp.data.user_name_user : this._usersService.userProfile.user_name_user;
+            const id_user = action === ACTION_AVATAR.user ? this.userResp.data.id_user : this.userProfile.id_user.toString();
+            const user_name_user = action === ACTION_AVATAR.user ? this.userResp.data.user_name_user : this.userProfile.user_name_user;
 
             const fd = new FormData();
             // console.log('Componente ' + this._name + ': uploadAvatar: this.avatarImg.isSelectedFile ─> ', this.avatarImg.isSelectedFile);
             if (this.avatarImg.isSelectedFile) {
                 fd.append('action', action);
-                fd.append('token', this._usersService.userProfile.token_user);
+                fd.append('token', this.userProfile.token_user);
                 fd.append('user_id', id_user);
                 fd.append('module', 'users');
                 fd.append('prefix', 'avatars' + '/user-' + id_user);
@@ -1167,9 +1181,9 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
     async deleteAvatars(action: ACTION_AVATAR): Promise<any> {
         return new Promise((resolve, _reject) => {
             const fd = new FormData();
-            const id_user = action === ACTION_AVATAR.user ? this.userResp.data.id_user : this._usersService.userProfile.id_user.toString();
+            const id_user = action === ACTION_AVATAR.user ? this.userResp.data.id_user : this.userProfile.id_user.toString();
             fd.append('action', 'delete');
-            fd.append('token', this._usersService.userProfile.token_user);
+            fd.append('token', this.userProfile.token_user);
             fd.append('user_id', id_user);
             fd.append('module', 'users');
             fd.append('prefix', 'avatars' + '/user-' + id_user);

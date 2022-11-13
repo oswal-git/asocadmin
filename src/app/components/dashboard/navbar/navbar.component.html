@@ -44,14 +44,14 @@
             [opened]="getMediaScren().order > 4"
          >
             <div *ngFor="let item of menu" class="nav-submenu-container">
-               <ng-container *ngIf="eval(item.ngif)">
+               <ng-container *eglosShowForRoles="item.ngif">
                   <mat-nav-list>
                      <div *ngIf="item.redirect !== ''">
                         <button
                            mat-button
                            (click)="getMediaScren().order < 5 ? snav.close() : ''"
                            [routerLink]="item.redirect"
-                           *ngIf="eval(item.ngif)"
+                           *eglosShowForRoles="item.ngif"
                         >
                            {{ item.nombre }}
                         </button>
@@ -100,6 +100,7 @@
          <!-- contenido. Abarca menu lateral por detrás  -->
          <mat-sidenav-content>
             <router-outlet></router-outlet>
+            <app-footer></app-footer>
          </mat-sidenav-content>
       </mat-sidenav-container>
    </div>

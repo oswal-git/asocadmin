@@ -11,6 +11,7 @@ import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
 import { faCalendarPlus, faCircleXmark, faClockRotateLeft, faEnvelope, faKey, faKeyboard, faMobileScreen } from '@fortawesome/free-solid-svg-icons';
 import { ToastrService } from 'ngx-toastr';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-form-asociacion',
@@ -20,6 +21,8 @@ import { ToastrService } from 'ngx-toastr';
 export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
     private _name = 'FormAsociacionComponent';
     private userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
 
     @Input('options') optionsDialog!: IOptionsDialog;
     @Output() salir = new EventEmitter<IResponseActionsUsers>();
@@ -96,8 +99,30 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
         private _toastr: ToastrService
     ) {
         this.loading = true;
-        this.isSuper = _usersService.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = _usersService.userProfile.id_asoc_admin === 0 ? false : true;
+        this.isSuper = false;
+        this.isAdmin = false;
+
+        if (!this.userProfileOSubscription) {
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
+                next: (user: IUserConnected) => {
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    this.userProfile = user;
+                    if (user.profile_user === 'superadmin') {
+                        this.isSuper = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.isAdmin = true;
+                    }
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
+            });
+        }
     }
 
     ngOnInit(): void {
@@ -178,8 +203,8 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                     };
                 }
 
-                if (this._usersService.userProfile.id_asociation_user !== 0) {
-                    this.oldRecord.id_asociation = this._usersService.userProfile.id_asociation_user;
+                if (this.userProfile.id_asociation_user !== 0) {
+                    this.oldRecord.id_asociation = this.userProfile.id_asociation_user;
                 }
 
                 this.createForm = this.optionsDialog.id === 'create';
@@ -207,7 +232,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
     getAsocUserConnected(): Promise<boolean> {
         console.log(
             'Componente ' + this._name + ': getAsocUserConnected: this.userProfile.id_asociation_user: ',
-            this._usersService.userProfile.id_asociation_user
+            this.userProfile.id_asociation_user
         );
         return new Promise((resolve, reject) => {
             try {
@@ -263,7 +288,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
             ),
         });
 
-        if (!this.isSuper && this._usersService.userProfile.id_asoc_admin.toString() !== this.oldRecord.id_asociation.toString()) {
+        if (!this.isSuper && this.userProfile.id_asoc_admin.toString() !== this.oldRecord.id_asociation.toString()) {
             console.log('Componente ' + this._name + ': fillFormData: data ─> disable');
             this.logoAsociationField.disable();
             this.emailAsociationField.disable();
@@ -581,7 +606,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                         console.log('Componente ' + this._name + ': updateAsociacion: resp ─> ', resp);
                         if (resp.status === 200) {
                             this.asocResp.data = resp.result.records[0];
-                            if (this.asocResp.data.id_asociation === this._usersService.userProfile.id_asoc_admin) {
+                            if (this.asocResp.data.id_asociation === this.userProfile.id_asoc_admin) {
                                 this.userProfile = this._usersService.modifyDataAsociationStoreProfile(this.asocResp.data);
                             }
                             resolve({ status: 'ok', message: 'La asociación se actualizó con exito' });
@@ -721,7 +746,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
             if (this.form.value.logo_asociation.isSelectedFile) {
                 const fd = new FormData();
                 fd.append('action', 'asociation');
-                fd.append('token', this._usersService.userProfile.token_user);
+                fd.append('token', this.userProfile.token_user);
                 fd.append('user_id', this.asocResp.data.id_asociation.toString());
                 fd.append('module', 'asociations');
                 fd.append('prefix', 'logos' + '/asociation-' + this.asocResp.data.id_asociation);
@@ -762,7 +787,7 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
         return new Promise((resolve, _reject) => {
             const fd = new FormData();
             fd.append('action', 'delete');
-            fd.append('token', this._usersService.userProfile.token_user);
+            fd.append('token', this.userProfile.token_user);
             fd.append('user_id', this.oldRecord.id_asociation.toString());
             fd.append('module', 'asociations');
             fd.append('prefix', 'logos' + '/asociation-' + this.oldRecord.id_asociation);

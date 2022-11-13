@@ -1,63 +1,120 @@
 <div #eglmain class="main">
    <div class="content">
       <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
-      <div class="content_path" *ngIf="idCategory">
-         <span><a [routerLink]="['/dashboard']">articles</a></span>
-         <span *ngIf="idCategory && idSubcategory"
-            >/<a [routerLink]="['/dashboard/list-categorys', idCategory]">{{ idCategory }}</a></span
-         >
-         <span *ngIf="idCategory && !idSubcategory">/{{ idCategory }}</span>
-         <span *ngIf="idSubcategory">/{{ idSubcategory }}</span>
-      </div>
-      <div class="toggle-edit" *ngIf="isSuper || isAdmin">
-         <div class="tooltip__toggle-edit">
-            <span class="browsing" [ngClass]="{ opacity: !editArticleCkeck }">browse</span>
-            <span class="editing" [ngClass]="{ opacity: editArticleCkeck }">edition</span>
-            <input type="checkbox" [(ngModel)]="editArticleCkeck" />
-            <div class="tooltip" data-text="Toggle editing o deleting article"></div>
-         </div>
-         <div class="tooltip__add">
-            <div class="add">
-               <fa-icon class="add__icon" [icon]="faPlus" routerLink="/dashboard/nuevo-articulo"></fa-icon>
-               <div class="tooltip new-article" data-text="Add new article"></div>
+      <div class="content_tool">
+         <div class="content_tool-rel">
+            <!-- <div class="content_path" *ngIf="idCategory">
+               <span class="content_path-item"> {{ getFilterCategories() }}</span>
+               <span class="content_path-item"><a [routerLink]="['/dashboard']">articles</a></span>
+               <span class="content_path-item" *ngIf="idCategory && idSubcategory">
+                  <a [routerLink]="['/dashboard/list-categorys', idCategory]">{{ idCategory }}</a>
+               </span>
+               <span class="content_path-item" *ngIf="idCategory && !idSubcategory">{{ idCategory }}</span>
+               <span class="content_path-item" *ngIf="idSubcategory">{{ idSubcategory }}</span>
+            </div> -->
+
+            <div class="content_path" *ngIf="!idCategory">
+               <ng-container *ngFor="let item of filterCategories; let i = index; first as isFirst">
+                  <span class="content_path-item">
+                     <a [routerLink]="['/dashboard/list-categorys', item]">{{ item }}</a>
+                  </span>
+               </ng-container>
+            </div>
+
+            <div class="content_path" *ngIf="idCategory && !idSubcategory">
+               <span class="content_path-item"><a [routerLink]="['/dashboard']">articles</a></span>
+               <span class="content_path-item" *ngIf="idCategory && !idSubcategory">{{ idCategory }}</span>
+               <ng-container *ngFor="let item of filterCategories; let i = index; first as isFirst">
+                  <span class="content_path-item" *ngIf="idCategory && !idSubcategory">
+                     <a [routerLink]="['/dashboard/list-subcategorys', idCategory, item]">{{ item }}</a>
+                  </span>
+               </ng-container>
+               <span class="content_path-item" *ngIf="idSubcategory">{{ idSubcategory }}</span>
+            </div>
+
+            <div class="content_path" *ngIf="idCategory && idSubcategory">
+               <span class="content_path-item"><a [routerLink]="['/dashboard']">articles</a></span>
+               <span class="content_path-item"
+                  ><a [routerLink]="['/dashboard/list-categorys', idCategory]">{{ idCategory }}</a></span
+               >
+               <ng-container *ngFor="let item of filterCategories; let i = index; first as isFirst">
+                  <span class="content_path-item" *ngIf="idCategory && !idSubcategory">
+                     <a [routerLink]="['/dashboard/list-subcategorys', idCategory, item]">{{ item }}</a>
+                  </span>
+               </ng-container>
+               <span class="content_path-item" *ngIf="idSubcategory">{{ idSubcategory }}</span>
+            </div>
+
+            <!-- <div class="toggle-edit" *ngIf="isEditor"> -->
+            <div class="toggle-edit" *eglosShowForRoles="['superadmin', 'admin', 'editor']">
+               <div class="tooltip__toggle-edit">
+                  <span class="browsing" [ngClass]="{ opacity: !editArticleCkeck }">browse</span>
+                  <span class="editing" [ngClass]="{ opacity: editArticleCkeck }">edition</span>
+                  <input type="checkbox" [(ngModel)]="editArticleCkeck" />
+                  <div class="tooltip" data-text="Toggle editing o deleting article"></div>
+               </div>
+               <div class="tooltip__add">
+                  <div class="add">
+                     <fa-icon class="add__icon" [icon]="faPlus" routerLink="/dashboard/nuevo-articulo"></fa-icon>
+                     <div class="tooltip new-article" data-text="Add new article"></div>
+                  </div>
+               </div>
             </div>
          </div>
       </div>
       <div class="content__article">
          <div class="list__article">
-            <div class="article" *ngFor="let article of listArticles; let i = index; first as isFirst">
-               <div class="article__card">
-                  <div *ngIf="editArticleCkeck && article.id_asociation_article.toString() === asociationId.toString()" class="icons">
-                     <div (click)="editArticle(article, i)" class="icon__edit">
-                        <fa-icon class="edit" [icon]="faPenToSquare"></fa-icon>
-                        <div class="tooltip edit" data-text="Edit article"></div>
+            <ng-container *ngFor="let article of listArticles; let i = index; first as isFirst">
+               <div class="article" *ngIf="showStateArticle.includes(article.state_article) || editArticleCkeck">
+                  <div class="article__card">
+                     <div *ngIf="editArticleCkeck && article.id_asociation_article.toString() === asociationId.toString()" class="icons">
+                        <div (click)="editArticle(article, i)" class="icon__edit">
+                           <fa-icon class="edit" [icon]="faPenToSquare"></fa-icon>
+                           <div class="tooltip edit" data-text="Edit article"></div>
+                        </div>
+                        <div (click)="deleteArticle(article, i)" class="icon__delete">
+                           <fa-icon class="delete" [icon]="faCircleXmark"></fa-icon>
+                           <div class="tooltip delete" data-text="Delete article"></div>
+                        </div>
                      </div>
-                     <div (click)="deleteArticle(article, i)" class="icon__delete">
-                        <fa-icon class="delete" [icon]="faCircleXmark"></fa-icon>
-                        <div class="tooltip delete" data-text="Delete article"></div>
-                     </div>
-                  </div>
-                  <div class="article__container">
-                     <div class="article__image" *ngIf="article.cover_image_article.src">
-                        <img class="article__img" [src]="article.cover_image_article.src" />
-                     </div>
-                     <div class="article__content">
-                        <div class="article__category">
-                           <span>
-                              <a [routerLink]="['/dashboard/list-categorys', article.category_article]">{{ article.category_article }}</a> -
-                              <a [routerLink]="['/dashboard/list-subcategorys', article.category_article, article.subcategory_article]">{{
-                                 article.subcategory_article
-                              }}</a>
+                     <div class="article__container">
+                        <div class="article__image" *ngIf="article.cover_image_article.src">
+                           <img class="article__img" [src]="article.cover_image_article.src" />
+                        </div>
+                        <div
+                           class="article__content"
+                           [ngClass]="{
+                              redaccion: article.state_article === 'redacción',
+                              anulado: ['expirado', 'anulado', 'borrado'].includes(article.state_article)
+                           }"
+                        >
+                           <span
+                              [ngClass]="{
+                                 publicado: ['notificar', 'publicado'].includes(article.state_article),
+                                 redaccion: article.state_article === 'redacción',
+                                 anulado: ['expirado', 'anulado', 'borrado'].includes(article.state_article)
+                              }"
+                              *ngIf="editArticleCkeck"
+                              >{{ article.state_article }}
                            </span>
+                           <!-- *ngIf="!showStateArticle.includes(article.state_article)" -->
+                           <div class="article__category">
+                              <span>
+                                 <a [routerLink]="['/dashboard/list-categorys', article.category_article]">{{ article.category_article }}</a> -
+                                 <a [routerLink]="['/dashboard/list-subcategorys', article.category_article, article.subcategory_article]">{{
+                                    article.subcategory_article
+                                 }}</a>
+                              </span>
+                           </div>
+                           <div class="abstract_article" (click)="browseArticle(article, i)">
+                              <div class="abstract_article-text">{{ article.abstract_article }}</div>
+                           </div>
+                           <div class="publication_date_article">{{ article.publication_date_article | date: "dd 'de' MMMM 'de' yyyy" }}</div>
                         </div>
-                        <div class="abstract_article" (click)="browseArticle(article, i)">
-                           <div class="abstract_article-text">{{ article.abstract_article }}</div>
-                        </div>
-                        <div class="publication_date_article">{{ article.publication_date_article | date: "dd 'de' MMMM 'de' yyyy" }}</div>
                      </div>
                   </div>
                </div>
-            </div>
+            </ng-container>
          </div>
       </div>
    </div>

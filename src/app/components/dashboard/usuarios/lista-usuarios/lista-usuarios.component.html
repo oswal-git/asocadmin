@@ -1,17 +1,15 @@
 <div class="container">
-   <mat-toolbar>
-      <span>{{ titleData.title }}</span>
-      <div class="spacer"></div>
-      <button mat-fab color="primary" class="add-button" (click)="abrirDialogo('create')"><mat-icon> person_add </mat-icon></button>
-   </mat-toolbar>
-
-   <mat-form-field appearance="standard">
-      <mat-label>Filter</mat-label>
-      <input matInput (keyup)="applyFilter($event)" placeholder="Buscar ..." #input />
-   </mat-form-field>
-
    <mat-spinner class="spinner" diameter="50" *ngIf="loading"></mat-spinner>
    <div [ngClass]="{ nodisplay: loading }">
+      <mat-toolbar>
+         <span>{{ titleData.title }}</span>
+         <div class="spacer"></div>
+         <button mat-fab color="primary" class="add-button" (click)="abrirDialogo('create')"><mat-icon> person_add </mat-icon></button>
+      </mat-toolbar>
+
+      <div class="filter">
+         <input class="filter__input" (keyup)="applyFilter($event)" placeholder="Buscar ..." #input />
+      </div>
       <div *ngIf="listUsuarios.length > 0">
          <div class="mat-elevation-z8">
             <table mat-table [dataSource]="dataSource" matSort [trackBy]="trackByUid">

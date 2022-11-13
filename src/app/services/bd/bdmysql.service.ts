@@ -186,4 +186,16 @@ export class BdmysqlService {
             header.headers
         );
     }
+
+    // ************************************************************************************ //
+    //                                                                                      //
+    //                           Notifications Management                                   //
+    //                                                                                      //
+    // ************************************************************************************ //
+
+    getUserNotifications(header: any) {
+        // console.log('Componente ' + this._name + ': getAllAsociations:  ─> ');
+
+        return this.http.get(`${this.Url}/notifications/pending.php`, header.headers);
+    }
 }

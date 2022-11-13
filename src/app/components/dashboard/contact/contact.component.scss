@@ -1,0 +1,32 @@
+$minwidth: 482px;
+$minwidth: 420px;
+* {
+   margin: 0;
+   padding: 0;
+   font-family: sans-serif;
+   // border: 1px dashed rgb(248, 240, 10);
+   background: transparent;
+}
+
+:host {
+   background: #f3eeee;
+}
+
+.main {
+   background: #b09f9f;
+   color: rgb(4, 32, 89);
+   line-height: 1.6;
+   font-family: "Quicksand", sans-serif;
+   padding: 0;
+   font-size: 0.8rem;
+   // height: 100vh;
+   margin: auto;
+   display: flex;
+   justify-content: center;
+   align-items: center;
+
+   h1 {
+      line-height: 1.6;
+      font-family: "Quicksand", sans-serif;
+   }
+}

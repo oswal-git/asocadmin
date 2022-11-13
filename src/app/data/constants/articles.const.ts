@@ -29,9 +29,10 @@ export const ARTICLES_CONST = {
     ARTICLES_CLASS: [],
     ARTICLES_STATE: [
         { id: 1, caption: 'redacción' },
-        { id: 2, caption: 'publicado' },
-        { id: 3, caption: 'expirado' },
-        { id: 4, caption: 'anulado' },
-        { id: 5, caption: 'borrado' },
+        { id: 2, caption: 'notificar' },
+        { id: 3, caption: 'publicado' },
+        { id: 4, caption: 'expirado' },
+        { id: 5, caption: 'anulado' },
+        { id: 6, caption: 'borrado' },
     ],
 };

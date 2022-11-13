@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { UsersService } from './services/bd/users.service';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-root',
@@ -9,7 +10,9 @@ import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition
 })
 export class AppComponent {
     title = 'Gestión de Asociaciones';
-    // private _name = 'AppComponent';
+    private _name = 'AppComponent';
+    usersServiceSubscriber!: Subscription;
+    pollSubscriber: Subscription | null = null;
 
     durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -28,11 +31,48 @@ export class AppComponent {
             // this.router.navigateByUrl('/login');
         }
 
-        if (this._usersService.userProfile.token_user === '') {
-            //TODO npm install crypto-js
-            // this.router.navigateByUrl('/login');
+        if (!this.usersServiceSubscriber) {
+            this.usersServiceSubscriber = this._usersService.userProfile.subscribe((user) => {
+                if (user.token_user === '') {
+                    //TODO npm install crypto-js
+                    if (this.pollSubscriber) {
+                        console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.unsubscribe');
+                        this.pollSubscriber.unsubscribe();
+                        this.pollSubscriber = null;
+                    }
+                    // this.router.navigateByUrl('/login');
+                } else {
+                    if (!this.pollSubscriber) {
+                        console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.subscribe');
+                        this.pollSubscriber = this._usersService.pollUsers().subscribe((res) => {
+                            console.log('Componente ' + this._name + ': constructor: pollUsers res ─> ', res);
+                            if (res) {
+                                res.result.map((noti: any) => {
+                                    console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ', noti);
+                                    // this.makeNotification(noti.title_article, noti.abstract_article);
+                                });
+                            }
+                        });
+                    }
+                }
+            });
         }
     }
+
+    // private makeNotification(title: any, body: string) {
+    //     let notify: Notification = new Notification(title, { body });
+    //     if (notification.click) {
+    //         notify.onclick = notification.click;
+    //     }
+    //     if (notification.error) {
+    //         notify.onerror = notification.error;
+    //     }
+    //     if (notification.timeout) {
+    //         setTimeout(() => {
+    //             notify.close();
+    //         }, notification.timeout);
+    //     }
+    // }
 
     // ngOnChanges() {
     //     console.log('Componente ' + this._name + ': ngOnChanges:  ─> ');
@@ -55,9 +95,10 @@ export class AppComponent {
     // ngAfterViewChecked() {
     //     console.log('Componente ' + this._name + ': ngAfterViewChecked:  ─> ');
     // }
-    // ngOnDestroy() {
-    //     console.log('Componente ' + this._name + ': ngOnDestroy:  ─> ');
-    // }
+    ngOnDestroy() {
+        // console.log('Componente ' + this._name + ': ngOnDestroy:  ─> ');
+        this.usersServiceSubscriber.unsubscribe();
+    }
 
     msg(msg: string) {
         this._snackBar.open(msg, '', {

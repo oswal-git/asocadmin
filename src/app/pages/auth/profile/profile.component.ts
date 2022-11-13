@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog } from '@app/interfaces/ui/dialogs.interface';
 import { UsersService } from '@app/services/bd/users.service';
 
@@ -12,7 +11,6 @@ import { UsersService } from '@app/services/bd/users.service';
 })
 export class ProfileComponent implements OnInit {
     private _name = 'ProfileComponent';
-    userProfile!: IUserConnected;
 
     loading = false;
 
@@ -42,7 +40,7 @@ export class ProfileComponent implements OnInit {
             this.router.navigateByUrl('/login');
         }
 
-        if (this._usersService.userProfile.token_user === '') {
+        if (res.msg !== 'User logged') {
             //TODO npm install crypto-js
             this.router.navigateByUrl('/login');
         }
@@ -50,8 +48,8 @@ export class ProfileComponent implements OnInit {
 
     ngOnInit(): void {
         // console.log('Componente ' + this._name + ': ngOnInit: this._usersService.userPerfil ─> ', this._usersService.userProfile);
-        if ((this._usersService.userProfile.profile_user === 'superadmin' || this._usersService.userProfile.token_user) === '') {
-        }
+        // if ((this._usersService.userProfile.profile_user === 'superadmin' || this._usersService.userProfile.token_user) === '') {
+        // }
         this.options.options.fin = true;
     }
 

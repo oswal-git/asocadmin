@@ -13,6 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 import { UsersService } from '@app/services/bd/users.service';
 import { DeleteArticleComponent } from '../delete-article/delete-article.component';
 import { Observable, Subscription } from 'rxjs';
+import { ARTICLES_CONST } from '@app/data/constants/articles.const';
 
 @Component({
     selector: 'app-list-articles',
@@ -23,17 +24,24 @@ export class ListArticlesComponent implements OnInit {
     private _name = 'ListArticlesComponent';
 
     userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
 
     public listArticles!: IArticle[];
 
+    categoryArticle: any[] = [];
+    subCategoryArticle: any[] = [];
+    filterCategories: any[] = [];
     subscriberParamams: any;
     idCategory: any = '';
     idSubcategory: any = '';
+    showStateArticle = ['publicado', 'notificar'];
 
     recordsPerPage: number = 3;
     isSuper = false;
     asociationId: number = 0;
     isAdmin = false;
+    isEditor = false;
 
     loading = true;
     editArticleCkeck: boolean = false;
@@ -50,41 +58,58 @@ export class ListArticlesComponent implements OnInit {
         private _route: ActivatedRoute,
         private router: Router
     ) {
-        const res = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        if (!this.userProfileOSubscription) {
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
+                next: (user: IUserConnected) => {
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.userProfile = user;
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    if (user.profile_user === 'superadmin') {
+                        this.isSuper = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.isAdmin = true;
+                    }
 
-        this.userProfile = res.userprofile;
-
-        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
-
-        if (res.msg !== 'User logged') {
-            this.asociationId = parseInt('9'.repeat(9));
-        } else if (this.isSuper) {
-            this.asociationId = parseInt('9'.repeat(9));
-        } else if (res.msg === 'User logged') {
-            this.asociationId = this.userProfile.id_asociation_user;
-        } else {
-            this._toastr.error('User not authorized for try the listArticles list', 'User unauthorized').onHidden.subscribe(() => {
-                this.router.navigateByUrl('/dashboard');
+                    if (!this.isLogin) {
+                        this.asociationId = parseInt('9'.repeat(9));
+                    } else if (this.isSuper) {
+                        this.asociationId = parseInt('9'.repeat(9));
+                    } else if (this.isLogin) {
+                        this.asociationId = user.id_asociation_user;
+                    } else {
+                        this._toastr.error('User not authorized for try the listArticles list', 'User unauthorized').onHidden.subscribe(() => {
+                            this.router.navigateByUrl('/dashboard');
+                        });
+                    }
+                    this.isEditor = this.isSuper || this.isAdmin || user.profile_user === 'editor';
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
             });
         }
+
+        this.getAuxiliarData();
     }
 
     ngOnInit(): void {
         this.subscriberParamams = this._route.paramMap.subscribe((params: ParamMap) => {
             if (params.get('id-category')) {
                 this.idCategory = params.get('id-category'); // (+) converts string 'id' to a number
-                console.log('Componente ' + this._name + ': ngOnInit: this.idCategory ─> ', this.idCategory);
+                // console.log('Componente ' + this._name + ': ngOnInit: this.idCategory ─> ', this.idCategory);
             }
             if (params.get('id-subcategory')) {
                 this.idSubcategory = params.get('id-subcategory'); // (+) converts string 'id' to a number
-                console.log('Componente ' + this._name + ': ngOnInit: this.idSubcategory ─> ', this.idSubcategory);
+                // console.log('Componente ' + this._name + ': ngOnInit: this.idSubcategory ─> ', this.idSubcategory);
             }
             // In a real app: dispatch action to load the details here.
-
+            this.filterCategories = this.getFilterCategories();
             this.loadArticles().then((resp) => {
-                console.log('Componente ' + this._name + ': ngOnInit: resp ─> ', resp);
+                // console.log('Componente ' + this._name + ': ngOnInit: resp ─> ', resp);
                 if (resp.status === 'ok') {
                     this.listArticles = resp.data;
                 }
@@ -97,32 +122,87 @@ export class ListArticlesComponent implements OnInit {
         this.subscriberParamams.unsubscribe();
     }
 
+    getAuxiliarData() {
+        this.categoryArticle = ARTICLES_CONST.ARTICLES_CATEGORY;
+        // console.log('Componente ' + this._name + ': getAuxiliarData: this.categoryArticle ─> ', this.categoryArticle);
+        return '';
+    }
+
+    getFilterCategories(): any {
+        // console.log('Componente ' + this._name + ': getFilterCategories: this.idCategory ─> ', this.idCategory);
+        // console.log('Componente ' + this._name + ': getFilterCategories: this.idSubcategory ─> ', this.idSubcategory);
+        const filterCategories = this.categoryArticle
+            .filter((reg) => {
+                if (this.idCategory !== '') {
+                    if (this.idCategory === reg.caption) {
+                        // console.log('Componente ' + this._name + ': getFilterCategories: idCategory true ─> ', reg);
+                        return true;
+                    } else {
+                        // console.log('Componente ' + this._name + ': getFilterCategories: idCategory false ─> ', reg);
+                        return false;
+                    }
+                } else if (this.idSubcategory !== '') {
+                    if (this.idSubcategory === reg.subcategory.caption) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                } else {
+                    // console.log('Componente ' + this._name + ': getFilterCategories: all ─> ', reg);
+                    return true;
+                }
+            })
+            .map((item: any) => {
+                // console.log('Componente ' + this._name + ': getFilterCategories: map ─> ', item);
+                const arr: any[] = [];
+                if (this.idCategory !== '') {
+                    item.subcategory.map((subItem: any) => {
+                        arr.push(subItem.caption);
+                    });
+                    return arr;
+                } else if (this.idSubcategory !== '') {
+                    return item.subcategory.caption;
+                } else {
+                    return item.caption;
+                }
+            });
+
+        // console.log('Componente ' + this._name + ': getFilterCategories: filterCategories ─> ', filterCategories);
+        if (this.idCategory !== '') {
+            return filterCategories[0];
+        } else if (this.idSubcategory !== '') {
+            return filterCategories;
+        } else {
+            return filterCategories;
+        }
+    }
+
     loadArticles(): Promise<any> {
-        console.log(
-            'Componente ' + this._name + ': loadArticles: this.userProfile.id_asociation_user: ',
-            this._usersService.userProfile.id_asociation_user
-        );
+        // console.log(
+        //     'Componente ' + this._name + ': loadArticles: this.userProfile.id_asociation_user: ',
+        //     this._usersService.userProfile.id_asociation_user
+        // );
         return new Promise((resolve, reject) => {
             let observableLoadArticles: Observable<any>;
             let subscription!: Subscription;
             try {
-                if (this.idSubcategory) {
+                if (this.idSubcategory !== '') {
                     observableLoadArticles = this._articlesService.getAllArticlesOfAsociationBySubcategory(
                         this.asociationId,
                         this.idCategory,
                         this.idSubcategory
                     );
-                } else if (this.idCategory) {
+                } else if (this.idCategory !== '') {
                     observableLoadArticles = this._articlesService.getAllArticlesOfAsociationByCategory(this.asociationId, this.idCategory);
                 } else {
                     observableLoadArticles = this._articlesService.getAllArticlesOfAsociation(this.asociationId);
                 }
                 subscription = observableLoadArticles.subscribe({
                     next: (resp: any) => {
-                        console.log('Componente ' + this._name + ': loadArticles: ─> resp', resp);
+                        // console.log('Componente ' + this._name + ': loadArticles: ─> resp', resp);
                         if (resp.status === 200) {
                             this.listArticles = resp.result;
-                            console.log('Componente ' + this._name + ': loadArticles: ─> this.listArticles', this.listArticles);
+                            // console.log('Componente ' + this._name + ': loadArticles: ─> this.listArticles', this.listArticles);
                         } else {
                             console.log('Componente ' + this._name + ': loadArticles: ─> resp.message', resp.message);
                         }

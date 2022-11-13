@@ -27,8 +27,10 @@ export class ProfileAsociationComponent implements OnInit {
         options: { fin: false },
     };
 
-    constructor(private _usersService: UsersService, private _toastr: ToastrService) // private _location: Location
-    {
+    constructor(
+        private _usersService: UsersService,
+        private _toastr: ToastrService // private _location: Location
+    ) {
         const res = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'Token expired') {
@@ -37,7 +39,7 @@ export class ProfileAsociationComponent implements OnInit {
             });
         }
 
-        if (this._usersService.userProfile.token_user === '') {
+        if (res.msg !== 'User logged') {
             //TODO npm install crypto-js
             // this._location.back();
         }

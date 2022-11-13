@@ -25,6 +25,10 @@ import { BrowseArticleComponent } from './articles/browse-article/browse-article
 import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { EditArticleComponent } from './articles/edit-article/edit-article.component';
 import { DeleteArticleComponent } from './articles/delete-article/delete-article.component';
+import { FooterComponent } from './footer/footer.component';
+import { ContactComponent } from './contact/contact.component';
+import { AboutComponent } from './about/about.component';
+import { PrivacyComponent } from './privacy/privacy.component';
 
 @NgModule({
     declarations: [
@@ -49,6 +53,10 @@ import { DeleteArticleComponent } from './articles/delete-article/delete-article
         BrowseArticleComponent,
         EditArticleComponent,
         DeleteArticleComponent,
+        FooterComponent,
+        ContactComponent,
+        AboutComponent,
+        PrivacyComponent,
     ],
     imports: [CommonModule, DashboardRoutingModule, ComponentsModule, FontAwesomeModule],
 })

@@ -211,9 +211,13 @@ export class ListaUsuariosComponent implements OnInit {
                 this.loading = true;
                 this._usersService.getAllUsers().subscribe({
                     next: (resp: any) => {
-                        // console.log('Componente ' + this._name + ': userLoad: ─> resp', resp);
+                        console.log('Componente ' + this._name + ': userLoad: ─> resp', resp);
                         if (resp.status === 200) {
-                            this.listUsuarios = resp.result.records;
+                            if (resp.result.num_records > 0) {
+                                this.listUsuarios = resp.result.records;
+                            } else {
+                                this.listUsuarios = [];
+                            }
                             // .map((record: any) => {
                             //     return { url: record.logo_asociation, caption: record.long_name_asociation, id: record.id_asociation };
                             // });

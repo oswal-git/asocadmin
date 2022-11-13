@@ -8,6 +8,7 @@ import { UsersService } from '@app/services/bd/users.service';
 import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
 import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-change',
@@ -18,6 +19,8 @@ import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
 export class ChangeComponent implements OnInit {
     private _name = 'LoginComponent';
     userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
 
     // avatar
     avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
@@ -64,10 +67,7 @@ export class ChangeComponent implements OnInit {
         if (res.msg !== 'User logged') {
             this.router.navigateByUrl('/login');
         }
-        const avatar =
-            this._usersService.userProfile.avatar_user === ''
-                ? environment.urlApi + '/assets/images/user.png'
-                : this._usersService.userProfile.avatar_user;
+        const avatar = res.userProfile.avatar_user === '' ? environment.urlApi + '/assets/images/user.png' : res.userProfile.avatar_user;
 
         this.avatarImg = {
             src: avatar,

@@ -23,6 +23,7 @@ import { Router } from '@angular/router';
 import { HttpEventType } from '@angular/common/http';
 import { HelperClass } from '@app/core/helper';
 import { Observable, Subscription } from 'rxjs';
+import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 
 @Component({
     selector: 'app-form-article',
@@ -40,6 +41,10 @@ export class FormArticleComponent implements OnInit {
     oldImageData!: IArticleImage;
     plainData!: IApiArticle;
     imageData!: IArticleImage;
+
+    userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
 
     isSuper = false;
     isAdmin = false;
@@ -162,67 +167,35 @@ export class FormArticleComponent implements OnInit {
         private renderer: Renderer2
     ) {
         this.loading = true;
-        this.isSuper = this._usersService.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this._usersService.userProfile.id_asoc_admin === 0 ? false : true;
+        this.isSuper = false;
+        this.isAdmin = false;
 
-        if (!this.isSuper && !this.isAdmin) {
-            // this._toastr.error('User not authorized to edit article', 'User not authorized to edit article');
-            this.salirClick();
+        if (!this.userProfileOSubscription) {
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
+                next: (user: IUserConnected) => {
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    this.userProfile = user;
+                    if (user.profile_user === 'superadmin') {
+                        this.isSuper = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.isAdmin = true;
+                    }
+
+                    if (!this.isSuper && !this.isAdmin) {
+                        // this._toastr.error('User not authorized to edit article', 'User not authorized to edit article');
+                        this.salirClick();
+                    }
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
+            });
         }
-
-        // this.article = {
-        //     id_article: 1,
-        //     id_asociation_article: 1,
-        //     id_user_article: 2,
-        //     category_article: 'categoria 1',
-        //     subcategory_article: 'subcategoria 1',
-        //     class_article: 'clase 1',
-        //     state_article: 'redaction',
-        //     publication_date_article: this.currentDate,
-        //     effective_date_article: this.currentDate,
-        //     expiration_date_article: '',
-        //     cover_image_article: {
-        //         src: this.articleSrcDefault,
-        //         nameFile: '',
-        //         filePath: '',
-        //         fileImage: null,
-        //         isSelectedFile: false,
-        //         isDefault: this.articleSrcDefault === this.articleSrcDefault,
-        //         isChange: false,
-        //     },
-        //     title_article: 'Artículo numero 1 de prueba',
-        //     abstract_article: 'Abastract del Artículo numero 1 de prueba',
-        //     items_article: [
-        //         {
-        //             image_item_article: {
-        //                 src: this.articleSrcDefault,
-        //                 nameFile: 'itemarticle1',
-        //                 filePath: '',
-        //                 fileImage: null,
-        //                 isSelectedFile: false,
-        //                 isDefault: this.articleSrcDefault === this.articleSrcDefault,
-        //                 isChange: false,
-        //             },
-        //             text_item_article: 'Item n 1',
-        //         },
-        //         {
-        //             image_item_article: {
-        //                 src: this.articleSrcDefault,
-        //                 nameFile: 'itemarticle1',
-        //                 filePath: '',
-        //                 fileImage: null,
-        //                 isSelectedFile: false,
-        //                 isDefault: this.articleSrcDefault === this.articleSrcDefault,
-        //                 isChange: false,
-        //             },
-        //             text_item_article: 'Item n 2',
-        //         },
-        //     ],
-        //     ubication_article: 'aqui',
-        //     date_deleted_article: '2022-08-23 14:37:20',
-        //     date_created_article: '2022-08-23 14:37:20',
-        //     date_updated_article: '2022-08-23 14:37:20',
-        // };
 
         this.form = this._formBuilder.group({
             cover_image_article: new FormControl({ value: '', disabled: false }),
@@ -477,18 +450,14 @@ export class FormArticleComponent implements OnInit {
             this._toastr.error('Fields are required', 'Fill fields, please');
             return;
         }
-        console.log(
-            'Componente ' + this._name + ': save: this._usersService.userProfile.id_asoc_admin ─> ',
-            this._usersService.userProfile.id_asoc_admin
-        );
+        console.log('Componente ' + this._name + ': save: this._usersService.userProfile.id_asoc_admin ─> ', this.userProfile.id_asoc_admin);
 
         // this.plainData.id_article = this.form.value.id_article;
         this.plainData = {
             data: {
                 id_article: this.article.id_article,
-                id_asociation_article:
-                    this.article.id_asociation_article === 0 ? this._usersService.userProfile.id_asoc_admin : this.article.id_asociation_article,
-                id_user_article: this._usersService.userProfile.id_user,
+                id_asociation_article: this.article.id_asociation_article === 0 ? this.userProfile.id_asoc_admin : this.article.id_asociation_article,
+                id_user_article: this.userProfile.id_user,
                 category_article: this.form.value.category_article,
                 subcategory_article: this.form.value.subcategory_article,
                 class_article: '',
@@ -575,7 +544,7 @@ export class FormArticleComponent implements OnInit {
             const element = {
                 cover: true,
                 id_article: this.articleResp.data.id_article,
-                id_asociation_article: this._usersService.userProfile.id_asoc_admin,
+                id_asociation_article: this.userProfile.id_asoc_admin,
                 cover_image_article: this.form.value.cover_image_article,
             };
             const respCover = await this.uploadImage(element);
@@ -615,11 +584,11 @@ export class FormArticleComponent implements OnInit {
 
         const articlePreview = this.form.value;
         articlePreview['user'] = {
-            id_user: this._usersService.userProfile.id_user,
-            name_user: this._usersService.userProfile.name_user,
-            last_name_user: this._usersService.userProfile.last_name_user,
-            profile_user: this._usersService.userProfile.profile_user,
-            avatar_user: this._usersService.userProfile.avatar_user,
+            id_user: this.userProfile.id_user,
+            name_user: this.userProfile.name_user,
+            last_name_user: this.userProfile.last_name_user,
+            profile_user: this.userProfile.profile_user,
+            avatar_user: this.userProfile.avatar_user,
         };
 
         console.log('Componente ' + this._name + ': previewClick: articlePreview ─> ', articlePreview);
@@ -702,13 +671,13 @@ export class FormArticleComponent implements OnInit {
         // const authHeaders = ''; // await this._usersService.getAuthHeaders();
 
         return new Promise(async (resolve, _reject) => {
-            const asoc = this._usersService.userProfile.id_asoc_admin === 0 ? '9'.repeat(9) : this._usersService.userProfile.id_asoc_admin;
+            const asoc = this.userProfile.id_asoc_admin === 0 ? '9'.repeat(9) : this.userProfile.id_asoc_admin;
             console.log('Componente ' + this._name + ': uploadImage: image ─> ', image);
             const fd = new FormData();
             fd.append('action', 'upload');
             fd.append('module', 'articles');
             fd.append('user_id', image.id_article.toString());
-            fd.append('token', this._usersService.userProfile.token_user);
+            fd.append('token', this.userProfile.token_user);
             if (image.cover) {
                 fd.append('cover', 'cover');
                 fd.append('id_article', image.id_article.toString());

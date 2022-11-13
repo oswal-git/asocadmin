@@ -5,6 +5,7 @@ import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog } from '@app/interfaces/ui/dialogs.interface';
 // import { BdmysqlService } from '@app/services/bd/bdmysql.service';
 import { UsersService } from '@app/services/bd/users.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-register',
@@ -14,6 +15,11 @@ import { UsersService } from '@app/services/bd/users.service';
 export class RegisterComponent implements OnInit {
     private _name = 'RegisterComponent';
     userProfile!: IUserConnected;
+    userProfileOSubscription!: Subscription;
+    isLogin: boolean = false;
+
+    isSuper = false;
+    isAdmin = false;
 
     durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -31,7 +37,29 @@ export class RegisterComponent implements OnInit {
         private _snackBar: MatSnackBar,
         private router: Router,
         private _usersService: UsersService // private _db: BdmysqlService
-    ) {}
+    ) {
+        if (!this.userProfileOSubscription) {
+            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
+            this.userProfileOSubscription = this._usersService.userProfile.subscribe({
+                next: (user: IUserConnected) => {
+                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    this.isLogin = user.token_user !== '' ? true : false;
+                    this.userProfile = user;
+                    if (user.profile_user === 'superadmin') {
+                        this.isSuper = true;
+                    } else if (user.id_asoc_admin !== 0) {
+                        this.isAdmin = true;
+                    }
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': constructor: error ─> ', err);
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': constructor: complete ─> ');
+                },
+            });
+        }
+    }
 
     ngOnChanges() {
         console.log('Componente ' + this._name + ': ngOnChanges:  ─> ');
@@ -39,7 +67,7 @@ export class RegisterComponent implements OnInit {
 
     ngOnInit() {
         console.log('Componente ' + this._name + ': ngOnInit: this._usersService.userPerfil ─> ', this._usersService.userProfile);
-        if ((this._usersService.userProfile.profile_user === 'superadmin' || this._usersService.userProfile.token_user) === '') {
+        if (this.isSuper || !this.isLogin) {
             this.options.options.fin = true;
         }
     }
