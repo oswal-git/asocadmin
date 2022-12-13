@@ -28,24 +28,27 @@
    .content {
       // border: 2px dashed rgb(51, 241, 4);
       // min-width: 300px;
+      padding: 0 1rem;
 
       width: 100%;
       // max-width: 400px;
       margin-left: auto;
       margin-right: auto;
       // padding: 1rem;
-      font-size: 16px;
-      line-height: 30px;
+      font-size: 14px;
+      line-height: 20px;
       font-weight: 300;
 
       .content__title {
+         text-indent: 50px;
          text-align: center;
-         font-size: 24px;
-         line-height: 40px;
+         font-size: 18px;
+         line-height: 25px;
          margin-top: 1rem;
          margin-bottom: 2rem;
          font-weight: 600;
          position: relative;
+         text-transform: uppercase;
 
          .span {
             color: #b70e21;
@@ -59,8 +62,8 @@
          margin: 0 auto;
 
          .icons {
-            width: 50px;
-            height: 50px;
+            width: 30px;
+            height: 30px;
             transform: rotate(180deg);
             position: absolute;
             top: 10px;
@@ -77,8 +80,10 @@
 
             .icon__back {
                display: block;
+               font-size: 20px;
             }
          }
+
          .article {
             // border: 2px dashed rgb(60, 176, 15);
 
@@ -109,7 +114,7 @@
                         display: flex;
                         flex-direction: column;
                         padding-left: 10px;
-                        font-size: 14px;
+                        font-size: 12px;
 
                         .article__user-name {
                            font-weight: 600;
@@ -120,11 +125,12 @@
 
                .publication_date_article {
                   font-style: italic;
+                  font-size: 12px;
                }
 
                .article__category {
-                  margin-bottom: 30px;
-                  font-size: 12px;
+                  margin-bottom: 20px;
+                  font-size: 10px;
                   font-style: oblique;
 
                   span {
@@ -152,6 +158,7 @@
 
                .effective_date_article {
                   font-size: 12px;
+                  line-height: 16px;
                   margin-top: 30px;
                }
 
@@ -214,13 +221,20 @@
    .main {
       .content {
          .content__title {
-            font-size: 32px;
-            line-height: 50px;
+            font-size: 25px;
+            line-height: 30px;
             font-weight: 700;
          }
 
          .content__article {
-            // max-width: 1800px;
+            .article {
+               .article__container {
+                  .article__category {
+                     margin-bottom: 30px;
+                     font-size: 12px;
+                  }
+               }
+            }
          }
       }
    }
@@ -229,14 +243,31 @@
 @media (min-width: 1300px) {
    .main {
       .content {
+         padding: 20px 80px;
+
          .content__title {
-            font-size: 36px;
+            line-height: 40px;
+            font-size: 30px;
          }
 
          .content__article {
+            .icons {
+               top: 20px;
+               width: 50px;
+               height: 50px;
+
+               .icon__back {
+                  font-size: 30px;
+               }
+            }
             .article {
                .article__container {
                   margin-bottom: 20px;
+
+                  .article__category {
+                     margin-bottom: 30px;
+                     font-size: 12px;
+                  }
 
                   .article__image {
                      .article__img {
@@ -300,13 +331,22 @@
 @media (min-width: 1800px) {
    .main {
       .content {
-         padding: 20px 50px;
+         // padding: 20px 80px;
          .content__title {
-            font-size: 42px;
+            font-size: 36px;
          }
 
          .content__article {
             max-width: 1800px;
+         }
+
+         .article {
+            .article__container {
+               .article__category {
+                  margin-bottom: 30px;
+                  font-size: 14px;
+               }
+            }
          }
       }
    }

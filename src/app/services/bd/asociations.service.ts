@@ -42,7 +42,7 @@ export class AsociationsService {
     }
 
     getListAsociations() {
-        // console.log('Componente ' + this._name + ': getListAsociations: ─> ');
+        console.log('Componente ' + this._name + ': getListAsociations: ─> ');
         return this._db.getListAsociations();
     }
 

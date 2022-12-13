@@ -84,8 +84,8 @@ export class FormArticleComponent implements OnInit {
     abstractArticleMinLength: number = 5;
     abstractArticleMaxLength: number = 200;
 
-    articleUrlDefault = environment.urlApi + '/assets/images/images.jpg';
-    articleSrcDefault = environment.urlApi + '/assets/images/images.jpg';
+    articleUrlDefault = environment.urlApi2 + '/assets/img/images.jpg';
+    articleSrcDefault = environment.urlApi2 + '/assets/img/images.jpg';
     imgReadonly = false;
     articleImg: IEglImagen = {
         src: this.articleSrcDefault,
@@ -119,7 +119,7 @@ export class FormArticleComponent implements OnInit {
         category_article: '',
         subcategory_article: '',
         class_article: '',
-        state_article: 'redaction',
+        state_article: 'redacción',
         publication_date_article: this.currentDate,
         effective_date_article: this.currentDate,
         expiration_date_article: '',
@@ -140,6 +140,7 @@ export class FormArticleComponent implements OnInit {
         date_created_article: '',
         date_updated_article: '',
     };
+    thereIsCover = false;
 
     faKeyboard = faKeyboard;
     faCircleUp = faCircleUp;
@@ -198,7 +199,10 @@ export class FormArticleComponent implements OnInit {
         }
 
         this.form = this._formBuilder.group({
-            cover_image_article: new FormControl({ value: '', disabled: false }),
+            cover_image_article: new FormControl({
+                value: this.article.cover_image_article,
+                disabled: false,
+            }),
             title_article: new FormControl(
                 { value: '', disabled: false },
                 Validators.compose([
@@ -259,6 +263,36 @@ export class FormArticleComponent implements OnInit {
             }
         });
 
+        this.stateArticleField.valueChanges.subscribe((value) => {
+            console.log('Componente ' + this._name + ': stateArticleField: value ─> ', value);
+            console.log('Componente ' + this._name + ': coverImageArticleField: this.coverImageArticleField ─> ', this.coverImageArticleField.value);
+            if (value.toLowerCase() === 'redacción') {
+                this.imgReadonly = false;
+            } else {
+                if (this.coverImageArticleField.value.isDefault) {
+                    this.stateArticleField.setValue('redacción');
+                    this.imgReadonly = false;
+                } else {
+                    this.imgReadonly = true;
+                }
+            }
+        });
+
+        this.coverImageArticleField.valueChanges.subscribe((value: any) => {
+            console.log('Componente ' + this._name + ': coverImageArticleField: value ─> ', value);
+            if (value.isDefault) {
+                this.stateArticleField.disable();
+                this.thereIsCover = false;
+                console.log('Componente ' + this._name + ': coverImageArticleField: thereIsCover ─> ', this.thereIsCover);
+                console.log('Componente ' + this._name + ': coverImageArticleField: form.invalid ─> ', this.form.invalid);
+            } else {
+                this.stateArticleField.enable();
+                this.thereIsCover = true;
+                console.log('Componente ' + this._name + ': coverImageArticleField: thereIsCover ─> ', this.thereIsCover);
+                console.log('Componente ' + this._name + ': coverImageArticleField: form.invalid ─> ', this.form.invalid);
+            }
+        });
+
         this.getAuxiliarData();
     }
 
@@ -306,6 +340,7 @@ export class FormArticleComponent implements OnInit {
                 this.oldPlainData.items.push({
                     id_item_article: index,
                     text_item_article: item.text_item_article,
+                    is_default_image: item.image_item_article.isDefault,
                 });
             }
             if (!item.image_item_article.isDefault) {
@@ -335,11 +370,11 @@ export class FormArticleComponent implements OnInit {
         this.changeSizeRef(this.abstractarticleRef.nativeElement, this.abstractArticleMaxLength);
     }
 
-    changeSizeRef(ref: any, size: number) {
-        if (ref.value.length >= size) {
-            ref.value = ref.value.substring(0, size);
-            // return;
-        }
+    changeSizeRef(ref: any, _size: number) {
+        // if (ref.value.length >= size) {
+        //     ref.value = ref.value.substring(0, size);
+        //     // return;
+        // }
         ref.style.cssText = 'height:auto; padding:0';
         ref.style.cssText = '-moz-box-sizing:content-box';
         ref.style.cssText = 'height:' + (ref.scrollHeight + 10) + 'px';
@@ -483,12 +518,13 @@ export class FormArticleComponent implements OnInit {
 
         let numItems = 0;
         this.form.value.items_article.map((item: IDataItemArticle, index: number) => {
-            if (item.text_item_article !== '' || !item.image_item_article.isDefault) {
-                this.plainData.items.push({
-                    id_item_article: index,
-                    text_item_article: item.text_item_article,
-                });
-            }
+            // if (item.text_item_article !== '' || !item.image_item_article.isDefault) {
+            this.plainData.items.push({
+                id_item_article: index,
+                text_item_article: item.text_item_article,
+                is_default_image: item.image_item_article.isDefault,
+            });
+            // }
             if (!item.image_item_article.isDefault) {
                 ++numItems;
                 this.imageData.items_article.push({
@@ -498,84 +534,235 @@ export class FormArticleComponent implements OnInit {
             }
         });
 
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.oldPlainData', '', this.oldPlainData);
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.plainData', '', this.plainData);
+        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.oldPlainData', '', JSON.parse(JSON.stringify(this.oldPlainData)));
+        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.plainData', '', JSON.parse(JSON.stringify(this.plainData)));
 
         if (HelperClass.compareObj(this.oldPlainData, this.plainData) && HelperClass.compareObj(this.oldImageData, this.imageData)) {
             this._toastr.error('Nothing changed', 'Nothing changed');
             return;
         }
 
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.imageData', '', this.imageData);
-        let finish = { status: '', message: 'Unknown error' };
+        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.oldImageData', '', JSON.parse(JSON.stringify(this.oldImageData)));
+        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.imageData', '', JSON.parse(JSON.stringify(this.imageData)));
+        // let finish = { status: '', message: 'Unknown error' };
 
-        switch (this.optionsDialog.id) {
-            case 'create':
-                finish = await this.createArticle();
-                if (finish.status !== 'ok') {
-                    this._toastr.error(finish.message, 'Error modifying article');
+        // actualize only plain data of article and items
+        const res: any = await this.saveData();
+        HelperClass.consoleLog(this._log, this._name, 'save', 'saveData', 'end', 'res', res);
+        if (res.status !== 'ok') {
+            this._toastr.error(res.message, res.title);
+            return;
+        }
+
+        HelperClass.consoleLog(
+            this._log,
+            this._name,
+            'save',
+            '',
+            'this.oldImageData.cover_image_article',
+            '',
+            JSON.parse(JSON.stringify(this.oldImageData.cover_image_article))
+        );
+        HelperClass.consoleLog(
+            this._log,
+            this._name,
+            'save',
+            '',
+            'this.imageData.cover_image_article',
+            '',
+            JSON.parse(JSON.stringify(this.imageData.cover_image_article))
+        );
+
+        let respItemImage = { status: '', message: '', title: '' };
+        if (this.oldImageData.cover_image_article !== this.imageData.cover_image_article) {
+            if (
+                this.imageData.cover_image_article.src === this.articleSrcDefault &&
+                this.oldImageData.cover_image_article.src !== this.articleSrcDefault
+            ) {
+                try {
+                    const asoc = this.userProfile.id_asoc_admin === 0 ? '9'.repeat(9) : this.userProfile.id_asoc_admin;
+                    const data = {
+                        action: 'delete',
+                        id_article: this.articleResp.data.id_article,
+                        id_asociation_article: asoc.toString(),
+                        date_updated_article: this.articleResp.data.date_updated_article,
+                    };
+                    const respDeleteCover: any = await this.deleteCover(data);
+                    console.log('Componente ' + this._name + ': save: deleteCover ─> ', respDeleteCover);
+                    if (respDeleteCover.status === 'ok' || respDeleteCover.status === 'success') {
+                        this.articleResp.data = respDeleteCover.result;
+                        console.log('Componente ' + this._name + ': save: deleteCover ok ─> ', respDeleteCover);
+                        this.updateOldRecord(this.articleResp.data);
+                    } else {
+                        console.log('Componente ' + this._name + ': save: deleteCover error ─> ', respDeleteCover.message, respDeleteCover.code);
+                        this._toastr.error(respDeleteCover.message, 'Error deleting cover image');
+                        return;
+                    }
+                } catch (error: any) {
+                    console.log('Componente ' + this._name + ': save: deleteCover error ─> ', error);
+                    this._toastr.error(error, 'Unexpected error deleting logo');
                     return;
                 }
+            } else {
+                HelperClass.consoleLog(this._log, this._name, 'save', '', 'actualize cover', '');
+                const element = {
+                    cover: true,
+                    id_article: this.articleResp.data.id_article,
+                    id_asociation_article: this.userProfile.id_asoc_admin,
+                    cover_image_article: this.form.value.cover_image_article,
+                };
+                const respCover = await this.uploadImage(element);
+                HelperClass.consoleLog(this._log, this._name, 'save', '', 'uploadImage', 'respCover', JSON.parse(JSON.stringify(respCover)));
 
+                if (respCover.status === 'ok' || respCover.status === 'success') {
+                    this.articleResp.data = respCover.result;
+                    await this.updateOldRecord(this.articleResp.data);
+                } else {
+                    console.log('Componente ' + this._name + ': manageLogo: uploadImage respUpload.message ─> ', respCover.message);
+                    this._toastr.error(respCover.message, 'Error load cover image');
+                    return;
+                }
+            }
+
+            HelperClass.consoleLog(this._log, this._name, 'save', 'cover', 'updateItemsImage', '');
+            respItemImage = await this.updateItemsImage(numItems);
+            HelperClass.consoleLog(
+                this._log,
+                this._name,
+                'save',
+                'cover',
+                'updateItemsImage',
+                'updateItemsImage',
+                JSON.parse(JSON.stringify(respItemImage))
+            );
+        } else {
+            HelperClass.consoleLog(this._log, this._name, 'save', 'not cover', 'updateItemsImage', '');
+            respItemImage = await this.updateItemsImage(numItems);
+            HelperClass.consoleLog(
+                this._log,
+                this._name,
+                'save',
+                'not cover',
+                'updateItemsImage',
+                'updateItemsImage',
+                JSON.parse(JSON.stringify(respItemImage))
+            );
+        }
+
+        if (respItemImage.status !== 'ok') {
+            this._toastr.error(respItemImage.message, respItemImage.title);
+            return;
+        }
+
+        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.articleResp', '', JSON.parse(JSON.stringify(this.articleResp)));
+        this.exitForm(this.articleResp);
+        return;
+    }
+
+    saveData = (): Promise<any> => {
+        switch (this.optionsDialog.id) {
+            case 'create':
+                HelperClass.consoleLog(
+                    this._log,
+                    this._name,
+                    'saveData',
+                    'switch',
+                    'this.optionsDialog.id',
+                    'create',
+                    JSON.parse(JSON.stringify(this.optionsDialog.id))
+                );
+                return new Promise((resolve) => {
+                    this.createArticle().then((finish: any) => {
+                        resolve({ status: finish.status, message: finish.message, title: 'Error creating article' });
+                    });
+                });
                 break;
 
             case 'edit':
-                if (!HelperClass.compareObj(this.oldPlainData, this.plainData)) {
-                    finish = await this.modifyArticle();
-                    if (finish.status !== 'ok') {
-                        this._toastr.error(finish.message, 'Error modifying article');
-                        return;
-                    }
-                }
+                HelperClass.consoleLog(
+                    this._log,
+                    this._name,
+                    'saveData',
+                    'switch',
+                    'this.optionsDialog.id',
+                    'edit',
+                    JSON.parse(JSON.stringify(this.optionsDialog.id))
+                );
+
+                return new Promise((resolve) => {
+                    this.modifyArticle().then((finish: any) => {
+                        resolve({ status: finish.status, message: finish.message, title: 'Error modifying article' });
+                    });
+                });
 
                 break;
 
             case 'delete':
+                return Promise.resolve({ status: 'ok', message: '', title: 'Error deleting article' });
                 break;
 
             default:
+                return Promise.resolve({ status: 'ok', message: '', title: 'Error saving article' });
                 break;
         }
+    };
 
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.oldImageData.cover_image_article', '', this.oldImageData.cover_image_article);
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.imageData.cover_image_article', '', this.imageData.cover_image_article);
-        if (this.oldImageData.cover_image_article !== this.imageData.cover_image_article) {
-            HelperClass.consoleLog(this._log, this._name, 'save', '', 'actualize cover', '');
-            const element = {
-                cover: true,
-                id_article: this.articleResp.data.id_article,
-                id_asociation_article: this.userProfile.id_asoc_admin,
-                cover_image_article: this.form.value.cover_image_article,
-            };
-            const respCover = await this.uploadImage(element);
-            if (respCover.status !== 'ok') {
-                this._toastr.error(respCover.message, 'Error load cover image');
-                return;
+    updateItemsImage = (numItems: number): Promise<any> => {
+        return new Promise(async (resolve, _reject) => {
+            if (numItems > 0) {
+                let respItemImage: any = {};
+                HelperClass.consoleLog(
+                    this._log,
+                    this._name,
+                    'updateItemsImage',
+                    '',
+                    'this.imageData.items_article.length',
+                    '',
+                    this.imageData.items_article.length
+                );
+                for (let index = 0; index < this.imageData.items_article.length; index++) {
+                    HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'index', '', index);
+                    const element = {
+                        cover: false,
+                        id_article: this.articleResp.data.id_article,
+                        id_item_article: this.imageData.items_article[index].id_item_article,
+                        image_item_article: this.imageData.items_article[index].image_item_article,
+                    };
+
+                    respItemImage = await this.uploadImage(element, index + 1, numItems);
+                    HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'respItemImage', `index: ${index}`, respItemImage);
+                    if (respItemImage.status !== 'success') {
+                        HelperClass.consoleLog(
+                            this._log,
+                            this._name,
+                            'updateItemsImage',
+                            'promisesUpdateItemsImages',
+                            'promiseUpdateItemImage',
+                            'resolve err',
+                            respItemImage.status
+                        );
+                        resolve({
+                            status: respItemImage.status,
+                            message: respItemImage.message,
+                            title: 'Error load item image ' + index.toString(),
+                            result: null,
+                        });
+                    } else {
+                        this.articleResp.data = respItemImage.result;
+                    }
+                }
+                await this.updateOldRecord(this.articleResp.data);
+
+                HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'end for', '');
+
+                resolve({ status: 'ok', message: '', title: '' });
+            } else {
+                resolve({ status: 'ok', message: 'No items', title: '' });
             }
-        }
+        });
+    };
 
-        let respItemImage = { status: '', message: '' };
-        for (let index = 0; index < this.imageData.items_article.length; index++) {
-            HelperClass.consoleLog(this._log, this._name, 'save', '', 'actualize item image', '', index);
-            const element = {
-                cover: false,
-                id_article: this.articleResp.data.id_article,
-                id_item_article: this.imageData.items_article[index].id_item_article,
-                image_item_article: this.imageData.items_article[index].image_item_article,
-            };
-
-            respItemImage = await this.uploadImage(element, index + 1, numItems);
-            if (respItemImage.status !== 'ok') {
-                this._toastr.error(respItemImage.message, 'Error load image item image' + index.toString());
-                return;
-            }
-        }
-
-        HelperClass.consoleLog(this._log, this._name, 'save', '', 'this.articleResp', '', this.articleResp);
-        this.exitForm(this.articleResp);
-    }
-
-    async previewClick() {
+    previewClick() {
         if (!this.form.valid) {
             this.form.markAllAsTouched;
             this._toastr.error('Fields are required', 'Fill fields for preview, please');
@@ -583,6 +770,7 @@ export class FormArticleComponent implements OnInit {
         }
 
         const articlePreview = this.form.value;
+        console.log('Componente ' + this._name + ': previewClick: articlePreview ─> ', articlePreview);
         articlePreview['user'] = {
             id_user: this.userProfile.id_user,
             name_user: this.userProfile.name_user,
@@ -637,27 +825,43 @@ export class FormArticleComponent implements OnInit {
     modifyArticle(): Promise<any> {
         return new Promise(async (resolve, _reject) => {
             try {
-                this._articlesService.modifyArticle(this.plainData).subscribe({
-                    next: async (resp: any) => {
-                        console.log('Componente ' + this._name + ': modifyArticle: resp ─> ', resp);
-                        if (resp.status === 200) {
-                            this.articleResp.data = resp.result;
-                            console.log('Componente ' + this._name + ': modifyArticle: this.articleResp ─> ', this.articleResp);
-                            resolve({ status: 'ok', message: 'El usuario se modificó con exito' });
-                        } else {
-                            console.log('Componente ' + this._name + ': modifyArticle: error ─> resp.message', resp.message);
-                            resolve({ status: 'error', message: resp.message });
-                        }
-                    },
-                    error: (err: any) => {
-                        console.log('Componente ' + this._name + ': modifyArticle: error ─> create', err);
-                        // reject(false);
-                        resolve({ status: 'error', message: err });
-                    },
-                    complete: () => {
-                        console.log('Componente ' + this._name + ': modifyArticle: complete ─> create');
-                    },
-                });
+                if (HelperClass.compareObj(this.oldPlainData, this.plainData)) {
+                    HelperClass.consoleLog(
+                        this._log,
+                        this._name,
+                        'modifyArticle',
+                        'Promise',
+                        'compareObj',
+                        'resolve',
+                        JSON.parse(JSON.stringify(HelperClass.compareObj(this.oldPlainData, this.plainData)))
+                    );
+                    resolve({ status: 'ok', message: 'Nothing to actualize' });
+                } else {
+                    HelperClass.consoleLog(this._log, this._name, 'modifyArticle', 'Promise', '', 'continue');
+
+                    this._articlesService.modifyArticle(this.plainData).subscribe({
+                        next: async (resp: any) => {
+                            console.log('Componente ' + this._name + ': modifyArticle: resp ─> ', resp);
+                            if (resp.status === 200) {
+                                console.log('Componente ' + this._name + ': modifyArticle: this.articleResp ─> ', this.articleResp);
+                                this.articleResp.data = resp.result;
+                                console.log('Componente ' + this._name + ': modifyArticle: this.articleResp ─> ', this.articleResp);
+                                resolve({ status: 'ok', message: 'El artículo se modificó con exito' });
+                            } else {
+                                console.log('Componente ' + this._name + ': modifyArticle: error ─> resp.message', resp.message);
+                                resolve({ status: 'error', message: resp.message });
+                            }
+                        },
+                        error: (err: any) => {
+                            console.log('Componente ' + this._name + ': modifyArticle: error ─> create', err);
+                            // reject(false);
+                            resolve({ status: 'error', message: err });
+                        },
+                        complete: () => {
+                            console.log('Componente ' + this._name + ': modifyArticle: complete ─> create');
+                        },
+                    });
+                }
             } catch (error: any) {
                 this.loading = false;
                 console.log('Componente ' + this._name + ': modifyArticle: catch error ─> ', error);
@@ -672,74 +876,128 @@ export class FormArticleComponent implements OnInit {
 
         return new Promise(async (resolve, _reject) => {
             const asoc = this.userProfile.id_asoc_admin === 0 ? '9'.repeat(9) : this.userProfile.id_asoc_admin;
-            console.log('Componente ' + this._name + ': uploadImage: image ─> ', image);
+            let isNew = false;
+            let post = true;
             const fd = new FormData();
-            fd.append('action', 'upload');
-            fd.append('module', 'articles');
-            fd.append('user_id', image.id_article.toString());
-            fd.append('token', this.userProfile.token_user);
-            if (image.cover) {
-                fd.append('cover', 'cover');
-                fd.append('id_article', image.id_article.toString());
-                fd.append('id_asociation_article', image.id_asociation_article.toString());
-                fd.append('name', 'cover.png');
-                fd.append('prefix', 'images' + '/asociation-' + asoc + '/article-' + image.id_article.toString() + '/cover');
-                fd.append('file', image.cover_image_article.fileImage, 'cover.png');
-            } else {
-                fd.append('cover', 'item');
-                fd.append('id_item_article', image.id_item_article.toString());
-                fd.append('index', index.toString());
-                fd.append('items', items.toString());
-                fd.append('id_article_item_article', image.id_article.toString());
-                fd.append('name', 'item-' + image.id_item_article + '.png');
-                fd.append('prefix', 'images' + '/asociation-' + asoc + '/article-' + image.id_article.toString() + '/items-images');
-                fd.append('is_new', image.image_item_article.isSelectedFile ? 'true' : 'false');
-                if (image.image_item_article.isSelectedFile) {
-                    fd.append('file', image.image_item_article.fileImage, 'item-' + image.id_item_article + '.png');
+            let data: any = {};
+            console.log('Componente ' + this._name + ': uploadImage: image ─> ', image);
+            console.log('Componente ' + this._name + ': uploadImage: this.userProfile.date_updated_user ─> ', this.userProfile.date_updated_user);
+
+            isNew = !image.cover && image.image_item_article.isSelectedFile ? true : false;
+
+            if (image.cover || isNew) {
+                fd.append('action', 'upload');
+                fd.append('token', this.userProfile.token_user);
+                fd.append('user_id', this.userProfile.id_user.toString());
+                fd.append('module', 'articles');
+                fd.append('date_updated', this.userProfile.date_updated_user);
+                fd.append('date_updated_article', this.articleResp.data.date_updated_article);
+                if (image.cover) {
+                    fd.append('cover', 'cover');
+                    fd.append('id_article', image.id_article.toString());
+                    fd.append('id_asociation_article', asoc.toString());
+                    fd.append('user_name', 'cover');
+                    fd.append('name', 'cover.png');
+                    fd.append('prefix', 'images' + '/asociation-' + asoc + '/article-' + image.id_article.toString() + '/cover');
+                    fd.append('file', image.cover_image_article.fileImage, 'cover.png');
                 } else {
-                    fd.append('file_src', image.image_item_article.src);
+                    fd.append('cover', 'item');
+                    fd.append('id_article', image.id_article.toString());
+                    fd.append('id_item_article', image.id_item_article.toString());
+                    fd.append('id_asociation_article', asoc.toString());
+                    fd.append('index', index.toString());
+                    fd.append('first', index === 1 ? true.toString() : false.toString());
+                    fd.append('last', index === items ? true.toString() : false.toString());
+                    fd.append('items', items.toString());
+                    fd.append('user_name', 'item-' + image.id_item_article);
+                    fd.append('name', 'item-' + image.id_item_article + '.png');
+                    fd.append('prefix', 'images' + '/asociation-' + asoc + '/article-' + image.id_article.toString() + '/items-images');
+                    fd.append('file', image.image_item_article.fileImage, 'item-' + image.id_item_article + '.png');
                 }
+                // fd.append('name', this.logoImg.nameFile);
+            } else {
+                data = {
+                    action: 'upload',
+                    // token: this.userProfile.token_user,
+                    user_id: this.userProfile.id_user.toString(),
+                    module: 'articles',
+                    date_updated: this.userProfile.date_updated_user,
+                    date_updated_article: this.articleResp.data.date_updated_article,
+                    cover: 'item',
+                    id_article: image.id_article.toString(),
+                    id_item_article: image.id_item_article.toString(),
+                    id_asociation_article: asoc.toString(),
+                    index: index.toString(),
+                    first: index === 1 ? true.toString() : false.toString(),
+                    last: index === items ? true.toString() : false.toString(),
+                    items: items.toString(),
+                    user_name: 'item-' + image.id_item_article,
+                    name: 'item-' + image.id_item_article + '.png',
+                    prefix: 'images' + '/asociation-' + asoc + '/article-' + image.id_article.toString() + '/items-images',
+                    file_src: image.image_item_article.src,
+                };
             }
-            fd.append('date_updated', this.articleResp.data.date_updated_article);
-            // fd.append('name', this.logoImg.nameFile);
             // if (this.logoImg.fileImage !== null) {
             // }
             let observable: Observable<any>;
 
             if (items > 0) {
-                observable = this._articlesService.uploadImageItem(fd);
+                if (isNew) {
+                    observable = this._articlesService.uploadImageItem(fd);
+                    post = true;
+                } else {
+                    observable = this._articlesService.moveImageItem(data);
+                    post = false;
+                }
             } else {
                 observable = this._articlesService.uploadImage(fd);
+                post = true;
             }
             // this._articlesService.uploadImage(fd).subscribe({
             const subscription: Subscription = observable.subscribe({
                 next: (event: any) => {
                     console.log('Componente ' + this._name + ': uploadImages: event ─> ', event);
                     if (event.type === HttpEventType.UploadProgress) {
+                        console.log('Componente ' + this._name + ': uploadImages: UploadProgress event.type ─> ', HttpEventType.UploadProgress);
                         console.log(
                             'Componente ' + this._name + ': uploadImages: Upload progress ─> ',
                             event.total ? Math.round(event.loaded / event.total) * 100 + ' %' : '--'
                         );
                     } else if (event.type === HttpEventType.Response) {
                         console.log('Componente ' + this._name + ': uploadImages: response event ─> ', event);
-                        this.articleResp.data = event.body.result;
+                        console.log('Componente ' + this._name + ': uploadImages: response event.type ─> ', HttpEventType.Response);
                         subscription.unsubscribe();
-                        if (event.body.message === 'ok') {
-                            console.log('Componente ' + this._name + ': uploadImage: ok ─> ', event);
-                            resolve({ status: 'ok', message: 'Logo deleted successfully' });
-                        } else {
-                            console.log('Componente ' + this._name + ': uploadImage: error ─> ', event.message, event.code);
-                            resolve({ status: 'error', message: event.body.message });
-                        }
+                        resolve({ status: 'success', message: '', result: event.body.result });
+                    } else if (!post) {
+                        console.log('Componente ' + this._name + ': uploadImages: else type event ─> ', event);
+                        resolve({ status: 'success', message: '', result: event.result });
                     }
                 },
                 error: (err: any) => {
                     console.log('Componente ' + this._name + ': uploadImages: error ─> ', err);
                     subscription.unsubscribe();
-                    resolve({ status: 'error', message: err.error });
+                    resolve({ status: 'error', message: err.error.message, result: null });
                 },
                 complete: () => {
                     console.log('Componente ' + this._name + ': uploadImages: complete ─> post uploadImages');
+                },
+            });
+        });
+    }
+
+    deleteCover(data: any): Promise<any> {
+        return new Promise((resolve, _reject) => {
+            this._articlesService.deleteCover(data).subscribe({
+                next: (event: any) => {
+                    console.log('Componente ' + this._name + ': deleteCover: event ─> ', event);
+                    resolve({ status: 'success', message: '', result: event.result });
+                },
+                error: (err: any) => {
+                    console.log('Componente ' + this._name + ': deleteCover: error ─> ', err);
+                    resolve({ status: 'error', message: err.error.message, result: null });
+                },
+                complete: () => {
+                    console.log('Componente ' + this._name + ': deleteCover: complete ─> ');
                 },
             });
         });
@@ -875,5 +1133,51 @@ export class FormArticleComponent implements OnInit {
 
     get expirationDateIsInvalid(): boolean {
         return this.form.get('expiration_date_article')!.invalid && this.form.get('expiration_date_article')!.touched;
+    }
+
+    async updateOldRecord(article: any) {
+        this.oldPlainData = {
+            data: {
+                id_article: article.id_article,
+                id_asociation_article: article.id_asociation_article,
+                id_user_article: article.id_user_article,
+                category_article: article.category_article,
+                subcategory_article: article.subcategory_article,
+                class_article: article.class_article,
+                state_article: article.state_article,
+                publication_date_article: article.publication_date_article,
+                effective_date_article: article.effective_date_article,
+                expiration_date_article: article.expiration_date_article,
+                title_article: article.title_article,
+                abstract_article: article.abstract_article,
+                ubication_article: article.ubication_article,
+                date_updated_article: article.date_updated_article,
+            },
+            items: [],
+        };
+
+        this.oldImageData = {
+            id_article: article.id_article,
+            id_asociation_article: article.id_asociation_article,
+            cover_image_article: article.cover_image_article,
+            items_article: [],
+            date_updated_article: article.date_updated_article,
+        };
+
+        article.items_article.map((item: IDataItemArticle, index: number) => {
+            if (item.text_item_article !== '' || !item.image_item_article.isDefault) {
+                this.oldPlainData.items.push({
+                    id_item_article: index,
+                    text_item_article: item.text_item_article,
+                    is_default_image: item.image_item_article.isDefault,
+                });
+            }
+            if (!item.image_item_article.isDefault) {
+                this.oldImageData.items_article.push({
+                    id_item_article: index,
+                    image_item_article: item.image_item_article,
+                });
+            }
+        });
     }
 }

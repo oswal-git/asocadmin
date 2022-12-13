@@ -12,8 +12,8 @@ export class PreviewArticleComponent implements OnInit {
     private _name = 'PreviewArticleComponent';
     public article!: any;
 
-    articleUrlDefault = environment.urlApi + '/assets/images/images.jpg';
-    articleSrcDefault = environment.urlApi + '/assets/images/images.jpg';
+    articleUrlDefault = environment.urlApi2 + '/assets/img/images.jpg';
+    articleSrcDefault = environment.urlApi2 + '/assets/img/images.jpg';
 
     date = new Date();
     currentDate = this.date.getFullYear() + '-' + (this.date.getMonth() + 1) + '-' + ('00' + this.date.getDate()).slice(-2);

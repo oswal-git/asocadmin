@@ -93,6 +93,7 @@ export interface IIdArticle {
 export interface IDataItemArticlePlain {
     id_item_article: number;
     text_item_article: string;
+    is_default_image: boolean;
 }
 
 export interface IArticleImage {

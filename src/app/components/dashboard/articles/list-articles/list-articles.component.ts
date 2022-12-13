@@ -44,11 +44,24 @@ export class ListArticlesComponent implements OnInit {
     isEditor = false;
 
     loading = true;
-    editArticleCkeck: boolean = false;
+    // editArticleCkeck: boolean = false;
+    // private _editArticleCkeck!: boolean;
 
     faCircleXmark = faCircleXmark;
     faPenToSquare = faPenToSquare;
     faPlus = faPlus;
+
+    get editArticleCkeck(): boolean {
+        return this._articlesService.editArticleCkeck;
+    }
+
+    set editArticleCkeck(newVal: boolean) {
+        if (this._articlesService.editArticleCkeck !== newVal) {
+            // if the new number is not the same as the old number
+            // Logic for what happens when there is a change detected
+            this._articlesService.editArticleCkeck = newVal; // You do need to explicitly set the new number
+        }
+    }
 
     constructor(
         private _usersService: UsersService,
@@ -110,7 +123,7 @@ export class ListArticlesComponent implements OnInit {
             this.filterCategories = this.getFilterCategories();
             this.loadArticles().then((resp) => {
                 // console.log('Componente ' + this._name + ': ngOnInit: resp ─> ', resp);
-                if (resp.status === 'ok') {
+                if (resp.status === 'ok' || 'success') {
                     this.listArticles = resp.data;
                 }
                 this.loading = false;
@@ -281,19 +294,23 @@ export class ListArticlesComponent implements OnInit {
 
         dialogo.afterClosed().subscribe({
             next: (retorno: IResponseActionsAsociations) => {
-                console.log('Componente ' + this._name + ': editArticle afterClosed: retorno ─> ', retorno);
+                console.log('Componente ' + this._name + ': editArticle afterClosed: retorno ─> ', JSON.parse(JSON.stringify(retorno)));
                 if (retorno && retorno.action && retorno.action === 'edit') {
                     console.log('Componente ' + this._name + ': editArticle afterClosed: retorno.action ─> ', retorno.action);
                     this.listArticles = this.listArticles.map((article) => {
-                        console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> map', article);
+                        console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> map', article.id_article);
                         if (article.id_article.toString() === retorno.data.id_article.toString()) {
+                            console.log(
+                                'Componente ' + this._name + ': editArticle afterClosed: article ─> before modify',
+                                JSON.parse(JSON.stringify(article))
+                            );
                             article = retorno.data;
 
-                            console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> modify', article);
+                            console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> after modify', article);
                             return article;
                         }
 
-                        console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> equal', article);
+                        console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> equal', JSON.parse(JSON.stringify(article)));
                         return article;
                     });
                 }

@@ -32,7 +32,7 @@ export class FormItemArticleComponent implements OnInit, ControlValueAccessor {
 
     textItemArticleMinLength: number = 5;
 
-    itemArticleUrlDefault = environment.urlApi + '/assets/images/images.jpg';
+    itemArticleUrlDefault = environment.urlApi2 + '/assets/img/images.jpg';
     imgReadonly = false;
 
     faKeyboard = faKeyboard;

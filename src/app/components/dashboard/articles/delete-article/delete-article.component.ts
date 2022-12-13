@@ -40,7 +40,7 @@ export class DeleteArticleComponent implements OnInit {
             });
         }
 
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
         console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {
@@ -72,7 +72,7 @@ export class DeleteArticleComponent implements OnInit {
     async clickDelete() {
         const resDelete = await this.deleteArticle();
         this.loading = false;
-        if (resDelete.status === 'ok') {
+        if (resDelete.status === 'ok' || 'success') {
             this._toastr.success('Artículo borrado correctamente', 'Artículo borrado').onHidden.subscribe(() => {
                 // window.location.reload();
                 this.cancelar({

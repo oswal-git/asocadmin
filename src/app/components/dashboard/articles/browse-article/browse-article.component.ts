@@ -23,8 +23,8 @@ export class BrowseArticleComponent implements OnInit {
     asociationId: number = 0;
     isAdmin = false;
 
-    articleUrlDefault = environment.urlApi + '/assets/images/images.jpg';
-    articleSrcDefault = environment.urlApi + '/assets/images/images.jpg';
+    articleUrlDefault = environment.urlApi2 + '/assets/img/images.jpg';
+    articleSrcDefault = environment.urlApi2 + '/assets/img/images.jpg';
 
     loading = true;
 
@@ -36,7 +36,7 @@ export class BrowseArticleComponent implements OnInit {
         public dialogRef: MatDialogRef<BrowseArticleComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
         console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         this.userProfile = res.userprofile;

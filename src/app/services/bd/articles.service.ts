@@ -12,6 +12,16 @@ export class ArticlesService {
     articlePlainData!: IApiArticle;
     articlePmageData!: IArticleImage;
 
+    private _editArticleCkeck: boolean = false;
+
+    get editArticleCkeck(): boolean {
+        return this._editArticleCkeck;
+    }
+
+    set editArticleCkeck(data: boolean) {
+        this._editArticleCkeck = data;
+    }
+
     private _articlePreview!: IArticle;
     //  = {
     // id_article: 0,
@@ -110,11 +120,15 @@ export class ArticlesService {
         return this._db.uploadImageItem(fd, this._usersService.getAuthHeaders());
     }
 
+    moveImageItem(data: any) {
+        return this._db.moveImageItem(data, this._usersService.getAuthHeaders());
+    }
+
     deleteLogo(fd: FormData) {
         return this._db.deleteImage(fd, this._usersService.getAuthHeaders());
     }
 
-    uploadLogo(fd: FormData) {
-        return this._db.uploadImage(fd, this._usersService.getAuthHeaders());
+    deleteCover(data: any) {
+        return this._db.deleteCover(data, this._usersService.getAuthHeaders());
     }
 }

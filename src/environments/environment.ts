@@ -4,7 +4,8 @@
 
 export const environment = {
     production: false,
-    urlApi: 'http://apiasoc.es'
+    urlApi: 'http://apiasoc.es',
+    urlApi2: 'http://apiasoc.es:7251',
 };
 
 /*

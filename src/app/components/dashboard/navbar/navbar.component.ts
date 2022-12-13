@@ -30,6 +30,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     userProfileOSubscription!: Subscription;
     onResizeSubscription: Subscription;
+    asociation_name = '';
 
     durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -51,11 +52,12 @@ export class NavbarComponent implements OnInit, OnDestroy {
                 next: (user: IUserConnected) => {
                     // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
                     this.isLogin = user.token_user !== '' ? true : false;
-                    this.avatar = user.avatar_user === '' ? environment.urlApi + '/assets/images/user.png' : user.avatar_user;
+                    this.avatar = user.avatar_user === '' ? environment.urlApi2 + '/assets/img/user.png' : user.avatar_user;
                     if (user.profile_user === 'superadmin') {
                         this.sadmin = true;
                     } else if (user.id_asoc_admin !== 0) {
                         this.admin = true;
+                        this.asociation_name = user.long_name_asoc;
                     }
                 },
                 error: (err: any) => {
@@ -78,7 +80,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
         // this.isLogin = this._usersService.userProfile.token_user !== '' ? true : false;
         // this.avatar =
         //     this._usersService.userProfile.avatar_user === ''
-        //         ? environment.urlApi + '/assets/images/user.png'
+        //         ? environment.urlApi2 + '/assets/img/user.png'
         //         : this._usersService.userProfile.avatar_user;
         // if (this._usersService.userProfile.profile_user === 'superadmin') {
         //     this.sadmin = true;
@@ -121,33 +123,37 @@ export class NavbarComponent implements OnInit, OnDestroy {
 
     logout() {
         this._usersService.logout().subscribe({
-            next: (_resp: any) => {
+            next: (resp: any) => {
                 // console.log('Componente ' + this._name + ': logout: ─> resp', resp);
                 // const userProfileOk = this._usersService.resetStoredProfile();
-                this._usersService.resetStoredProfile();
-                // console.log('Componente ' + this._name + ': logout: ─> userProfileOk', userProfileOk);
-                this.msg('Desconection successfull. Come back soon!!');
+                if (resp.status === 200) {
+                    this._usersService.resetStoredProfile();
+                    // console.log('Componente ' + this._name + ': logout: ─> userProfileOk', userProfileOk);
+                    this.msg('Desconection successfull. Come back soon!!');
 
-                // this.isLogin = this._usersService.userProfile.profile_user ? true : false;
-                // this.avatar = this._usersService.userProfile.avatar_user;
-                // if (this._usersService.userProfile.profile_user === 'superadmin') {
-                //     this.sadmin = true;
-                // }
-                this.avatar = environment.urlApi + '/assets/images/user.png';
-                this.isLogin = false;
-                this.sadmin = false;
-                // console.log('Componente ' + this._name + ': logout: this.sadmin ─> ', this.sadmin);
-                // console.log('Componente ' + this._name + ': logout: this.isLogin ─> ', this.isLogin);
-                // console.log('Componente ' + this._name + ': logout: this.avatar ─> ', this.avatar);
+                    // this.isLogin = this._usersService.userProfile.profile_user ? true : false;
+                    // this.avatar = this._usersService.userProfile.avatar_user;
+                    // if (this._usersService.userProfile.profile_user === 'superadmin') {
+                    //     this.sadmin = true;
+                    // }
+                    this.avatar = environment.urlApi2 + '/assets/img/user.png';
+                    this.isLogin = false;
+                    this.sadmin = false;
+                    // console.log('Componente ' + this._name + ': logout: this.sadmin ─> ', this.sadmin);
+                    // console.log('Componente ' + this._name + ': logout: this.isLogin ─> ', this.isLogin);
+                    // console.log('Componente ' + this._name + ': logout: this.avatar ─> ', this.avatar);
 
-                // this.router.navigateByUrl('/dashboard');
-                this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate(['/dashboard']));
+                    // this.router.navigateByUrl('/dashboard');
+                    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate(['/dashboard']));
+                } else {
+                    this.msg(resp.message);
+                }
             },
             error: (err: any) => {
                 const userProfileErr = this._usersService.resetStoredProfile();
                 console.log('Componente ' + this._name + ': logout: ─> userProfileErr', userProfileErr);
                 console.log('Componente ' + this._name + ': logout: error ─> perfil', err);
-                this.avatar = environment.urlApi + '/assets/images/user.png';
+                this.avatar = environment.urlApi2 + '/assets/img/user.png';
                 this.isLogin = false;
                 this.sadmin = false;
             },

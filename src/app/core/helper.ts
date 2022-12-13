@@ -38,15 +38,18 @@ export class HelperClass {
         statment: string,
         variable_name: string,
         sentence: string,
-        variable: any = ''
+        variable: any = null
     ): void {
         statment = statment === '' ? statment : ' ' + statment;
+        variable = variable === null ? '' : variable;
         if (log) {
             console.log(`Componente ${component}: ${funct}${statment}: ${variable_name} ─> ${sentence}`, variable);
         }
     }
 
     static compareObj(a: any, b: any): boolean {
+        // true if equal
+        // false if diferent
         if (typeof a === 'object' && typeof b === 'object') {
             var aKeys = Object.keys(a).sort();
             var bKeys = Object.keys(b).sort();

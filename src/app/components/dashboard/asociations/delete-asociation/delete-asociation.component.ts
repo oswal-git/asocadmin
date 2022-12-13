@@ -24,7 +24,7 @@ export class DeleteAsociationComponent implements OnInit {
     asocResp: IResponseActionsUsers = { action: '', data: '', replay: { status: '', message: '' } };
     userProfile!: IUserConnected;
 
-    avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
+    avatarUrlDefault = environment.urlApi2 + '/assets/img/user.png';
     avatarImg: IEglImagen = {
         src: this.avatarUrlDefault,
         nameFile: '',
@@ -56,14 +56,26 @@ export class DeleteAsociationComponent implements OnInit {
         console.log('Componente ' + this._name + ': constructor: data ─> ', data);
         if (typeof data !== 'string') {
             this.options = data;
-            if (this.options.record.avatar_user) {
-                this.avatarImg.src = this.options.record.avatar_user;
-            }
+            // if (this.options.record.avatar_user) {
+            //     this.avatarImg.src = this.options.record.avatar_user;
+            // }
+            const avatar: string =
+                this.options.record.logo_asociation === '' ? environment.urlApi2 + '/assets/img/images.jpg' : this.options.record.logo_asociation;
+
+            this.avatarImg = {
+                src: avatar,
+                nameFile: avatar.split(/[\\/]/).pop() || '',
+                filePath: '',
+                fileImage: null,
+                isSelectedFile: false,
+                isDefault: this.avatarUrlDefault === avatar,
+                isChange: false,
+            };
 
             console.log('Componente ' + this._name + ': constructor: this.options ─> ', this.options);
         }
 
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
         console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {
@@ -93,8 +105,9 @@ export class DeleteAsociationComponent implements OnInit {
 
     async clickDelete() {
         const resDelete = await this.deleteAsociation();
+        console.log('Componente ' + this._name + ': clickDelete: resDelete ─> ', resDelete);
         this.loading = false;
-        if (resDelete.status === 'ok') {
+        if (resDelete.status === 'ok' || resDelete.status === 'success') {
             this.cancelar({
                 action: this.options.id,
                 data: this.options.record.id_asociation,
@@ -126,7 +139,7 @@ export class DeleteAsociationComponent implements OnInit {
                     },
                     error: (err: any) => {
                         console.log('Componente ' + this._name + ': deleteAsociation: error ─> delete', err);
-                        resolve({ status: 'error', message: err });
+                        resolve({ status: 'error', message: err.error.message });
                     },
                     complete: () => {
                         console.log('Componente ' + this._name + ': deleteAsociation: complete ─> delete');

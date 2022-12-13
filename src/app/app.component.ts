@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UsersService } from './services/bd/users.service';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+// import { Router } from '@angular/router';
 
 @Component({
     selector: 'app-root',
@@ -24,7 +25,7 @@ export class AppComponent {
         private _snackBar: MatSnackBar
     ) {
         // console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'Token expired') {
             this.msg('Token expired');
@@ -43,20 +44,34 @@ export class AppComponent {
                     // this.router.navigateByUrl('/login');
                 } else {
                     if (!this.pollSubscriber) {
-                        console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.subscribe');
-                        this.pollSubscriber = this._usersService.pollUsers().subscribe((res) => {
-                            console.log('Componente ' + this._name + ': constructor: pollUsers res ─> ', res);
-                            if (res) {
-                                res.result.map((noti: any) => {
-                                    console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ', noti);
-                                    // this.makeNotification(noti.title_article, noti.abstract_article);
-                                });
-                            }
-                        });
+                        // console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.subscribe');
+                        // this.pollSubscriber = this._usersService.pollUsers().subscribe((res) => {
+                        //     console.log('Componente ' + this._name + ': constructor: pollUsers res ─> ', res);
+                        //     if (res) {
+                        //         // res.result.map((noti: any) => {
+                        //         // console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ', noti);
+                        //         console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ');
+                        //         // this.makeNotification(noti.title_article, noti.abstract_article);
+                        //         // });
+                        //     }
+                        // });
                     }
                 }
             });
         }
+    }
+
+    ngOnInit(): void {
+        // this.router.events.subscribe((event: any) => {
+        // console.log('Componente ' + this._name + ': ngOnInit: ─> ');
+        //     // let r = this.route;
+        //     // while (r.firstChild) {
+        //     //     r = r.firstChild;
+        //     // }
+        //     // r.params.subscribe((params: any) => {
+        //     //     this.timestamp.TestStart = params.start;
+        //     // });
+        // });
     }
 
     // private makeNotification(title: any, body: string) {

@@ -51,7 +51,7 @@
                   <span class="browsing" [ngClass]="{ opacity: !editArticleCkeck }">browse</span>
                   <span class="editing" [ngClass]="{ opacity: editArticleCkeck }">edition</span>
                   <input type="checkbox" [(ngModel)]="editArticleCkeck" />
-                  <div class="tooltip" data-text="Toggle editing o deleting article"></div>
+                  <div class="tooltip" [attr.data-text]="editArticleCkeck ? 'Toggle browse mode' : 'Toggle editing/deleting mode'"></div>
                </div>
                <div class="tooltip__add">
                   <div class="add">
@@ -109,7 +109,7 @@
                            <div class="abstract_article" (click)="browseArticle(article, i)">
                               <div class="abstract_article-text">{{ article.abstract_article }}</div>
                            </div>
-                           <div class="publication_date_article">{{ article.publication_date_article | date: "dd 'de' MMMM 'de' yyyy" }}</div>
+                           <div class="publication_date_article">{{ article.publication_date_article | date : "dd 'de' MMMM 'de' yyyy" }}</div>
                         </div>
                      </div>
                   </div>

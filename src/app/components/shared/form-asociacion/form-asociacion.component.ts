@@ -38,8 +38,8 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
     asocResp: IResponseActionsUsers = { action: '', data: '', replay: { status: '', message: '' } };
 
     // logo
-    logoSrcDefault = environment.urlApi + '/assets/images/asociation_default.png';
-    logoUrlDefault = environment.urlApi + '/assets/images/asociation_default.png';
+    logoSrcDefault = environment.urlApi2 + '/assets/img/asociation_default.png';
+    logoUrlDefault = environment.urlApi2 + '/assets/img/asociation_default.png';
 
     src = this.logoSrcDefault;
     logoImg: IEglImagen = {
@@ -396,7 +396,6 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                         this.oldRecord.email_asociation === this.form.value.email_asociation &&
                         this.oldRecord.phone_asociation === this.form.value.phone_asociation &&
                         this.oldRecord.logo_asociation === this.form.value.logo_asociation.src
-                        // this.logoImg.src === this.oldRecord.logo_asociation
                     ) {
                         console.log('Componente ' + this._name + ': manageAsociation: error ─> not data changed');
                         this._toastr.error('Nothing for update.<br> No action made.', 'Not data changed');
@@ -694,13 +693,14 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
             try {
                 const respDelete: any = await this.deleteLogo();
                 console.log('Componente ' + this._name + ': manageLogo: deleteLogo ─> ', respDelete);
-                if (respDelete.message === 'ok') {
-                    this.asocResp.data = respDelete.result.records[0];
+                if (respDelete.status === 'ok' || respDelete.status === 'success') {
+                    this.asocResp.data = respDelete.result;
                     console.log('Componente ' + this._name + ': manageLogo: deleteLogo ok ─> ', respDelete);
+                    this.updateOldRecord(this.asocResp.data);
                     return { status: 'ok', message: 'Logo deleted successfully' };
                 } else {
                     console.log('Componente ' + this._name + ': manageLogo: deleteLogo error ─> ', respDelete.message, respDelete.code);
-                    return { status: 'error', message: respDelete.body.message };
+                    return { status: 'error', message: respDelete.message };
                 }
             } catch (error: any) {
                 console.log('Componente ' + this._name + ': manageLogo: deleteLogo error ─> ', error);
@@ -713,13 +713,14 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                     console.log('Componente ' + this._name + ': manageLogo: uploadLogo () ─> ');
                     const respUpload: any = await this.uploadLogo();
                     console.log('Componente ' + this._name + ': manageLogo: uploadLogo respUpload ─> ', respUpload);
-                    if (respUpload.body.message === 'ok') {
-                        this.asocResp.data = respUpload.body.result.records[0];
+                    if (respUpload.status === 'ok' || respUpload.status === 'success') {
+                        this.asocResp.data = respUpload.result[0];
                         console.log('Componente ' + this._name + ': manageLogo: uploadLogo this.asocResp ─> ', this.asocResp);
+                        this.updateOldRecord(this.asocResp.data);
                         return { status: 'ok', message: 'Logo modified successfully' };
                     } else {
-                        console.log('Componente ' + this._name + ': manageLogo: uploadLogo respUpload.body.message ─> ', respUpload.body.message);
-                        return { status: 'error', message: respUpload.body.message };
+                        console.log('Componente ' + this._name + ': manageLogo: uploadLogo respUpload.message ─> ', respUpload.message);
+                        return { status: 'error', message: respUpload.message };
                     }
                 } catch (error: any) {
                     console.log('Componente ' + this._name + ': manageLogo: uploadLogo error ─> ', error);
@@ -747,12 +748,15 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                 const fd = new FormData();
                 fd.append('action', 'asociation');
                 fd.append('token', this.userProfile.token_user);
-                fd.append('user_id', this.asocResp.data.id_asociation.toString());
+                fd.append('user_id', this.userProfile.id_user.toString());
+                fd.append('asoc_id', this.asocResp.data.id_asociation.toString());
                 fd.append('module', 'asociations');
-                fd.append('prefix', 'logos' + '/asociation-' + this.asocResp.data.id_asociation);
+                // fd.append('prefix', 'logos' + '/asociation-' + this.asocResp.data.id_asociation);
                 // fd.append('name', this.logoImg.nameFile);
+                fd.append('user_name', this.asocResp.data.short_name_asociation.replace(' ', '_'));
                 fd.append('name', this.form.value.short_name_asociation.replace(' ', '_') + '.png');
-                fd.append('date_updated', this.asocResp.data.date_updated_asociation);
+                fd.append('date_updated', this.userProfile.date_updated_user);
+                fd.append('date_updated_asociation', this.asocResp.data.date_updated_asociation);
                 fd.append('file', this.form.value.logo_asociation.fileImage, this.asocResp.data.short_name_asociation.replace(' ', '_') + '.png');
                 // if (this.logoImg.fileImage !== null) {
                 // }
@@ -766,12 +770,12 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
                             );
                         } else if (event.type === HttpEventType.Response) {
                             console.log('Componente ' + this._name + ': uploadLogo: response event ─> ', event);
-                            resolve(event);
+                            resolve({ status: 'success', message: '', result: event.body.result.records });
                         }
                     },
                     error: (err: any) => {
                         console.log('Componente ' + this._name + ': uploadLogo: error ─> ', err);
-                        resolve(err);
+                        resolve({ status: 'error', message: err.error.message, result: null });
                     },
                     complete: () => {
                         console.log('Componente ' + this._name + ': uploadLogo: complete ─> post uploadLogo');
@@ -790,17 +794,17 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
             fd.append('token', this.userProfile.token_user);
             fd.append('user_id', this.oldRecord.id_asociation.toString());
             fd.append('module', 'asociations');
-            fd.append('prefix', 'logos' + '/asociation-' + this.oldRecord.id_asociation);
+            // fd.append('prefix', 'logos' + '/asociation-' + this.oldRecord.id_asociation);
             fd.append('name', this.logoImg.nameFile);
             fd.append('date_updated', this.asocResp.data.date_updated_asociation);
             this._asociationsService.deleteLogo(fd).subscribe({
                 next: (event: any) => {
                     console.log('Componente ' + this._name + ': deleteLogo: event ─> ', event);
-                    resolve(event);
+                    resolve({ status: 'success', message: '', result: event.result });
                 },
                 error: (err: any) => {
                     console.log('Componente ' + this._name + ': deleteLogo: error ─> ', err);
-                    resolve(err);
+                    resolve({ status: 'error', message: err.error.message, result: null });
                 },
                 complete: () => {
                     console.log('Componente ' + this._name + ': deleteLogo: complete ─> post ulrUploadFile');
@@ -887,5 +891,19 @@ export class FormAsociacionComponent implements OnInit, OnChanges, DoCheck {
 
     get emailAsociationIsInvalid(): boolean {
         return this.form.get('email_asociation')!.invalid && this.form.get('email_asociation')!.touched;
+    }
+
+    updateOldRecord(asoc: any) {
+        // this.oldRecord.id_user = asoc.id_user;
+        this.oldRecord.id_asociation = asoc.id_asociation;
+        this.oldRecord.long_name_asociation = asoc.long_name_asociation;
+        this.oldRecord.short_name_asociation = asoc.short_name_asociation;
+        this.oldRecord.logo_asociation = asoc.logo_asociation === '' ? this.logoSrcDefault : asoc.logo_asociation;
+        this.oldRecord.email_asociation = asoc.email_asociation;
+        this.oldRecord.name_contact_asociation = asoc.name_contact_asociation;
+        this.oldRecord.phone_asociation = asoc.phone_asociation;
+        this.oldRecord.date_deleted_asociation = asoc.date_deleted_asociation;
+        this.oldRecord.date_created_asociation = asoc.date_created_asociation;
+        this.oldRecord.date_updated_asociation = asoc.date_updated_asociation;
     }
 }

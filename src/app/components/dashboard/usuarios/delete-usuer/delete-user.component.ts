@@ -20,7 +20,7 @@ export class DeleteUserComponent implements OnInit {
     options!: IOptionsDialog;
     userResp: IResponseActionsUsers = { action: '', data: '', replay: { status: '', message: '' } };
 
-    avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
+    avatarUrlDefault = environment.urlApi2 + '/assets/img/user.png';
     avatarImg: IEglImagen = {
         src: this.avatarUrlDefault,
         nameFile: '',
@@ -62,7 +62,7 @@ export class DeleteUserComponent implements OnInit {
     async clickDelete() {
         const resDelete = await this.deleteUser();
         this.loading = false;
-        if (resDelete.status === 'ok') {
+        if (resDelete.status === 'success') {
             this.cancelar({ action: this.options.id, data: this.options.record.id_user, replay: { status: 'ok', message: 'User deleted' } });
         } else {
             this.msg(resDelete.message);
@@ -82,7 +82,7 @@ export class DeleteUserComponent implements OnInit {
                     next: async (resp: any) => {
                         console.log('Componente ' + this._name + ': deleteUser: resp ─> ', resp);
                         if (resp.status === 200) {
-                            resolve({ status: 'ok', message: 'El usuario se eliminó con exito' });
+                            resolve({ status: 'success', message: 'El usuario se eliminó con exito' });
                         } else {
                             console.log('Componente ' + this._name + ': deleteUser: error ─> resp.message', resp.message);
                             resolve({ status: 'error', message: resp.message });

@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
+import { ILocalProfile } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog } from '@app/interfaces/ui/dialogs.interface';
 import { UsersService } from '@app/services/bd/users.service';
 
@@ -33,7 +34,8 @@ export class ProfileComponent implements OnInit {
         private _usersService: UsersService // private _db: BdmysqlService
     ) {
         // console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
-        const res = this._usersService.getLocalStoredProfile();
+        const res: ILocalProfile = this._usersService.getLocalStoredProfile();
+        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg === 'Token expired') {
             this.msg('Token expired');
@@ -65,7 +67,7 @@ export class ProfileComponent implements OnInit {
         console.log('Componente ' + this._name + ': cancelar: ─> dialogRef.close: datosSalida ', datosSalida);
         if (this.options.id === 'profile') {
             if (datosSalida.action === 'profile') {
-                this._usersService.updateProfileAvatar(datosSalida.data.avatar);
+                // this._usersService.updateProfileAvatar(datosSalida.data.avatar);
             }
             this.router.navigate(['/dashboard']);
         } else {

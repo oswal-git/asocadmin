@@ -18,8 +18,8 @@ export class LoginComponent implements OnInit {
     userProfile!: IUserConnected;
 
     // avatar
-    avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
-    src = environment.urlApi + '/assets/images/user.png';
+    avatarUrlDefault = environment.urlApi2 + '/assets/img/user.png';
+    src = environment.urlApi2 + '/assets/img/user.png';
 
     avatarImg: IEglImagen = {
         src: this.src,
@@ -56,7 +56,7 @@ export class LoginComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'User logged') {
             this.router.navigateByUrl('/dashboard');
@@ -103,14 +103,16 @@ export class LoginComponent implements OnInit {
                             this.router.navigateByUrl('/dashboard');
                         } else {
                             this.userProfile = this._usersService.resetStoredProfile();
+                            console.log('Componente ' + this._name + ': login: ─> this.userProfile', this.userProfile);
                             this.msg(resp.message);
                         }
                         this.loading = false;
                     },
                     error: (err: any) => {
-                        console.log('Componente ' + this._name + ': login: error ─> perfil', err);
+                        console.log('Componente ' + this._name + ': login: err ─> perfil', err.error.message);
                         this.userProfile = this._usersService.resetStoredProfile();
                         console.log('Componente ' + this._name + ': login: ─> this.userProfile', this.userProfile);
+                        this.msg(err.error.message);
                     },
                     complete: () => {
                         console.log('Componente ' + this._name + ': login: complete ─> perfil');

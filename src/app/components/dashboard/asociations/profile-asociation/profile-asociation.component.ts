@@ -31,7 +31,7 @@ export class ProfileAsociationComponent implements OnInit {
         private _usersService: UsersService,
         private _toastr: ToastrService // private _location: Location
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'Token expired') {
             this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {

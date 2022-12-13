@@ -64,7 +64,7 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
         style: '',
     };
     listAsociations: IBDAsociation[] = [];
-    avatarUrlDefault = environment.urlApi + '/assets/images/images.jpg';
+    logoUrlDefault = environment.urlApi2 + '/assets/img/asociation_default.png';
 
     isSuper = false;
     isAdmin = false;
@@ -112,7 +112,7 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
         public dialog: MatDialog,
         private router: Router
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
         console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         this.userProfile = res.userprofile;

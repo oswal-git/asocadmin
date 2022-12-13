@@ -8,7 +8,6 @@
             <div class="component--main">
                <div *ngIf="!src && !imgDefaultSrc">Imagen</div>
                <img class="component--main-svg" *ngIf="!src && imgDefaultSrc" [src]="imgDefaultSrc" />
-
                <img class="component--main-img" *ngIf="src" [src]="src" />
                <label class="component--label" *ngIf="label !== ''">{{ label }}</label>
             </div>
@@ -45,8 +44,7 @@
                </div>
             </div>
          </div>
-         <div class="img--name">{{ nameFile }}</div>
-         <p></p>
+         <div class="img--name" *ngIf="label !== ''">{{ nameFile }}</div>
       </div>
    </div>
 </div>

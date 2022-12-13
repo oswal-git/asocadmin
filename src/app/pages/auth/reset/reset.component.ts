@@ -20,7 +20,7 @@ export class ResetComponent implements OnInit {
     loading = false;
 
     // avatar
-    avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
+    avatarUrlDefault = environment.urlApi2 + '/assets/img/user.png';
 
     // icons
     faEnvelope = faEnvelope;
@@ -39,7 +39,7 @@ export class ResetComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
 
         if (res.msg === 'User logged') {
             this.router.navigateByUrl('/dashboard');
@@ -69,9 +69,9 @@ export class ResetComponent implements OnInit {
                 this._usersService.resetPassword(data).subscribe({
                     next: (resp: any) => {
                         console.log('Componente ' + this._name + ': reset: ─> resp', resp);
-                        this.userProfile = this._usersService.resetStoredProfile();
                         if (resp.status === 200) {
                             this.msg('El nuevo password ha sido enviado a su correo');
+                            this.userProfile = this._usersService.resetStoredProfile();
                             this.router.navigateByUrl('/login');
                         } else {
                             this.msg(resp.message);
@@ -81,7 +81,7 @@ export class ResetComponent implements OnInit {
                     error: (err: any) => {
                         this.userProfile = this._usersService.resetStoredProfile();
                         console.log('Componente ' + this._name + ': reset: error ─> perfil', err);
-                        this.msg(err);
+                        this.msg(err.error.message);
                     },
                     complete: () => {
                         console.log('Componente ' + this._name + ': reset: complete ─> perfil');

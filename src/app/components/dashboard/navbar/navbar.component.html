@@ -3,7 +3,7 @@
       <!-- menu superior -->
       <mat-toolbar color="primary" class="navbar-toolbar">
          <button mat-icon-button (click)="snav.toggle()" *ngIf="getMediaScren().order < 5"><mat-icon>menu</mat-icon></button>
-         <h1 class="navbar-app-name">Asociación</h1>
+         <h1 class="navbar-app-name">Asociación {{ asociation_name }}</h1>
          <span class="spacer"></span>
          <button mat-icon-button [matMenuTriggerFor]="menuProfile" aria-label="Example icon-button with a menu">
             <img class="img_avatar" [src]="avatar" />

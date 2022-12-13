@@ -121,7 +121,7 @@ export class ListaUsuariosComponent implements OnInit {
         public dialog: MatDialog,
         private router: Router
     ) {
-        const res = this._usersService.getLocalStoredProfile();
+        const res: any = this._usersService.getLocalStoredProfile();
         // console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {

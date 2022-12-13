@@ -3,7 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { INewCredentials, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, INewCredentials, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { UsersService } from '@app/services/bd/users.service';
 import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
@@ -23,8 +23,8 @@ export class ChangeComponent implements OnInit {
     isLogin: boolean = false;
 
     // avatar
-    avatarUrlDefault = environment.urlApi + '/assets/images/user.png';
-    src = environment.urlApi + '/assets/images/user.png';
+    avatarUrlDefault = environment.urlApi2 + '/assets/img/user.png';
+    src = environment.urlApi2 + '/assets/img/user.png';
 
     avatarImg: IEglImagen = {
         src: this.src,
@@ -36,7 +36,7 @@ export class ChangeComponent implements OnInit {
         isChange: false,
     };
 
-    form: UntypedFormGroup;
+    form!: UntypedFormGroup;
     durationInSeconds = 1.5;
     loading = false;
 
@@ -61,13 +61,32 @@ export class ChangeComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService,
         private _location: Location
-    ) {
-        const res = this._usersService.getLocalStoredProfile();
+    ) {}
+
+    ngOnInit(): void {
+        this.init();
+        this.form = this._formBuilder.group({
+            // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],
+            email_user: new UntypedFormControl(
+                this.userProfile.email_user,
+                Validators.compose([Validators.required, Validators.pattern(this.emailTextPattern), Validators.maxLength(50)])
+            ),
+            password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
+            new_password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
+        });
+    }
+
+    async init() {
+        const res: ILocalProfile = this._usersService.getLocalStoredProfile();
+        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {
             this.router.navigateByUrl('/login');
         }
-        const avatar = res.userProfile.avatar_user === '' ? environment.urlApi + '/assets/images/user.png' : res.userProfile.avatar_user;
+        this.userProfile = res.userprofile;
+        console.log('Componente ' + this._name + ': constructor: res.userprofile ─> ', res.userprofile);
+        const avatar = res.userprofile.avatar_user === '' ? environment.urlApi2 + '/assets/img/user.png' : res.userprofile.avatar_user;
+        console.log('Componente ' + this._name + ': constructor: avatar ─> ', avatar);
 
         this.avatarImg = {
             src: avatar,
@@ -78,26 +97,17 @@ export class ChangeComponent implements OnInit {
             isDefault: this.avatarUrlDefault === avatar,
             isChange: false,
         };
-
-        this.form = this._formBuilder.group({
-            // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],
-            email_user: new UntypedFormControl(
-                '',
-                Validators.compose([Validators.required, Validators.pattern(this.emailTextPattern), Validators.maxLength(50)])
-            ),
-            password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
-            new_password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
-        });
-    }
-
-    ngOnInit(): void {
-        // this.userProfile = this._usersService.getProfile();
     }
 
     async change(event: Event) {
         event.preventDefault();
 
         if (this.form.value.email_user != '' && this.form.value.password_user != '' && this.form.value.new_password_user != '' && this.form.valid) {
+            if (this.form.value.password_user === this.form.value.new_password_user) {
+                this.msg('The new password has been diferent of old password');
+                return;
+            }
+
             this.loading = true;
 
             const credentials: INewCredentials = {
@@ -119,15 +129,16 @@ export class ChangeComponent implements OnInit {
                             this.msg(msg, 2);
                             this.router.navigateByUrl('/dashboard');
                         } else {
-                            this.userProfile = this._usersService.resetStoredProfile();
+                            // this.userProfile = this._usersService.resetStoredProfile();
                             this.msg(resp.message);
                         }
                         this.loading = false;
                     },
                     error: (err: any) => {
-                        console.log('Componente ' + this._name + ': change: error ─> perfil', err);
-                        this.userProfile = this._usersService.resetStoredProfile();
+                        console.log('Componente ' + this._name + ': change: error ─> perfil', err.error.message);
+                        // this.userProfile = this._usersService.resetStoredProfile();
                         console.log('Componente ' + this._name + ': change: ─> this.userProfile', this.userProfile);
+                        this.msg(err.error.message);
                     },
                     complete: () => {
                         console.log('Componente ' + this._name + ': change: complete ─> perfil');

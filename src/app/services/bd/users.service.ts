@@ -1,6 +1,14 @@
 import { Injectable } from '@angular/core';
 import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
-import { IBDUsuario, ICredentials, IIdUser, INewCredentials, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import {
+    IBDUsuario,
+    ICredentials,
+    IIdUser,
+    ILocalProfile,
+    INewCredentials,
+    IUserAsociation,
+    IUserConnected,
+} from '@app/interfaces/api/iapi-users.metadatos';
 import { ICreateUser } from '@app/interfaces/ui/dialogs.interface';
 import { BehaviorSubject, Observable, timer, switchMap } from 'rxjs';
 import { BdmysqlService } from './bdmysql.service';
@@ -9,7 +17,7 @@ import { BdmysqlService } from './bdmysql.service';
     providedIn: 'root',
 })
 export class UsersService {
-    // private _name = 'UsersService';
+    private _name = 'UsersService';
 
     hours: number = 0;
     minuts: number = 0;
@@ -32,7 +40,7 @@ export class UsersService {
         recover_password_user: 0,
         short_name_asoc: '',
         status_user: '',
-        token_exp_user: '',
+        token_exp_user: 0,
         token_user: '',
         user_name_user: '',
     };
@@ -150,7 +158,7 @@ export class UsersService {
         return this._db.updateUser(data, this.getAuthHeaders());
     }
 
-    getLocalStoredProfile() {
+    getLocalStoredProfile(): ILocalProfile {
         const item = localStorage.getItem('userprofile') || null;
         let resp!: any;
 
@@ -160,25 +168,28 @@ export class UsersService {
                 msg: 'Not user logged',
                 userprofile: this._userprofile,
             };
-            // console.log('Componente ' + this._name + ': getProfile: resp  ─> ', resp);
+            console.log('Componente ' + this._name + ': getProfile: item == null resp  ─> ', resp);
             return resp;
         } else {
             this._userprofile = JSON.parse(item);
-            if (this._userprofile.token_exp_user !== '') {
+            if (this._userprofile.token_exp_user !== 0) {
                 const now = Math.round(new Date().getTime() / 1000);
-                if (now >= parseInt(this._userprofile.token_exp_user)) {
+                if (now >= this._userprofile.token_exp_user) {
                     this.resetStoredProfile();
                     resp = {
                         msg: 'Token expired',
                         userprofile: this._userprofile,
                     };
+                    console.log('Componente ' + this._name + ': getProfile: token_exp_user resp  ─> ', resp);
                     return resp;
                 } else {
+                    console.log('Componente ' + this._name + ': getProfile: this._userprofile  ─> ', this._userprofile);
                     resp = {
                         msg: 'User logged',
                         userprofile: this._userprofile,
                     };
                     this.userProfileSubject$.next(this._userprofile);
+                    console.log('Componente ' + this._name + ': getProfile: logged resp  ─> ', resp);
                     return resp;
                 }
             } else {
@@ -187,6 +198,7 @@ export class UsersService {
                     msg: 'Not user logged',
                     userprofile: this._userprofile,
                 };
+                console.log('Componente ' + this._name + ': getProfile: else resp  ─> ', resp);
                 return resp;
             }
         }
@@ -288,7 +300,7 @@ export class UsersService {
         this._userprofile.email_user = '';
         this._userprofile.recover_password_user = 0;
         this._userprofile.token_user = '';
-        this._userprofile.token_exp_user = '';
+        this._userprofile.token_exp_user = 0;
         this._userprofile.profile_user = '';
         this._userprofile.status_user = '';
         this._userprofile.name_user = '';
