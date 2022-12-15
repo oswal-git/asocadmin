@@ -8,10 +8,11 @@ import { ComponentsModule } from '@app/components/components.module';
 import { ResetComponent } from './auth/reset/reset.component';
 import { ChangeComponent } from './auth/change/change.component';
 import { ProfileComponent } from './auth/profile/profile.component';
+import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 
 @NgModule({
     declarations: [LoginComponent, RegisterComponent, ResetComponent, ChangeComponent, ProfileComponent],
-    imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, ComponentsModule],
+    imports: [CommonModule, AppRoutingModule, FormsModule, ReactiveFormsModule, ComponentsModule, FontAwesomeModule],
     schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class PagesModule {}

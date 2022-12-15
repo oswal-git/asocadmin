@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { UsersService } from '@app/services/bd/users.service';
 import { environment } from '@env/environment';
 import { faEnvelope } from '@fortawesome/free-solid-svg-icons';
@@ -39,11 +39,11 @@ export class ResetComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
-
-        if (res.msg === 'User logged') {
-            this.router.navigateByUrl('/dashboard');
-        }
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            if (res.msg === 'User logged') {
+                this.router.navigateByUrl('/dashboard');
+            }
+        });
 
         this.form = this._formBuilder.group({
             // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],

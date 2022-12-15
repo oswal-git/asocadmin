@@ -7,7 +7,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Router } from '@angular/router';
 import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
-import { IProfileUsuario, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IProfileUsuario, IUserAsociation, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog, IResponseActionsUsers } from '@app/interfaces/ui/dialogs.interface';
 import { AsociationsService } from '@app/services/bd/asociations.service';
 import { ToastrService } from 'ngx-toastr';
@@ -121,26 +121,27 @@ export class ListaUsuariosComponent implements OnInit {
         public dialog: MatDialog,
         private router: Router
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
-        // console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        this._usersService.getLocalStoredProfile().then( (res: ILocalProfile) => {
+            // console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
-        if (res.msg !== 'User logged') {
-            this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
-                this.router.navigateByUrl('/dashboard');
-            });
-        } else if (!['admin', 'superadmin'].includes(res.userprofile.profile_user)) {
-            this._toastr.error('User not authorized for try the user list', 'User unauthorized').onHidden.subscribe(() => {
-                this.router.navigateByUrl('/dashboard');
-            });
-        }
+            if (res.msg !== 'User logged') {
+                this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
+                    this.router.navigateByUrl('/dashboard');
+                });
+            } else if (!['admin', 'superadmin'].includes(res.userprofile.profile_user)) {
+                this._toastr.error('User not authorized for try the user list', 'User unauthorized').onHidden.subscribe(() => {
+                    this.router.navigateByUrl('/dashboard');
+                });
+            }
 
-        this.userProfile = res.userprofile;
+            this.userProfile = res.userprofile;
 
-        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
+            this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
+            this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
 
-        this.titleData.title =
-            this.userProfile.long_name_asoc === '' ? this.titleData.title : this.titleData.title + ' de ' + this.userProfile.long_name_asoc;
+            this.titleData.title =
+                this.userProfile.long_name_asoc === '' ? this.titleData.title : this.titleData.title + ' de ' + this.userProfile.long_name_asoc;
+        })
     }
 
     async ngOnInit() {

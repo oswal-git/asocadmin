@@ -7,7 +7,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { IOptionsDialog, IResponseActionsAsociations } from '@app/interfaces/ui/dialogs.interface';
 import { IBDAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
 import { Subject, Subscription } from 'rxjs';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { UsersService } from '@app/services/bd/users.service';
 import { ComponentType } from '@angular/cdk/portal';
 import { AsociationsService } from '@app/services/bd/asociations.service';
@@ -112,23 +112,24 @@ export class ListAsociationsComponent implements OnInit, AfterViewChecked, OnDes
         public dialog: MatDialog,
         private router: Router
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
-        this.userProfile = res.userprofile;
+            this.userProfile = res.userprofile;
 
-        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
+            this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
+            this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
 
-        if (res.msg !== 'User logged') {
-            this._toastr.error('Login for try the asociations list', 'User not logged').onHidden.subscribe(() => {
-                this.router.navigateByUrl('/dashboard');
-            });
-        } else if (!this.isSuper) {
-            this._toastr.error('User not authorized for try the asociations list', 'User unauthorized').onHidden.subscribe(() => {
-                this.router.navigateByUrl('/dashboard');
-            });
-        }
+            if (res.msg !== 'User logged') {
+                this._toastr.error('Login for try the asociations list', 'User not logged').onHidden.subscribe(() => {
+                    this.router.navigateByUrl('/dashboard');
+                });
+            } else if (!this.isSuper) {
+                this._toastr.error('User not authorized for try the asociations list', 'User unauthorized').onHidden.subscribe(() => {
+                    this.router.navigateByUrl('/dashboard');
+                });
+            }
+        });
     }
 
     async ngOnInit() {

@@ -53,6 +53,7 @@ export class NavbarComponent implements OnInit, OnDestroy {
                     // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
                     this.isLogin = user.token_user !== '' ? true : false;
                     this.avatar = user.avatar_user === '' ? environment.urlApi2 + '/assets/img/user.png' : user.avatar_user;
+                    this.asociation_name = '';
                     if (user.profile_user === 'superadmin') {
                         this.sadmin = true;
                     } else if (user.id_asoc_admin !== 0) {
@@ -143,7 +144,9 @@ export class NavbarComponent implements OnInit, OnDestroy {
                     // console.log('Componente ' + this._name + ': logout: this.isLogin ─> ', this.isLogin);
                     // console.log('Componente ' + this._name + ': logout: this.avatar ─> ', this.avatar);
 
+                    // window.location.reload();
                     // this.router.navigateByUrl('/dashboard');
+                    // this.router.navigate(['./dashboard']);
                     this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => this.router.navigate(['/dashboard']));
                 } else {
                     this.msg(resp.message);

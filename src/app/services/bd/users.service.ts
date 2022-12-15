@@ -158,50 +158,52 @@ export class UsersService {
         return this._db.updateUser(data, this.getAuthHeaders());
     }
 
-    getLocalStoredProfile(): ILocalProfile {
-        const item = localStorage.getItem('userprofile') || null;
-        let resp!: any;
+    getLocalStoredProfile(): Promise<ILocalProfile> {
+        return new Promise<ILocalProfile>((resolve, _reject) => {
+            const item = localStorage.getItem('userprofile') || null;
+            let resp!: ILocalProfile;
 
-        if (item == null) {
-            this.resetStoredProfile();
-            resp = {
-                msg: 'Not user logged',
-                userprofile: this._userprofile,
-            };
-            console.log('Componente ' + this._name + ': getProfile: item == null resp  ─> ', resp);
-            return resp;
-        } else {
-            this._userprofile = JSON.parse(item);
-            if (this._userprofile.token_exp_user !== 0) {
-                const now = Math.round(new Date().getTime() / 1000);
-                if (now >= this._userprofile.token_exp_user) {
-                    this.resetStoredProfile();
-                    resp = {
-                        msg: 'Token expired',
-                        userprofile: this._userprofile,
-                    };
-                    console.log('Componente ' + this._name + ': getProfile: token_exp_user resp  ─> ', resp);
-                    return resp;
-                } else {
-                    console.log('Componente ' + this._name + ': getProfile: this._userprofile  ─> ', this._userprofile);
-                    resp = {
-                        msg: 'User logged',
-                        userprofile: this._userprofile,
-                    };
-                    this.userProfileSubject$.next(this._userprofile);
-                    console.log('Componente ' + this._name + ': getProfile: logged resp  ─> ', resp);
-                    return resp;
-                }
-            } else {
+            if (item == null) {
                 this.resetStoredProfile();
                 resp = {
                     msg: 'Not user logged',
                     userprofile: this._userprofile,
                 };
-                console.log('Componente ' + this._name + ': getProfile: else resp  ─> ', resp);
-                return resp;
+                console.log('Componente ' + this._name + ': getProfile: item == null resp  ─> ', resp);
+                resolve(resp);
+            } else {
+                this._userprofile = JSON.parse(item);
+                if (this._userprofile.token_exp_user !== 0) {
+                    const now = Math.round(new Date().getTime() / 1000);
+                    if (now >= this._userprofile.token_exp_user) {
+                        this.resetStoredProfile();
+                        resp = {
+                            msg: 'Token expired',
+                            userprofile: this._userprofile,
+                        };
+                        console.log('Componente ' + this._name + ': getProfile: token_exp_user resp  ─> ', resp);
+                        resolve(resp);
+                    } else {
+                        console.log('Componente ' + this._name + ': getProfile: this._userprofile  ─> ', this._userprofile);
+                        resp = {
+                            msg: 'User logged',
+                            userprofile: this._userprofile,
+                        };
+                        this.userProfileSubject$.next(this._userprofile);
+                        console.log('Componente ' + this._name + ': getProfile: logged resp  ─> ', resp);
+                        resolve(resp);
+                    }
+                } else {
+                    this.resetStoredProfile();
+                    resp = {
+                        msg: 'Not user logged',
+                        userprofile: this._userprofile,
+                    };
+                    console.log('Componente ' + this._name + ': getProfile: else resp  ─> ', resp);
+                    resolve(resp);
+                }
             }
-        }
+        });
     }
 
     actualizeStoreProfile(user: IBDUsuario, asoc: IBDAsociation) {

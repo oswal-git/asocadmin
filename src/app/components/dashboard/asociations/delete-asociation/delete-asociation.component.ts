@@ -3,7 +3,7 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { IIdAsociation } from '@app/interfaces/api/iapi-asociation.metadata';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog, IReplay, IResponseActionsUsers } from '@app/interfaces/ui/dialogs.interface';
 import { AsociationsService } from '@app/services/bd/asociations.service';
 import { UsersService } from '@app/services/bd/users.service';
@@ -75,28 +75,29 @@ export class DeleteAsociationComponent implements OnInit {
             console.log('Componente ' + this._name + ': constructor: this.options ─> ', this.options);
         }
 
-        const res: any = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
-        if (res.msg !== 'User logged') {
-            this._toastr.error(res.msge, 'User not logged. Login for try the user list').onHidden.subscribe(() => {
-                this._location.back();
-            });
-        } else if (!['admin', 'superadmin'].includes(res.userprofile.profile_user)) {
-            this._toastr.error(res.msge, 'User not authorized for try the asociations list').onHidden.subscribe(() => {
-                this._location.back();
-            });
-        }
+            if (res.msg !== 'User logged') {
+                this._toastr.error(res.msg, 'User not logged. Login for try the user list').onHidden.subscribe(() => {
+                    this._location.back();
+                });
+            } else if (!['admin', 'superadmin'].includes(res.userprofile.profile_user)) {
+                this._toastr.error(res.msg, 'User not authorized for try the asociations list').onHidden.subscribe(() => {
+                    this._location.back();
+                });
+            }
 
-        this.userProfile = res.userprofile;
+            this.userProfile = res.userprofile;
 
-        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
-        if (!this.isSuper) {
-            this._toastr.error(res.msge, 'User not authorized for try the asociations list').onHidden.subscribe(() => {
-                this._location.back();
-            });
-        }
+            this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
+            this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
+            if (!this.isSuper) {
+                this._toastr.error(res.msg, 'User not authorized for try the asociations list').onHidden.subscribe(() => {
+                    this._location.back();
+                });
+            }
+        });
     }
 
     ngOnInit(): void {

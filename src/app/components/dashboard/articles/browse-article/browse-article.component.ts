@@ -1,6 +1,6 @@
 import { Component, Inject, OnInit } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IResponseActionsUsers } from '@app/interfaces/ui/dialogs.interface';
 import { UsersService } from '@app/services/bd/users.service';
 import { environment } from '@env/environment';
@@ -36,29 +36,30 @@ export class BrowseArticleComponent implements OnInit {
         public dialogRef: MatDialogRef<BrowseArticleComponent>,
         @Inject(MAT_DIALOG_DATA) public data: any
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
-        this.userProfile = res.userprofile;
+            this.userProfile = res.userprofile;
 
-        this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
-        this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
+            this.isSuper = this.userProfile.profile_user === 'superadmin' ? true : false;
+            this.isAdmin = this.userProfile.id_asoc_admin === 0 ? false : true;
 
-        if (res.msg !== 'User logged') {
-            this.asociationId = parseInt('9'.repeat(9));
-        } else if (this.isSuper) {
-            this.asociationId = parseInt('9'.repeat(9));
-        } else if (res.msg === 'User logged') {
-            this.asociationId = this.userProfile.id_asociation_user;
-        } else {
-            this._toastr.error('User not authorized for try the listArticles list', 'User unauthorized').onHidden.subscribe(() => {
-                this.close(null);
-            });
-        }
+            if (res.msg !== 'User logged') {
+                this.asociationId = parseInt('9'.repeat(9));
+            } else if (this.isSuper) {
+                this.asociationId = parseInt('9'.repeat(9));
+            } else if (res.msg === 'User logged') {
+                this.asociationId = this.userProfile.id_asociation_user;
+            } else {
+                this._toastr.error('User not authorized for try the listArticles list', 'User unauthorized').onHidden.subscribe(() => {
+                    this.close(null);
+                });
+            }
 
-        console.log('Componente ' + this._name + ': constructor: data ─> ', data);
-        this.article = data.record;
-        this.loading = false;
+            console.log('Componente ' + this._name + ': constructor: data ─> ', data);
+            this.article = data.record;
+            this.loading = false;
+        });
     }
 
     ngOnInit(): void {}

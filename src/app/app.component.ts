@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { UsersService } from './services/bd/users.service';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Subscription } from 'rxjs';
+import { ILocalProfile } from './interfaces/api/iapi-users.metadatos';
 // import { Router } from '@angular/router';
 
 @Component({
@@ -25,40 +26,40 @@ export class AppComponent {
         private _snackBar: MatSnackBar
     ) {
         // console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
-        const res: any = this._usersService.getLocalStoredProfile();
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            if (res.msg === 'Token expired') {
+                this.msg('Token expired');
+                // this.router.navigateByUrl('/login');
+            }
 
-        if (res.msg === 'Token expired') {
-            this.msg('Token expired');
-            // this.router.navigateByUrl('/login');
-        }
-
-        if (!this.usersServiceSubscriber) {
-            this.usersServiceSubscriber = this._usersService.userProfile.subscribe((user) => {
-                if (user.token_user === '') {
-                    //TODO npm install crypto-js
-                    if (this.pollSubscriber) {
-                        console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.unsubscribe');
-                        this.pollSubscriber.unsubscribe();
-                        this.pollSubscriber = null;
+            if (!this.usersServiceSubscriber) {
+                this.usersServiceSubscriber = this._usersService.userProfile.subscribe((user) => {
+                    if (user.token_user === '') {
+                        //TODO npm install crypto-js
+                        if (this.pollSubscriber) {
+                            console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.unsubscribe');
+                            this.pollSubscriber.unsubscribe();
+                            this.pollSubscriber = null;
+                        }
+                        // this.router.navigateByUrl('/login');
+                    } else {
+                        if (!this.pollSubscriber) {
+                            // console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.subscribe');
+                            // this.pollSubscriber = this._usersService.pollUsers().subscribe((res) => {
+                            //     console.log('Componente ' + this._name + ': constructor: pollUsers res ─> ', res);
+                            //     if (res) {
+                            //         // res.result.map((noti: any) => {
+                            //         // console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ', noti);
+                            //         console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ');
+                            //         // this.makeNotification(noti.title_article, noti.abstract_article);
+                            //         // });
+                            //     }
+                            // });
+                        }
                     }
-                    // this.router.navigateByUrl('/login');
-                } else {
-                    if (!this.pollSubscriber) {
-                        // console.log('Componente ' + this._name + ': constructor:  ─> pollSubscriber.subscribe');
-                        // this.pollSubscriber = this._usersService.pollUsers().subscribe((res) => {
-                        //     console.log('Componente ' + this._name + ': constructor: pollUsers res ─> ', res);
-                        //     if (res) {
-                        //         // res.result.map((noti: any) => {
-                        //         // console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ', noti);
-                        //         console.log('Componente ' + this._name + ': constructor: pollUsers noti ─> ');
-                        //         // this.makeNotification(noti.title_article, noti.abstract_article);
-                        //         // });
-                        //     }
-                        // });
-                    }
-                }
-            });
-        }
+                });
+            }
+        });
     }
 
     ngOnInit(): void {

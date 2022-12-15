@@ -1,6 +1,6 @@
 import { ArticlesService } from '@app/services/bd/articles.service';
 import { BrowseArticleComponent } from '../browse-article/browse-article.component';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { ComponentType } from '@angular/cdk/portal';
 import { EditArticleComponent } from '../edit-article/edit-article.component';
 import { faCircleXmark, faPenToSquare, faPlus } from '@fortawesome/free-solid-svg-icons';
@@ -20,7 +20,7 @@ import { ARTICLES_CONST } from '@app/data/constants/articles.const';
     templateUrl: './list-articles.component.html',
     styleUrls: ['./list-articles.component.scss'],
 })
-export class ListArticlesComponent implements OnInit {
+export class ListArticlesComponent implements OnInit, OnDestroy {
     private _name = 'ListArticlesComponent';
 
     userProfile!: IUserConnected;
@@ -40,6 +40,7 @@ export class ListArticlesComponent implements OnInit {
     recordsPerPage: number = 3;
     isSuper = false;
     asociationId: number = 0;
+    lastAsociationId: number = 0;
     isAdmin = false;
     isEditor = false;
 
@@ -75,14 +76,11 @@ export class ListArticlesComponent implements OnInit {
             // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
             this.userProfileOSubscription = this._usersService.userProfile.subscribe({
                 next: (user: IUserConnected) => {
-                    // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
+                    console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);
                     this.userProfile = user;
                     this.isLogin = user.token_user !== '' ? true : false;
-                    if (user.profile_user === 'superadmin') {
-                        this.isSuper = true;
-                    } else if (user.id_asoc_admin !== 0) {
-                        this.isAdmin = true;
-                    }
+                    this.isSuper = user.profile_user === 'superadmin';
+                    this.isAdmin = user.id_asoc_admin !== 0;
 
                     if (!this.isLogin) {
                         this.asociationId = parseInt('9'.repeat(9));
@@ -96,6 +94,23 @@ export class ListArticlesComponent implements OnInit {
                         });
                     }
                     this.isEditor = this.isSuper || this.isAdmin || user.profile_user === 'editor';
+                    if (this.lastAsociationId === 0) {
+                        this.lastAsociationId = this.asociationId;
+                    } else if (this.lastAsociationId !== this.asociationId) {
+                        console.log(
+                            'Componente ' + this._name + ': constructor: subscribe this.lastAsociationId !== this.asociationId ─> ',
+                            this.lastAsociationId,
+                            this.asociationId
+                        );
+                        this.loading = true;
+                        this.loadArticles().then((resp) => {
+                            // console.log('Componente ' + this._name + ': ngOnInit: resp ─> ', resp);
+                            if (resp.status === 'ok' || 'success') {
+                                this.listArticles = resp.data;
+                            }
+                            this.loading = false;
+                        });
+                    }
                 },
                 error: (err: any) => {
                     console.log('Componente ' + this._name + ': constructor: error ─> ', err);
@@ -133,6 +148,7 @@ export class ListArticlesComponent implements OnInit {
 
     ngOnDestroy() {
         this.subscriberParamams.unsubscribe();
+        this.userProfileOSubscription.unsubscribe();
     }
 
     getAuxiliarData() {

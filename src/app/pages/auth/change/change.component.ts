@@ -77,7 +77,7 @@ export class ChangeComponent implements OnInit {
     }
 
     async init() {
-        const res: ILocalProfile = this._usersService.getLocalStoredProfile();
+        const res: ILocalProfile = await this._usersService.getLocalStoredProfile();
         console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
         if (res.msg !== 'User logged') {

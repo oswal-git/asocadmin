@@ -1,6 +1,6 @@
 import { Location, LocationStrategy, PathLocationStrategy } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
-import { IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { IOptionsDialog } from '@app/interfaces/ui/dialogs.interface';
 import { UsersService } from '@app/services/bd/users.service';
 import { ToastrService } from 'ngx-toastr';
@@ -31,18 +31,18 @@ export class ProfileAsociationComponent implements OnInit {
         private _usersService: UsersService,
         private _toastr: ToastrService // private _location: Location
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            if (res.msg === 'Token expired') {
+                this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
+                    // this._location.back();
+                });
+            }
 
-        if (res.msg === 'Token expired') {
-            this._toastr.error('Login for try the user list', 'User not logged').onHidden.subscribe(() => {
+            if (res.msg !== 'User logged') {
+                //TODO npm install crypto-js
                 // this._location.back();
-            });
-        }
-
-        if (res.msg !== 'User logged') {
-            //TODO npm install crypto-js
-            // this._location.back();
-        }
+            }
+        });
     }
 
     ngOnInit(): void {

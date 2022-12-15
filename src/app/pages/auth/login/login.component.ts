@@ -2,11 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatSnackBar, MatSnackBarHorizontalPosition, MatSnackBarVerticalPosition } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
-import { ICredentials, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
+import { ICredentials, ILocalProfile, IUserConnected } from '@app/interfaces/api/iapi-users.metadatos';
 import { UsersService } from '@app/services/bd/users.service';
 import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
-import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 
 @Component({
     selector: 'app-login',
@@ -41,6 +41,8 @@ export class LoginComponent implements OnInit {
 
     passwordMinLength: number = 3;
 
+    fieldTextType = true;
+
     srcImage: string | ArrayBuffer | null = 'assets/user.png';
 
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -49,6 +51,8 @@ export class LoginComponent implements OnInit {
     // icons
     faEnvelope = faEnvelope;
     faKey = faKey;
+    faEye = faEye;
+    faEyeSlash = faEyeSlash;
 
     constructor(
         private _formBuilder: UntypedFormBuilder,
@@ -56,11 +60,11 @@ export class LoginComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService
     ) {
-        const res: any = this._usersService.getLocalStoredProfile();
-
-        if (res.msg === 'User logged') {
-            this.router.navigateByUrl('/dashboard');
-        }
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            if (res.msg === 'User logged') {
+                this.router.navigateByUrl('/dashboard');
+            }
+        });
 
         this.form = this._formBuilder.group({
             // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],
@@ -130,6 +134,10 @@ export class LoginComponent implements OnInit {
             this.form.markAllAsTouched();
             this.msg('Email o contraseña ingresados son inválidos');
         }
+    }
+
+    toggleFieldTextType() {
+        this.fieldTextType = !this.fieldTextType;
     }
 
     get emailField(): any {

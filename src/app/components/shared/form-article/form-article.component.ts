@@ -711,17 +711,16 @@ export class FormArticleComponent implements OnInit {
         return new Promise(async (resolve, _reject) => {
             if (numItems > 0) {
                 let respItemImage: any = {};
-                HelperClass.consoleLog(
-                    this._log,
-                    this._name,
-                    'updateItemsImage',
-                    '',
-                    'this.imageData.items_article.length',
-                    '',
-                    this.imageData.items_article.length
-                );
+                this._log
+                    ? console.log(
+                          'Componente ' + this._name + ': updateItemsImage: this.imageData.items_article.length ─> ',
+                          this.imageData.items_article.length
+                      )
+                    : '';
                 for (let index = 0; index < this.imageData.items_article.length; index++) {
-                    HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'index', '', index);
+                    // HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'index', '', index);
+                    this._log ? console.log('Componente ' + this._name + ': updateItemsImage: index ─> ', index) : '';
+
                     const element = {
                         cover: false,
                         id_article: this.articleResp.data.id_article,
@@ -730,17 +729,17 @@ export class FormArticleComponent implements OnInit {
                     };
 
                     respItemImage = await this.uploadImage(element, index + 1, numItems);
-                    HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'respItemImage', `index: ${index}`, respItemImage);
+                    this._log ? console.log('Componente ' + this._name + ': updateItemsImage: respItemImage - index ─> ', index, respItemImage) : '';
                     if (respItemImage.status !== 'success') {
-                        HelperClass.consoleLog(
-                            this._log,
-                            this._name,
-                            'updateItemsImage',
-                            'promisesUpdateItemsImages',
-                            'promiseUpdateItemImage',
-                            'resolve err',
-                            respItemImage.status
-                        );
+                        this._log
+                            ? console.log(
+                                  'Componente ' +
+                                      this._name +
+                                      ': updateItemsImage: promisesUpdateItemsImages - promiseUpdateItemImage resolve err ─>',
+                                  respItemImage.status
+                              )
+                            : '';
+
                         resolve({
                             status: respItemImage.status,
                             message: respItemImage.message,
@@ -748,15 +747,22 @@ export class FormArticleComponent implements OnInit {
                             result: null,
                         });
                     } else {
+                        this._log
+                            ? console.log(
+                                  'Componente ' + this._name + ': updateItemsImage: promisesUpdateItemsImages - promiseUpdateItemImage resolve ok ─>',
+                                  respItemImage.result
+                              )
+                            : '';
                         this.articleResp.data = respItemImage.result;
                     }
                 }
                 await this.updateOldRecord(this.articleResp.data);
 
-                HelperClass.consoleLog(this._log, this._name, 'updateItemsImage', '', 'end for', '');
+                this._log ? console.log('Componente ' + this._name + ': updateItemsImage: end for ─>') : '';
 
                 resolve({ status: 'ok', message: '', title: '' });
             } else {
+                this._log ? console.log('Componente ' + this._name + ': updateItemsImage: No items ─>') : '';
                 resolve({ status: 'ok', message: 'No items', title: '' });
             }
         });
@@ -880,8 +886,13 @@ export class FormArticleComponent implements OnInit {
             let post = true;
             const fd = new FormData();
             let data: any = {};
-            console.log('Componente ' + this._name + ': uploadImage: image ─> ', image);
-            console.log('Componente ' + this._name + ': uploadImage: this.userProfile.date_updated_user ─> ', this.userProfile.date_updated_user);
+            this._log ? console.log('Componente ' + this._name + ': uploadImage: image ─>', image) : '';
+            this._log
+                ? console.log(
+                      'Componente ' + this._name + ': uploadImage: this.userProfile.date_updated_user ─> ',
+                      this.userProfile.date_updated_user
+                  )
+                : '';
 
             isNew = !image.cover && image.image_item_article.isSelectedFile ? true : false;
 

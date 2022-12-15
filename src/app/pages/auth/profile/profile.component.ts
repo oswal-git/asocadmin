@@ -34,18 +34,20 @@ export class ProfileComponent implements OnInit {
         private _usersService: UsersService // private _db: BdmysqlService
     ) {
         // console.log('Componente ' + this._name + ': constructor:  ─> getProfile');
-        const res: ILocalProfile = this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            console.log('Componente ' + this._name + ': constructor: res ─> ', res);
 
-        if (res.msg === 'Token expired') {
-            this.msg('Token expired');
-            this.router.navigateByUrl('/login');
-        }
+            if (res.msg === 'Token expired') {
+                this.msg('Token expired');
+                this.router.navigateByUrl('/login');
+            }
 
-        if (res.msg !== 'User logged') {
-            //TODO npm install crypto-js
-            this.router.navigateByUrl('/login');
-        }
+            if (res.msg !== 'User logged') {
+                //TODO npm install crypto-js
+                this.msg('User not logged');
+                this.router.navigateByUrl('/login');
+            }
+        });
     }
 
     ngOnInit(): void {
