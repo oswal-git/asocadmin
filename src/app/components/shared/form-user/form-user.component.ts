@@ -140,8 +140,8 @@ export class FormUserComponent implements OnInit, OnChanges, DoCheck {
         this.isSuper = false;
         this.isAdmin = false;
 
+        console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
         if (!this.userProfileOSubscription) {
-            // console.log('Componente ' + this._name + ': constructor: subscribe user ─> ');
             this.userProfileOSubscription = this._usersService.userProfile.subscribe({
                 next: (user: IUserConnected) => {
                     console.log('Componente ' + this._name + ': constructor: subscribe user ─> ', user);

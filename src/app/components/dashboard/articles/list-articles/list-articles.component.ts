@@ -329,6 +329,7 @@ export class ListArticlesComponent implements OnInit, OnDestroy {
                         console.log('Componente ' + this._name + ': editArticle afterClosed: article ─> equal', JSON.parse(JSON.stringify(article)));
                         return article;
                     });
+                    this.sortArticlesByPublish();
                 }
             },
             error: (err: IResponseActionsAsociations) => {
@@ -387,5 +388,16 @@ export class ListArticlesComponent implements OnInit, OnDestroy {
                 console.log('Componente ' + this._name + ': afterClosed: complete ─> dialogo1');
             },
         });
+    }
+
+    sortArticlesByPublish() {
+        console.log('Componente ' + this._name + ': sortArticlesByPublish begin', JSON.parse(JSON.stringify(this.listArticles)));
+
+        this.listArticles.sort((article1, article2) => {
+            if (article1.publication_date_article > article2.publication_date_article) return -1;
+            else if (article1.publication_date_article < article2.publication_date_article) return 1;
+            else return 0;
+        });
+        console.log('Componente ' + this._name + ': sortArticlesByPublish end', JSON.parse(JSON.stringify(this.listArticles)));
     }
 }

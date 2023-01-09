@@ -167,7 +167,7 @@
                               class="form__input-date"
                               formControlName="publication_date_article"
                               placeholder="Introduce la fecha de publicación del artículo"
-                              [min]="minPublicatonDateArticle"
+                              [min]="isSuper ? null : minPublicatonDateArticle"
                               [max]="maxPublicatonDateArticle"
                            />
                         </div>

@@ -7,7 +7,7 @@ import { ILocalProfile, INewCredentials, IUserConnected } from '@app/interfaces/
 import { UsersService } from '@app/services/bd/users.service';
 import { IEglImagen } from '@app/shared/controls';
 import { environment } from '@env/environment';
-import { faEnvelope, faKey } from '@fortawesome/free-solid-svg-icons';
+import { faEnvelope, faEye, faEyeSlash, faKey } from '@fortawesome/free-solid-svg-icons';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -46,6 +46,9 @@ export class ChangeComponent implements OnInit {
 
     passwordMinLength: number = 3;
 
+    passwordTextType = true;
+    newPasswordTextType = true;
+
     srcImage: string | ArrayBuffer | null = 'assets/user.png';
 
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
@@ -54,6 +57,8 @@ export class ChangeComponent implements OnInit {
     // icons
     faEnvelope = faEnvelope;
     faKey = faKey;
+    faEye = faEye;
+    faEyeSlash = faEyeSlash;
 
     constructor(
         private _formBuilder: UntypedFormBuilder,
@@ -61,10 +66,30 @@ export class ChangeComponent implements OnInit {
         private router: Router,
         private _usersService: UsersService,
         private _location: Location
-    ) {}
+    ) {
+        this._usersService.getLocalStoredProfile().then((res: ILocalProfile) => {
+            if (res.msg !== 'User logged') {
+                this.router.navigateByUrl('/dashboard');
+            }
+
+            this.userProfile = res.userprofile;
+            console.log('Componente ' + this._name + ': constructor: res.userprofile ─> ', res.userprofile);
+            const avatar = res.userprofile.avatar_user === '' ? environment.urlApi2 + '/assets/img/user.png' : res.userprofile.avatar_user;
+            console.log('Componente ' + this._name + ': constructor: avatar ─> ', avatar);
+
+            this.avatarImg = {
+                src: avatar,
+                nameFile: avatar.split(/[\\/]/).pop() || '',
+                filePath: '',
+                fileImage: null,
+                isSelectedFile: false,
+                isDefault: this.avatarUrlDefault === avatar,
+                isChange: false,
+            };
+        });
+    }
 
     ngOnInit(): void {
-        this.init();
         this.form = this._formBuilder.group({
             // image: [{ src: 'assets/img/user.png', nameFile: 'user.png', filePath: 'assets/img', image: null, isSelectedFile: false }, []],
             email_user: new UntypedFormControl(
@@ -74,29 +99,6 @@ export class ChangeComponent implements OnInit {
             password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
             new_password_user: new UntypedFormControl('', Validators.compose([Validators.required, Validators.minLength(3)])),
         });
-    }
-
-    async init() {
-        const res: ILocalProfile = await this._usersService.getLocalStoredProfile();
-        console.log('Componente ' + this._name + ': constructor: res ─> ', res);
-
-        if (res.msg !== 'User logged') {
-            this.router.navigateByUrl('/login');
-        }
-        this.userProfile = res.userprofile;
-        console.log('Componente ' + this._name + ': constructor: res.userprofile ─> ', res.userprofile);
-        const avatar = res.userprofile.avatar_user === '' ? environment.urlApi2 + '/assets/img/user.png' : res.userprofile.avatar_user;
-        console.log('Componente ' + this._name + ': constructor: avatar ─> ', avatar);
-
-        this.avatarImg = {
-            src: avatar,
-            nameFile: avatar.split(/[\\/]/).pop() || '',
-            filePath: '',
-            fileImage: null,
-            isSelectedFile: false,
-            isDefault: this.avatarUrlDefault === avatar,
-            isChange: false,
-        };
     }
 
     async change(event: Event) {
@@ -156,6 +158,13 @@ export class ChangeComponent implements OnInit {
             this.form.markAllAsTouched();
             this.msg('Email o contraseña ingresados son inválidos');
         }
+    }
+
+    togglePasswordTextType() {
+        this.passwordTextType = !this.passwordTextType;
+    }
+    toggleNewPasswordTextType() {
+        this.newPasswordTextType = !this.newPasswordTextType;
     }
 
     exit(): void {

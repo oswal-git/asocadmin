@@ -23,6 +23,7 @@ export const ARTICLES_CONST = {
                 { id: 1, caption: 'servicios' },
                 { id: 2, caption: 'reuniones' },
                 { id: 3, caption: 'asambleas' },
+                { id: 4, caption: 'cultura' },
             ],
         },
     ],

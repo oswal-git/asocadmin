@@ -574,6 +574,13 @@
             .list__article {
                grid-template-columns: repeat(auto-fit, minmax(336px, 1fr));
                margin-top: 3rem;
+
+               .article {
+                  .article__card {
+                     .article__card {
+                     }
+                  }
+               }
             }
          }
       }

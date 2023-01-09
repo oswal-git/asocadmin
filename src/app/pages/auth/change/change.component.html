@@ -41,13 +41,25 @@
                      <div class="form__field-input">
                         <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
                         <input
-                           type="password"
+                           [type]="passwordTextType ? 'password' : 'text'"
                            class="form__input"
                            formControlName="password_user"
                            id="password_user"
                            placeholder="Password"
                            autocomplete="current-password"
                         />
+                        <fa-icon
+                           class="form__input-icon clickable"
+                           [icon]="faEye"
+                           (click)="togglePasswordTextType()"
+                           *ngIf="passwordTextType && passwordField.value.length > 0"
+                        ></fa-icon>
+                        <fa-icon
+                           class="form__input-icon clickable"
+                           [icon]="faEyeSlash"
+                           (click)="togglePasswordTextType()"
+                           *ngIf="!passwordTextType && passwordField.value.length > 0"
+                        ></fa-icon>
                      </div>
                      <div class="form__field-error" *ngIf="passwordField!.errors && passwordField!.touched">
                         <p *ngIf="passwordField!.hasError('required')">Es un campo requerido</p>
@@ -60,13 +72,25 @@
                      <div class="form__field-input">
                         <fa-icon class="form__input-icon" [icon]="faKey"></fa-icon>
                         <input
-                           type="password"
+                           [type]="newPasswordTextType ? 'password' : 'text'"
                            class="form__input"
                            formControlName="new_password_user"
                            id="new_password_user"
                            placeholder="New password"
                            autocomplete="new-password"
                         />
+                        <fa-icon
+                           class="form__input-icon clickable"
+                           [icon]="faEye"
+                           (click)="toggleNewPasswordTextType()"
+                           *ngIf="newPasswordTextType && newPasswordField.value.length > 0"
+                        ></fa-icon>
+                        <fa-icon
+                           class="form__input-icon clickable"
+                           [icon]="faEyeSlash"
+                           (click)="toggleNewPasswordTextType()"
+                           *ngIf="!newPasswordTextType && passwordField.value.length > 0"
+                        ></fa-icon>
                      </div>
                      <div class="form__field-error" *ngIf="newPasswordField!.errors && newPasswordField!.touched">
                         <p *ngIf="newPasswordField!.hasError('required')">Es un campo requerido</p>

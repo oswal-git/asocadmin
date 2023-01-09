@@ -18,7 +18,7 @@ export class ProfileComponent implements OnInit {
     durationInSeconds = 1.5;
     horizontalPosition: MatSnackBarHorizontalPosition = 'start';
     verticalPosition: MatSnackBarVerticalPosition = 'bottom';
-
+    //  ES87.0186.0091.28.0509250498
     options: IOptionsDialog = {
         id: 'profile',
         title: 'Editar el Perfil de <span class="title__span">Usuario</span>',
@@ -39,19 +39,22 @@ export class ProfileComponent implements OnInit {
 
             if (res.msg === 'Token expired') {
                 this.msg('Token expired');
+                console.log('Componente ' + this._name + ': constructor: Token expired ─> ');
                 this.router.navigateByUrl('/login');
             }
 
             if (res.msg !== 'User logged') {
+                console.log('Componente ' + this._name + ': constructor: Not user logged ─> ');
                 //TODO npm install crypto-js
                 this.msg('User not logged');
                 this.router.navigateByUrl('/login');
             }
         });
+        console.log('Componente ' + this._name + ': constructor: end ─> ');
     }
 
     ngOnInit(): void {
-        // console.log('Componente ' + this._name + ': ngOnInit: this._usersService.userPerfil ─> ', this._usersService.userProfile);
+        console.log('Componente ' + this._name + ': ngOnInit: ');
         // if ((this._usersService.userProfile.profile_user === 'superadmin' || this._usersService.userProfile.token_user) === '') {
         // }
         this.options.options.fin = true;
