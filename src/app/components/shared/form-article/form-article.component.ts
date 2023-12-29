@@ -232,7 +232,7 @@ export class FormArticleComponent implements OnInit {
             items_article: this._formBuilder.array([]),
         });
 
-        this.categoryArticleField.valueChanges.subscribe((value) => {
+        this.categoryArticleField.valueChanges.subscribe((value: any) => {
             this.form.value.subcategory_article = '';
             this.subCategoryArticle = [];
             const list = ARTICLES_CONST.ARTICLES_CATEGORY.filter((cat: any) => cat.caption === value).map((cat: any) => cat.subcategory);
@@ -242,7 +242,7 @@ export class FormArticleComponent implements OnInit {
             this.subCategoryArticleField.markAsUntouched();
         });
 
-        this.publicatonDateField.valueChanges.subscribe((value) => {
+        this.publicatonDateField.valueChanges.subscribe((value: any) => {
             console.log('Componente ' + this._name + ': publicatonDateField: value ─> ', value);
             if (value > this.form.value.effective_date_article) {
                 this.effectiveDateField.setValue(value);
@@ -252,7 +252,7 @@ export class FormArticleComponent implements OnInit {
             }
         });
 
-        this.effectiveDateField.valueChanges.subscribe((value) => {
+        this.effectiveDateField.valueChanges.subscribe((value: any) => {
             console.log('Componente ' + this._name + ': effectiveDateField: value ─> ', value);
             const expiration_date_article = this.form.value.expiration_date_article === '' ? '9999-12-31' : this.form.value.expiration_date_article;
             if (value > expiration_date_article) {
@@ -263,7 +263,7 @@ export class FormArticleComponent implements OnInit {
             }
         });
 
-        this.stateArticleField.valueChanges.subscribe((value) => {
+        this.stateArticleField.valueChanges.subscribe((value: any) => {
             console.log('Componente ' + this._name + ': stateArticleField: value ─> ', value);
             console.log('Componente ' + this._name + ': coverImageArticleField: this.coverImageArticleField ─> ', this.coverImageArticleField.value);
             if (value.toLowerCase() === 'redacción') {
